@@ -53,7 +53,6 @@ export function checkHeirs(heirs, condition) {
   }
 }
 
-// دالة للحصول على نوع المتوفي من النموذج
 export function getDeceasedType() {
   const maleRadio = document.getElementById('male');
   return maleRadio?.checked ? DECEASED_TYPE.FATHER : DECEASED_TYPE.MOTHER;
