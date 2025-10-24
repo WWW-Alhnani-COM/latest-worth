@@ -13,474 +13,251 @@ export function calculateShare(total, shareType) {
   return total * (shares[shareType] || 0);
 }
 
-// نظام جديد لتتبع الأنصبة
-class InheritanceCalculator {
-  constructor(total, heirs) {
-    this.total = parseFloat(total);
-    this.heirs = heirs;
-    this.shares = {};
-    this.remainingAmount = this.total;
-    this.remainingPercentage = 100;
-  }
-
-  assignFixedShare(heirType, shareType, note = '') {
-    const shareAmount = calculateShare(this.total, shareType);
-    this.shares[heirType] = {
-      amount: shareAmount,
-      percentage: (shareAmount / this.total) * 100,
-      note
-    };
-    this.remainingAmount -= shareAmount;
-    this.remainingPercentage -= this.shares[heirType].percentage;
-  }
-
-  assignRemainingTo(heirType, note = '') {
-    this.shares[heirType] = {
-      amount: this.remainingAmount,
-      percentage: this.remainingPercentage,
-      note
-    };
-    this.remainingAmount = 0;
-    this.remainingPercentage = 0;
-  }
-
-  getResults() {
-    return this.shares;
-  }
-}
-
 // ================ Calculate Husband ================
-export function calculateHusbandHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage
-}) {
+export function calculateHusbandHeir(heirs, total, heirCounts = {}) {
   const deceasedType = getDeceasedType();
-  const calculator = new InheritanceCalculator(total, heirs);
-  
+  let amount = 0;
+  let percentage = 0;
+  let note = '';
+
   if (deceasedType === DECEASED_TYPE.MOTHER) {
     if (checkHeirs(heirs, CONDITIONS.hasSon) || checkHeirs(heirs, CONDITIONS.hasDaughter)) {
-      calculator.assignFixedShare(type, SHARES.quarter, 'حصل علي الربع فرض بسبب وجود ابناء');
+      amount = calculateShare(total, SHARES.quarter);
+      percentage = 25;
+      note = 'حصل علي الربع فرض بسبب وجود ابناء';
     } else {
-      calculator.assignFixedShare(type, SHARES.half, 'حصل علي النصف فرض بسبب عدم وجود ابناء');
+      amount = calculateShare(total, SHARES.half);
+      percentage = 50;
+      note = 'حصل علي النصف فرض بسبب عدم وجود ابناء';
     }
   } else {
-    results[type] = {
-      ...value,
-      amount: '0.00',
-      percentage: '0.00',
-      note: 'لا يرث مع المتوفي أب',
-    };
-    return;
+    amount = 0;
+    percentage = 0;
+    note = 'لا يرث مع المتوفي أب';
   }
-  
-  Object.assign(results, calculator.getResults());
+
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
 // ================ Calculate Wife ================
-export function calculateWifeHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  heirCounts,
-  heirType,
-  remainingPercentage
-}) {
+export function calculateWifeHeir(heirs, total, heirCounts = {}) {
   const deceasedType = getDeceasedType();
-  const calculator = new InheritanceCalculator(total, heirs);
-  
+  let amount = 0;
+  let percentage = 0;
+  let note = '';
+
   if (deceasedType === DECEASED_TYPE.FATHER) {
+    const wifeCount = heirCounts['wife'] || 1;
+    
     if (checkHeirs(heirs, CONDITIONS.hasSon) || checkHeirs(heirs, CONDITIONS.hasDaughter)) {
-      const wifeShare = calculateShare(total, SHARES.eighth);
-      const wifeCount = heirCounts[heirType] || 1;
-      const sharePerWife = wifeShare / wifeCount;
-      
-      results[type] = {
-        ...value,
-        amount: sharePerWife.toFixed(2),
-        percentage: ((sharePerWife / total) * 100).toFixed(2),
-        note: generateWifeNote('eighth', wifeCount),
-      };
+      const totalShare = calculateShare(total, SHARES.eighth);
+      amount = totalShare / wifeCount;
+      percentage = (amount / total) * 100;
+      note = generateWifeNote('eighth', wifeCount);
     } else {
-      const wifeShare = calculateShare(total, SHARES.quarter);
-      const wifeCount = heirCounts[heirType] || 1;
-      const sharePerWife = wifeShare / wifeCount;
-      
-      results[type] = {
-        ...value,
-        amount: sharePerWife.toFixed(2),
-        percentage: ((sharePerWife / total) * 100).toFixed(2),
-        note: generateWifeNote('quarter', wifeCount),
-      };
+      const totalShare = calculateShare(total, SHARES.quarter);
+      amount = totalShare / wifeCount;
+      percentage = (amount / total) * 100;
+      note = generateWifeNote('quarter', wifeCount);
     }
   } else {
-    results[type] = {
-      ...value,
-      amount: '0.00',
-      percentage: '0.00',
-      note: 'لا ترث مع المتوفي أم',
-    };
+    amount = 0;
+    percentage = 0;
+    note = 'لا ترث مع المتوفي أم';
   }
+
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
 // ================ Calculate DAD ================
-export function calculateDadHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage
-}) {
-  const calculator = new InheritanceCalculator(total, heirs);
-  
+export function calculateDadHeir(heirs, total, heirCounts = {}) {
+  let amount = 0;
+  let percentage = 0;
+  let note = '';
+
   if (checkHeirs(heirs, CONDITIONS.hasSon) || checkHeirs(heirs, CONDITIONS.hasDaughter)) {
-    calculator.assignFixedShare(type, SHARES.sixth, 'السدس فرض لوجود فرع وارث');
+    amount = calculateShare(total, SHARES.sixth);
+    percentage = (amount / total) * 100;
+    note = 'السدس فرض لوجود فرع وارث';
   } else {
-    calculator.assignRemainingTo(type, 'الباقي تعصيب لعدم وجود فرع وارث');
+    // في حالة عدم وجود أبناء، الأب يأخذ الباقي
+    amount = total; // سيتم تعديل هذا لاحقاً في دالة التوزيع
+    percentage = 100;
+    note = 'الباقي تعصيب لعدم وجود فرع وارث';
   }
-  
-  Object.assign(results, calculator.getResults());
+
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
 // ================ Calculate MOM ================
-export function calculateMomHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage
-}) {
-  const calculator = new InheritanceCalculator(total, heirs);
-  
+export function calculateMomHeir(heirs, total, heirCounts = {}) {
+  let amount = 0;
+  let percentage = 0;
+  let note = '';
+
   if (checkHeirs(heirs, CONDITIONS.hasSon) || checkHeirs(heirs, CONDITIONS.hasDaughter)) {
-    calculator.assignFixedShare(type, SHARES.sixth, 'السدس فرض لوجود فرع وارث');
+    amount = calculateShare(total, SHARES.sixth);
+    percentage = (amount / total) * 100;
+    note = 'السدس فرض لوجود فرع وارث';
   } else {
-    calculator.assignFixedShare(type, SHARES.third, 'الثلث فرض لعدم وجود فرع وارث');
-  }
-  
-  Object.assign(results, calculator.getResults());
-}
-
-// ================ Calculate SON ================
-export function calculateSonHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage,
-  heirCounts,
-  heirType
-}) {
-  const deceasedType = getDeceasedType();
-  const hasSister = checkHeirs(heirs, CONDITIONS.hasSister);
-  const hasDad = checkHeirs(heirs, CONDITIONS.hasDad);
-  const hasMom = checkHeirs(heirs, CONDITIONS.hasMom);
-  const hasGrandmother = checkHeirs(heirs, CONDITIONS.hasGrandmother);
-  const hasWife = checkHeirs(heirs, CONDITIONS.hasWife);
-  const hasHusband = checkHeirs(heirs, CONDITIONS.hasHusband);
-  const hasDaughter = checkHeirs(heirs, CONDITIONS.hasDaughter);
-  
-  const sonCount = heirCounts['son'] || 0;
-  const daughterCount = heirCounts['daughter'] || 0;
-
-  // حساب الأنصبة الثابتة أولاً
-  let fixedShares = 0;
-  if (hasDad) fixedShares += calculateShare(total, SHARES.sixth);
-  if (hasMom) fixedShares += calculateShare(total, SHARES.sixth);
-  if (hasGrandmother) fixedShares += calculateShare(total, SHARES.sixth);
-  if (hasWife && deceasedType === DECEASED_TYPE.FATHER) fixedShares += calculateShare(total, SHARES.eighth);
-  if (hasHusband && deceasedType === DECEASED_TYPE.MOTHER) fixedShares += calculateShare(total, SHARES.quarter);
-
-  const remainingForChildren = total - fixedShares;
-  
-  let sonAmount = 0;
-  let sonNote = '';
-
-  if (hasSister || hasDaughter) {
-    // للذكر مثل حظ الانثيين
-    const totalShares = sonCount * 2 + daughterCount;
-    const sharePerUnit = remainingForChildren / totalShares;
-    sonAmount = sharePerUnit * 2;
-    sonNote = 'للذكر مثل حظ الانثيين';
-  } else {
-    // الباقي كله للأبناء
-    sonAmount = remainingForChildren / sonCount;
-    sonNote = 'الباقي تعصيباً';
+    amount = calculateShare(total, SHARES.third);
+    percentage = (amount / total) * 100;
+    note = 'الثلث فرض لعدم وجود فرع وارث';
   }
 
-  results[type] = {
-    ...value,
-    amount: sonAmount.toFixed(2),
-    percentage: ((sonAmount / total) * 100).toFixed(2),
-    note: sonNote,
-  };
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
 // ================ Calculate DAUGHTER ================
-export function calculateDaughterHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage,
-  heirCounts,
-  heirType
-}) {
+export function calculateDaughterHeir(heirs, total, heirCounts = {}) {
   const deceasedType = getDeceasedType();
-  const hasSon = checkHeirs(heirs, CONDITIONS.hasSon);
-  const hasDad = checkHeirs(heirs, CONDITIONS.hasDad);
-  const hasMom = checkHeirs(heirs, CONDITIONS.hasMom);
-  const hasWife = checkHeirs(heirs, CONDITIONS.hasWife);
-  const hasHusband = checkHeirs(heirs, CONDITIONS.hasHusband);
-  const hasGrandmother = checkHeirs(heirs, CONDITIONS.hasGrandmother);
-  const hasGrandfather = checkHeirs(heirs, CONDITIONS.hasGrandfather);
-  
   const daughterCount = heirCounts['daughter'] || 0;
   const sonCount = heirCounts['son'] || 0;
-
-  // حساب الأنصبة الثابتة أولاً
-  let fixedShares = 0;
-  if (hasDad) fixedShares += calculateShare(total, SHARES.sixth);
-  if (hasMom) fixedShares += calculateShare(total, SHARES.sixth);
-  if (hasGrandmother) fixedShares += calculateShare(total, SHARES.sixth);
-  if (hasGrandfather) fixedShares += calculateShare(total, SHARES.sixth);
-  if (hasWife && deceasedType === DECEASED_TYPE.FATHER) fixedShares += calculateShare(total, SHARES.eighth);
-  if (hasHusband && deceasedType === DECEASED_TYPE.MOTHER) fixedShares += calculateShare(total, SHARES.quarter);
-
-  const remainingForChildren = total - fixedShares;
   
-  let daughterAmount = 0;
-  let daughterNote = '';
+  let amount = 0;
+  let percentage = 0;
+  let note = '';
 
-  if (hasSon) {
-    // للذكر مثل حظ الانثيين
-    const totalShares = sonCount * 2 + daughterCount;
-    const sharePerUnit = remainingForChildren / totalShares;
-    daughterAmount = sharePerUnit;
-    daughterNote = 'للذكر مثل حظ الانثيين';
+  if (sonCount > 0) {
+    // للذكر مثل حظ الانثيين - يتم حسابه في دالة التوزيع الرئيسية
+    note = 'للذكر مثل حظ الانثيين';
+    return { amount: '0.00', percentage: '0.00', note }; // سيتم حسابها لاحقاً
   } else if (daughterCount >= 2) {
     // ابنتين فصاعدا - الثلثين
-    const daughtersTotalShare = calculateShare(total, SHARES.twoThirds);
-    daughterAmount = daughtersTotalShare / daughterCount;
-    daughterNote = 'ثلثين فرض';
-  } else {
+    const totalShare = calculateShare(total, SHARES.twoThirds);
+    amount = totalShare / daughterCount;
+    percentage = (amount / total) * 100;
+    note = 'ثلثين فرض';
+  } else if (daughterCount === 1) {
     // بنت واحدة - النصف
-    daughterAmount = calculateShare(total, SHARES.half);
-    daughterNote = 'نصف فرض';
+    amount = calculateShare(total, SHARES.half);
+    percentage = (amount / total) * 100;
+    note = 'نصف فرض';
   }
 
-  results[type] = {
-    ...value,
-    amount: daughterAmount.toFixed(2),
-    percentage: ((daughterAmount / total) * 100).toFixed(2),
-    note: daughterNote,
-  };
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+}
+
+// ================ Calculate SON ================
+export function calculateSonHeir(heirs, total, heirCounts = {}) {
+  const daughterCount = heirCounts['daughter'] || 0;
+  const sonCount = heirCounts['son'] || 0;
+  
+  let amount = 0;
+  let percentage = 0;
+  let note = '';
+
+  if (daughterCount > 0) {
+    // للذكر مثل حظ الانثيين - يتم حسابه في دالة التوزيع الرئيسية
+    note = 'للذكر مثل حظ الانثيين';
+    return { amount: '0.00', percentage: '0.00', note }; // سيتم حسابها لاحقاً
+  } else {
+    // أبناء فقط - الباقي تعصيباً
+    note = 'الباقي تعصيباً';
+    return { amount: '0.00', percentage: '0.00', note }; // سيتم حسابها لاحقاً
+  }
 }
 
 // ================ Calculate SISTER ================
-export function calculateSisterHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage,
-  heirCounts,
-  heirType
-}) {
-  const hasSon = checkHeirs(heirs, CONDITIONS.hasSon);
+export function calculateSisterHeir(heirs, total, heirCounts = {}) {
+  const sisterCount = heirCounts['sister'] || 0;
+  const sonCount = heirCounts['son'] || 0;
   
-  if (hasSon) {
-    const sisterCount = heirCounts['sister'] || 0;
-    const sonCount = heirCounts['son'] || 0;
-    
-    // حساب الأنصبة الثابتة أولاً
-    let fixedShares = 0;
-    if (checkHeirs(heirs, CONDITIONS.hasDad)) fixedShares += calculateShare(total, SHARES.sixth);
-    if (checkHeirs(heirs, CONDITIONS.hasMom)) fixedShares += calculateShare(total, SHARES.sixth);
-    
-    const remainingForSiblings = total - fixedShares;
-    const totalShares = sonCount * 2 + sisterCount;
-    const sharePerUnit = remainingForSiblings / totalShares;
-    const sisterAmount = sharePerUnit;
-    
-    results[type] = {
-      ...value,
-      amount: sisterAmount.toFixed(2),
-      percentage: ((sisterAmount / total) * 100).toFixed(2),
-      note: 'للذكر مثل حظ الانثيين مع الابن',
-    };
+  let amount = 0;
+  let percentage = 0;
+  let note = '';
+
+  if (sonCount > 0) {
+    note = 'للذكر مثل حظ الانثيين مع الابن';
+    return { amount: '0.00', percentage: '0.00', note };
   } else {
-    results[type] = {
-      ...value,
-      amount: '0.00',
-      percentage: '0.00',
-      note: 'لا توجد معالجة في المفاتيح المطلوبة',
-    };
+    note = 'لا توجد معالجة في المفاتيح المطلوبة';
+    return { amount: '0.00', percentage: '0.00', note };
   }
 }
 
 // ================ Calculate GRANDMOTHER ================
-export function calculateFR_grandmotherHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage
-}) {
-  const shareAmount = calculateShare(total, SHARES.sixth);
-  
-  results[type] = {
-    ...value,
-    amount: shareAmount.toFixed(2),
-    percentage: ((shareAmount / total) * 100).toFixed(2),
-    note: 'السدس فرض',
-  };
+export function calculateFR_grandmotherHeir(heirs, total, heirCounts = {}) {
+  const amount = calculateShare(total, SHARES.sixth);
+  const percentage = (amount / total) * 100;
+  const note = 'السدس فرض';
+
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
-export function calculateMR_grandmotherHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage
-}) {
-  const shareAmount = calculateShare(total, SHARES.sixth);
-  
-  results[type] = {
-    ...value,
-    amount: shareAmount.toFixed(2),
-    percentage: ((shareAmount / total) * 100).toFixed(2),
-    note: 'السدس فرض',
-  };
+export function calculateMR_grandmotherHeir(heirs, total, heirCounts = {}) {
+  const amount = calculateShare(total, SHARES.sixth);
+  const percentage = (amount / total) * 100;
+  const note = 'السدس فرض';
+
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
 // ================ Calculate GRANDFATHER ================
-export function calculateFR_grandfatherHeir({
-  type,
-  value,
-  note,
-  amount,
-  percentage,
-  heirs,
-  total,
-  results,
-  remainingAmount,
-  remainingPercentage
-}) {
-  const shareAmount = calculateShare(total, SHARES.sixth);
-  
-  results[type] = {
-    ...value,
-    amount: shareAmount.toFixed(2),
-    percentage: ((shareAmount / total) * 100).toFixed(2),
-    note: 'السدس فرض',
-  };
+export function calculateFR_grandfatherHeir(heirs, total, heirCounts = {}) {
+  const amount = calculateShare(total, SHARES.sixth);
+  const percentage = (amount / total) * 100;
+  const note = 'السدس فرض';
+
+  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
-// الدوال الأخرى تبقى فارغة كما هي
-export function calculateMR_grandfatherHeir() {}
-export function calculateSN_grandsonHeir() {}
-export function calculateSN_granddaughterHeir() {}
-export function calculateDR_grandsonHeir() {}
-export function calculateDR_granddaughterHeir() {}
-export function calculateBrotherHeir() {}
-export function calculateMR_brotherHeir() {}
-export function calculateMR_mother_sisterHeir() {}
-export function calculateFR_brotherHeir() {}
-export function calculateFR_sisterHeir() {}
-export function calculateBR_boysHeir() {}
-export function calculateSR_boysHeir() {}
-export function calculateMR_BR_boysHeir() {}
-export function calculateMR_SR_boysHeir() {}
-export function calculateFR_BR_boysHeir() {}
-export function calculateFR_SR_boysHeir() {}
-export function calculateBR_girlsHeir() {}
-export function calculateSR_girlsHeir() {}
-export function calculateMR_BR_girlsHeir() {}
-export function calculateMR_SR_girlsHeir() {}
-export function calculateFR_BR_girlsHeir() {}
-export function calculateFR_SR_girlsHeir() {}
-export function calculateFR_uncleHeir() {}
-export function calculateFR_auntHeir() {}
-export function calculateMR_uncleHeir() {}
-export function calculateMR_auntHeir() {}
-export function calculateMR_uncle_motherHeir() {}
-export function calculateFR_uncle_fatherHeir() {}
-export function calculateMR_aunt_motherHeir() {}
-export function calculateFR_aunt_fatherHeir() {}
-export function calculateFR_uncle_father_AHeir() {}
-export function calculateMR_uncle_mother_AHeir() {}
-export function calculateFR_aunt_father_KHeir() {}
-export function calculateMR_aunt_mother_KHeir() {}
-export function calculateUncle_sons_AHeir() {}
-export function calculateUncle_daughters_AHeir() {}
-export function calculateAunt_sons_AHeir() {}
-export function calculateAunt_daughters_AHeir() {}
-export function calculateFR_uncle_sons_AHeir() {}
-export function calculateMR_uncle_sons_AHeir() {}
-export function calculateFR_uncle_daughter_AHeir() {}
-export function calculateMR_uncle_daughter_AHeir() {}
-export function calculateFR_aunt_sons_AHeir() {}
-export function calculateMR_aunt_sons_AHeir() {}
-export function calculateFR_aunt_daughter_AHeir() {}
-export function calculateMR_aunt_daughter_AHeir() {}
-export function calculateUncle_sons_KHeir() {}
-export function calculateUncle_daughters_KHeir() {}
-export function calculateAunt_sons_KHeir() {}
-export function calculateAunt_daughters_KHeir() {}
-export function calculateFR_uncle_sons_KHeir() {}
-export function calculateMR_uncle_sons_KHeir() {}
-export function calculateFR_uncle_daughter_KHeir() {}
-export function calculateMR_uncle_daughter_KHeir() {}
-export function calculateFR_aunt_sons_KHeir() {}
-export function calculateMR_aunt_sons_KHeir() {}
-export function calculateFR_aunt_daughter_KHeir() {}
-export function calculateMR_aunt_daughter_KHeir() {}
+// الدوال الأخرى تبقى فارغة
+export function calculateMR_grandfatherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateSN_grandsonHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateSN_granddaughterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateDR_grandsonHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateDR_granddaughterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateBrotherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_brotherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_mother_sisterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_brotherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_sisterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateBR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateSR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_BR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_SR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_BR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_SR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateBR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateSR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_BR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_SR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_BR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_SR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncleHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_auntHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncleHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_auntHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_motherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_fatherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_motherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_fatherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_father_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_mother_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_father_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_mother_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_daughters_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_daughters_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_daughters_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_daughters_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
