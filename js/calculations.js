@@ -72,9 +72,13 @@ export function calculateHusbandHeir({
       calculator.assignFixedShare(type, SHARES.half, 'حصل علي النصف فرض بسبب عدم وجود ابناء');
     }
   } else {
-    amount = '0.00';
-    percentage = 0;
-    note = 'لا يرث مع المتوفي أب';
+    results[type] = {
+      ...value,
+      amount: '0.00',
+      percentage: '0.00',
+      note: 'لا يرث مع المتوفي أب',
+    };
+    return;
   }
   
   Object.assign(results, calculator.getResults());
@@ -100,17 +104,36 @@ export function calculateWifeHeir({
   
   if (deceasedType === DECEASED_TYPE.FATHER) {
     if (checkHeirs(heirs, CONDITIONS.hasSon) || checkHeirs(heirs, CONDITIONS.hasDaughter)) {
-      calculator.assignFixedShare(type, SHARES.eighth, generateWifeNote('eighth', heirCounts[heirType]));
+      const wifeShare = calculateShare(total, SHARES.eighth);
+      const wifeCount = heirCounts[heirType] || 1;
+      const sharePerWife = wifeShare / wifeCount;
+      
+      results[type] = {
+        ...value,
+        amount: sharePerWife.toFixed(2),
+        percentage: ((sharePerWife / total) * 100).toFixed(2),
+        note: generateWifeNote('eighth', wifeCount),
+      };
     } else {
-      calculator.assignFixedShare(type, SHARES.quarter, generateWifeNote('quarter', heirCounts[heirType]));
+      const wifeShare = calculateShare(total, SHARES.quarter);
+      const wifeCount = heirCounts[heirType] || 1;
+      const sharePerWife = wifeShare / wifeCount;
+      
+      results[type] = {
+        ...value,
+        amount: sharePerWife.toFixed(2),
+        percentage: ((sharePerWife / total) * 100).toFixed(2),
+        note: generateWifeNote('quarter', wifeCount),
+      };
     }
   } else {
-    amount = '0.00';
-    percentage = 0;
-    note = 'لا ترث مع المتوفي أم';
+    results[type] = {
+      ...value,
+      amount: '0.00',
+      percentage: '0.00',
+      note: 'لا ترث مع المتوفي أم',
+    };
   }
-  
-  Object.assign(results, calculator.getResults());
 }
 
 // ================ Calculate DAD ================
@@ -177,8 +200,6 @@ export function calculateSonHeir({
   heirType
 }) {
   const deceasedType = getDeceasedType();
-  const calculator = new InheritanceCalculator(total, heirs);
-  
   const hasSister = checkHeirs(heirs, CONDITIONS.hasSister);
   const hasDad = checkHeirs(heirs, CONDITIONS.hasDad);
   const hasMom = checkHeirs(heirs, CONDITIONS.hasMom);
@@ -190,41 +211,37 @@ export function calculateSonHeir({
   const sonCount = heirCounts['son'] || 0;
   const daughterCount = heirCounts['daughter'] || 0;
 
-  // أولاً: خصم الأنصبة الثابتة
-  if (hasDad) {
-    calculator.assignFixedShare('father', SHARES.sixth, 'سدس الأب');
-  }
-  if (hasMom) {
-    calculator.assignFixedShare('mother', SHARES.sixth, 'سدس الأم');
-  }
-  if (hasGrandmother) {
-    calculator.assignFixedShare('FR_grandmother', SHARES.sixth, 'سدس الجدة');
-  }
-  if (hasWife && deceasedType === DECEASED_TYPE.FATHER) {
-    calculator.assignFixedShare('wife', SHARES.eighth, 'ثمن الزوجة');
-  }
-  if (hasHusband && deceasedType === DECEASED_TYPE.MOTHER) {
-    calculator.assignFixedShare('husband', SHARES.quarter, 'ربع الزوج');
-  }
+  // حساب الأنصبة الثابتة أولاً
+  let fixedShares = 0;
+  if (hasDad) fixedShares += calculateShare(total, SHARES.sixth);
+  if (hasMom) fixedShares += calculateShare(total, SHARES.sixth);
+  if (hasGrandmother) fixedShares += calculateShare(total, SHARES.sixth);
+  if (hasWife && deceasedType === DECEASED_TYPE.FATHER) fixedShares += calculateShare(total, SHARES.eighth);
+  if (hasHusband && deceasedType === DECEASED_TYPE.MOTHER) fixedShares += calculateShare(total, SHARES.quarter);
 
-  // ثانياً: توزيع الباقي على الأبناء
+  const remainingForChildren = total - fixedShares;
+  
+  let sonAmount = 0;
+  let sonNote = '';
+
   if (hasSister || hasDaughter) {
     // للذكر مثل حظ الانثيين
     const totalShares = sonCount * 2 + daughterCount;
-    const sharePerUnit = calculator.remainingAmount / totalShares;
-    const sonAmount = sharePerUnit * 2;
-    
-    calculator.shares[type] = {
-      amount: sonAmount,
-      percentage: (sonAmount / total) * 100,
-      note: 'للذكر مثل حظ الانثيين'
-    };
+    const sharePerUnit = remainingForChildren / totalShares;
+    sonAmount = sharePerUnit * 2;
+    sonNote = 'للذكر مثل حظ الانثيين';
   } else {
-    // الباقي كله للابن
-    calculator.assignRemainingTo(type, 'الباقي تعصيباً');
+    // الباقي كله للأبناء
+    sonAmount = remainingForChildren / sonCount;
+    sonNote = 'الباقي تعصيباً';
   }
-  
-  Object.assign(results, calculator.getResults());
+
+  results[type] = {
+    ...value,
+    amount: sonAmount.toFixed(2),
+    percentage: ((sonAmount / total) * 100).toFixed(2),
+    note: sonNote,
+  };
 }
 
 // ================ Calculate DAUGHTER ================
@@ -243,8 +260,6 @@ export function calculateDaughterHeir({
   heirType
 }) {
   const deceasedType = getDeceasedType();
-  const calculator = new InheritanceCalculator(total, heirs);
-  
   const hasSon = checkHeirs(heirs, CONDITIONS.hasSon);
   const hasDad = checkHeirs(heirs, CONDITIONS.hasDad);
   const hasMom = checkHeirs(heirs, CONDITIONS.hasMom);
@@ -256,54 +271,43 @@ export function calculateDaughterHeir({
   const daughterCount = heirCounts['daughter'] || 0;
   const sonCount = heirCounts['son'] || 0;
 
-  // أولاً: خصم الأنصبة الثابتة
-  if (hasDad) {
-    calculator.assignFixedShare('father', SHARES.sixth, 'سدس الأب');
-  }
-  if (hasMom) {
-    calculator.assignFixedShare('mother', SHARES.sixth, 'سدس الأم');
-  }
-  if (hasGrandmother) {
-    calculator.assignFixedShare('FR_grandmother', SHARES.sixth, 'سدس الجدة');
-  }
-  if (hasGrandfather) {
-    calculator.assignFixedShare('FR_grandfather', SHARES.sixth, 'سدس الجد');
-  }
-  if (hasWife && deceasedType === DECEASED_TYPE.FATHER) {
-    calculator.assignFixedShare('wife', SHARES.eighth, 'ثمن الزوجة');
-  }
-  if (hasHusband && deceasedType === DECEASED_TYPE.MOTHER) {
-    calculator.assignFixedShare('husband', SHARES.quarter, 'ربع الزوج');
-  }
+  // حساب الأنصبة الثابتة أولاً
+  let fixedShares = 0;
+  if (hasDad) fixedShares += calculateShare(total, SHARES.sixth);
+  if (hasMom) fixedShares += calculateShare(total, SHARES.sixth);
+  if (hasGrandmother) fixedShares += calculateShare(total, SHARES.sixth);
+  if (hasGrandfather) fixedShares += calculateShare(total, SHARES.sixth);
+  if (hasWife && deceasedType === DECEASED_TYPE.FATHER) fixedShares += calculateShare(total, SHARES.eighth);
+  if (hasHusband && deceasedType === DECEASED_TYPE.MOTHER) fixedShares += calculateShare(total, SHARES.quarter);
 
-  // ثانياً: حساب نصيب البنات
+  const remainingForChildren = total - fixedShares;
+  
+  let daughterAmount = 0;
+  let daughterNote = '';
+
   if (hasSon) {
     // للذكر مثل حظ الانثيين
     const totalShares = sonCount * 2 + daughterCount;
-    const sharePerUnit = calculator.remainingAmount / totalShares;
-    const daughterAmount = sharePerUnit;
-    
-    calculator.shares[type] = {
-      amount: daughterAmount,
-      percentage: (daughterAmount / total) * 100,
-      note: 'للذكر مثل حظ الانثيين'
-    };
+    const sharePerUnit = remainingForChildren / totalShares;
+    daughterAmount = sharePerUnit;
+    daughterNote = 'للذكر مثل حظ الانثيين';
   } else if (daughterCount >= 2) {
     // ابنتين فصاعدا - الثلثين
     const daughtersTotalShare = calculateShare(total, SHARES.twoThirds);
-    const daughterAmount = daughtersTotalShare / daughterCount;
-    
-    calculator.shares[type] = {
-      amount: daughterAmount,
-      percentage: (daughterAmount / total) * 100,
-      note: 'ثلثين فرض'
-    };
+    daughterAmount = daughtersTotalShare / daughterCount;
+    daughterNote = 'ثلثين فرض';
   } else {
     // بنت واحدة - النصف
-    calculator.assignFixedShare(type, SHARES.half, 'نصف فرض');
+    daughterAmount = calculateShare(total, SHARES.half);
+    daughterNote = 'نصف فرض';
   }
-  
-  Object.assign(results, calculator.getResults());
+
+  results[type] = {
+    ...value,
+    amount: daughterAmount.toFixed(2),
+    percentage: ((daughterAmount / total) * 100).toFixed(2),
+    note: daughterNote,
+  };
 }
 
 // ================ Calculate SISTER ================
@@ -321,30 +325,36 @@ export function calculateSisterHeir({
   heirCounts,
   heirType
 }) {
-  const calculator = new InheritanceCalculator(total, heirs);
+  const hasSon = checkHeirs(heirs, CONDITIONS.hasSon);
   
-  if (checkHeirs(heirs, CONDITIONS.hasSon)) {
+  if (hasSon) {
     const sisterCount = heirCounts['sister'] || 0;
     const sonCount = heirCounts['son'] || 0;
     
+    // حساب الأنصبة الثابتة أولاً
+    let fixedShares = 0;
+    if (checkHeirs(heirs, CONDITIONS.hasDad)) fixedShares += calculateShare(total, SHARES.sixth);
+    if (checkHeirs(heirs, CONDITIONS.hasMom)) fixedShares += calculateShare(total, SHARES.sixth);
+    
+    const remainingForSiblings = total - fixedShares;
     const totalShares = sonCount * 2 + sisterCount;
-    const sharePerUnit = calculator.remainingAmount / totalShares;
+    const sharePerUnit = remainingForSiblings / totalShares;
     const sisterAmount = sharePerUnit;
     
-    calculator.shares[type] = {
-      amount: sisterAmount,
-      percentage: (sisterAmount / total) * 100,
-      note: 'للذكر مثل حظ الانثيين مع الابن'
+    results[type] = {
+      ...value,
+      amount: sisterAmount.toFixed(2),
+      percentage: ((sisterAmount / total) * 100).toFixed(2),
+      note: 'للذكر مثل حظ الانثيين مع الابن',
     };
   } else {
-    calculator.shares[type] = {
-      amount: 0,
-      percentage: 0,
-      note: 'لا توجد معالجة في المفاتيح المطلوبة'
+    results[type] = {
+      ...value,
+      amount: '0.00',
+      percentage: '0.00',
+      note: 'لا توجد معالجة في المفاتيح المطلوبة',
     };
   }
-  
-  Object.assign(results, calculator.getResults());
 }
 
 // ================ Calculate GRANDMOTHER ================
@@ -360,9 +370,14 @@ export function calculateFR_grandmotherHeir({
   remainingAmount,
   remainingPercentage
 }) {
-  const calculator = new InheritanceCalculator(total, heirs);
-  calculator.assignFixedShare(type, SHARES.sixth, 'السدس فرض');
-  Object.assign(results, calculator.getResults());
+  const shareAmount = calculateShare(total, SHARES.sixth);
+  
+  results[type] = {
+    ...value,
+    amount: shareAmount.toFixed(2),
+    percentage: ((shareAmount / total) * 100).toFixed(2),
+    note: 'السدس فرض',
+  };
 }
 
 export function calculateMR_grandmotherHeir({
@@ -377,9 +392,14 @@ export function calculateMR_grandmotherHeir({
   remainingAmount,
   remainingPercentage
 }) {
-  const calculator = new InheritanceCalculator(total, heirs);
-  calculator.assignFixedShare(type, SHARES.sixth, 'السدس فرض');
-  Object.assign(results, calculator.getResults());
+  const shareAmount = calculateShare(total, SHARES.sixth);
+  
+  results[type] = {
+    ...value,
+    amount: shareAmount.toFixed(2),
+    percentage: ((shareAmount / total) * 100).toFixed(2),
+    note: 'السدس فرض',
+  };
 }
 
 // ================ Calculate GRANDFATHER ================
@@ -395,12 +415,15 @@ export function calculateFR_grandfatherHeir({
   remainingAmount,
   remainingPercentage
 }) {
-  const calculator = new InheritanceCalculator(total, heirs);
-  calculator.assignFixedShare(type, SHARES.sixth, 'السدس فرض');
-  Object.assign(results, calculator.getResults());
+  const shareAmount = calculateShare(total, SHARES.sixth);
+  
+  results[type] = {
+    ...value,
+    amount: shareAmount.toFixed(2),
+    percentage: ((shareAmount / total) * 100).toFixed(2),
+    note: 'السدس فرض',
+  };
 }
-
-// ... باقي الدوال تبقى كما هي
 
 // الدوال الأخرى تبقى فارغة كما هي
 export function calculateMR_grandfatherHeir() {}
@@ -460,5 +483,4 @@ export function calculateMR_uncle_daughter_KHeir() {}
 export function calculateFR_aunt_sons_KHeir() {}
 export function calculateMR_aunt_sons_KHeir() {}
 export function calculateFR_aunt_daughter_KHeir() {}
-
 export function calculateMR_aunt_daughter_KHeir() {}
