@@ -1,453 +1,352 @@
-import { distribute } from "./functions.js";
+import {
+  calculateDadHeir,
+  calculateHusbandHeir,
+  calculateMomHeir,
+  calculateWifeHeir,
+  calculateSonHeir,
+  calculateDaughterHeir,
+  calculateFR_grandfatherHeir,
+  calculateMR_grandfatherHeir,
+  calculateFR_grandmotherHeir,
+  calculateMR_grandmotherHeir,
+  calculateSN_grandsonHeir,
+  calculateSN_granddaughterHeir,
+  calculateDR_grandsonHeir,
+  calculateDR_granddaughterHeir,
+  calculateBrotherHeir,
+  calculateSisterHeir,
+  calculateMR_brotherHeir,
+  calculateMR_mother_sisterHeir,
+  calculateFR_brotherHeir,
+  calculateFR_sisterHeir,
+  calculateBR_boysHeir,
+  calculateSR_boysHeir,
+  calculateMR_BR_boysHeir,
+  calculateMR_SR_boysHeir,
+  calculateFR_BR_boysHeir,
+  calculateFR_SR_boysHeir,
+  calculateBR_girlsHeir,
+  calculateSR_girlsHeir,
+  calculateMR_BR_girlsHeir,
+  calculateMR_SR_girlsHeir,
+  calculateFR_BR_girlsHeir,
+  calculateFR_SR_girlsHeir,
+  calculateFR_uncleHeir,
+  calculateFR_auntHeir,
+  calculateMR_uncleHeir,
+  calculateMR_auntHeir,
+  calculateMR_uncle_motherHeir,
+  calculateFR_uncle_fatherHeir,
+  calculateMR_aunt_motherHeir,
+  calculateFR_aunt_fatherHeir,
+  calculateFR_uncle_father_AHeir,
+  calculateMR_uncle_mother_AHeir,
+  calculateFR_aunt_father_KHeir,
+  calculateMR_aunt_mother_KHeir,
+  calculateUncle_sons_AHeir,
+  calculateUncle_daughters_AHeir,
+  calculateAunt_sons_AHeir,
+  calculateAunt_daughters_AHeir,
+  calculateFR_uncle_sons_AHeir,
+  calculateMR_uncle_sons_AHeir,
+  calculateFR_uncle_daughter_AHeir,
+  calculateMR_uncle_daughter_AHeir,
+  calculateFR_aunt_sons_AHeir,
+  calculateMR_aunt_sons_AHeir,
+  calculateFR_aunt_daughter_AHeir,
+  calculateMR_aunt_daughter_AHeir,
+  calculateUncle_sons_KHeir,
+  calculateUncle_daughters_KHeir,
+  calculateAunt_sons_KHeir,
+  calculateAunt_daughters_KHeir,
+  calculateFR_uncle_sons_KHeir,
+  calculateMR_uncle_sons_KHeir,
+  calculateFR_uncle_daughter_KHeir,
+  calculateMR_uncle_daughter_KHeir,
+  calculateFR_aunt_sons_KHeir,
+  calculateMR_aunt_sons_KHeir,
+  calculateFR_aunt_daughter_KHeir,
+  calculateMR_aunt_daughter_KHeir,
 
+} from "./calculations.js";
 
-const all = {};
-const booleanOptions = ["لا", "نعم"];
-const defaultOptions = ["لا", ...Array.from({ length: 49 }, (_, i) => i + 1)];
-const customOptions = ["لا", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
+export function distribute(total = 10000, heirs) {
+  const results = {};
+  const heirCounts = {};
+  const totalAmount = parseFloat(total);
+  const deceasedType = getDeceasedType();
 
-const fieldsData = [
-  {
-    groupTitle: "1",
-    fields: [
-      { id: "father", title: "أب", options: booleanOptions, gender: "male" },
-      { id: "mother", title: "أم", options: booleanOptions, gender: "female" },
-      { id: "son", title: "ابن", options: defaultOptions, gender: "male" },
-      { id: "daughter", title: "ابنة", options: defaultOptions, gender: "female" },
-    ]
-  },
-  {
-    groupTitle: "2",
-    fields: [
-      { id: "FR_grandfather", title: "جد لاب", options: booleanOptions, gender: "male" },
-      { id: "MR_grandfather", title: "جد لأم", options: booleanOptions, gender: "male" },
-      { id: "FR_grandmother", title: "جدة لاب", options: booleanOptions, gender: "female" },
-      { id: "MR_grandmother", title: "جدة لأم", options: booleanOptions, gender: "female" }
-    ]
-  },
-  {
-    groupTitle: "3",
-    fields: [
-      { id: "SN_grandson", title: "ابن ابن", options: defaultOptions, gender: "male" },
-      { id: "SN_granddaughter", title: "ابنة ابن", options: defaultOptions, gender: "female" },
-      { id: "DR_grandson", title: "ابن بنت", options: defaultOptions, gender: "male" },
-      { id: "DR_granddaughter", title: "ابنة بنت", options: defaultOptions, gender: "female" }
-    ]
-  },
-  {
-    groupTitle: "4",
-    fields: [
-      { id: "brother", title: "أخ", options: defaultOptions, gender: "male" },
-      { id: "sister", title: "أخت", options: defaultOptions, gender: "female" },
-      { id: "MR_brother", title: "أخ لأم", options: defaultOptions, gender: "male" },
-      { id: "MR_mother_sister", title: "أخت لأم", options: defaultOptions, gender: "female" },
-      { id: "FR_brother", title: "أخ لأبيه", options: defaultOptions, gender: "male" },
-      { id: "FR_sister", title: "أخت لأبيه", options: defaultOptions, gender: "female" }
-    ]
-
-  },
-  {
-    groupTitle: "5",
-    fields: [
-      { id: "BR_boys", title: "ولد أخ", options: defaultOptions, gender: "male" },
-      { id: "SR_boys", title: "ولد أخت", options: defaultOptions, gender: "male" },
-      { id: "MR_BR_boys", title: "ولد أخ لأم", options: defaultOptions, gender: "male" },
-      { id: "MR_SR_boys", title: "ولد أخت لأم", options: defaultOptions, gender: "male" },
-      { id: "FR_BR_boys", title: "ولد أخ لأبيه", options: defaultOptions, gender: "male" },
-      { id: "FR_SR_boys", title: "ولد أخت لأبيه", options: defaultOptions, gender: "male" }
-    ]
-
-  }, {
-    groupTitle: "6",
-    fields: [
-      { id: "BR_girls", title: "بنت أخ", options: defaultOptions, gender: "female" },
-      { id: "SR_girls", title: "بنت أخت", options: defaultOptions, gender: "female" },
-      { id: "MR_BR_girls", title: "بنت أخ لأم", options: defaultOptions, gender: "female" },
-      { id: "MR_SR_girls", title: "بنت أخت لأم", options: defaultOptions, gender: "female" },
-      { id: "FR_BR_girls", title: "بنت أخ لأبيه", options: defaultOptions, gender: "female" },
-      { id: "FR_SR_girls", title: "بنت أخت لأبيه", options: defaultOptions, gender: "female" }
-    ]
-
-  },
-
-  {
-    groupTitle: "7",
-    fields: [
-      { id: "FR_uncle", title: "عم", options: defaultOptions, gender: "male" },
-      { id: "FR_aunt", title: "عمة", options: defaultOptions, gender: "female" },
-      { id: "MR_uncle", title: "خال", options: defaultOptions, gender: "male" },
-      { id: "MR_aunt", title: "خالة", options: defaultOptions, gender: "female" },
-      { id: "MR_uncle_mother", title: "خال لأم", options: defaultOptions, gender: "male" },
-      { id: "FR_uncle_father", title: "خال لأب", options: defaultOptions, gender: "male" },
-      { id: "MR_aunt_mother", title: "خالة لأم", options: defaultOptions, gender: "female" },
-      { id: "FR_aunt_father", title: "خالة لأب", options: defaultOptions, gender: "female" },
-      { id: "FR_uncle_father_A", title: "عم لأبيه", options: defaultOptions, gender: "male" },
-      { id: "MR_uncle_mother_A", title: "عم لأمه", options: defaultOptions, gender: "male" },
-      { id: "FR_aunt_father_K", title: "عمة لأبيه", options: defaultOptions, gender: "female" },
-      { id: "MR_aunt_mother_K", title: "عمة لأمه", options: defaultOptions, gender: "female" }
-    ]
-
-  },
-  {
-    groupTitle: "8",
-    fields: [
-      { id: "uncle_sons_A", title: "ابن عم", options: defaultOptions, gender: "male" },
-      { id: "uncle_daughters_A", title: "بنت عم", options: defaultOptions, gender: "female" },
-      { id: "aunt_sons_A", title: "ابن عمة", options: defaultOptions, gender: "male" },
-      { id: "aunt_daughters_A", title: "بنت عمة", options: defaultOptions, gender: "female" },
-      { id: "FR_uncle_sons_A", title: "ابن عم لأبيه", options: defaultOptions, gender: "male" },
-      { id: "MR_uncle_sons_A", title: "ابن عم لأمه", options: defaultOptions, gender: "male" },
-      { id: "FR_uncle_daughter_A", title: "بنت عم لأبيه", options: defaultOptions, gender: "female" },
-      { id: "MR_uncle_daughter_A", title: "بنت عم لأمه", options: defaultOptions, gender: "female" },
-      { id: "FR_aunt_sons_A", title: "ابن عمة لأم", options: defaultOptions, gender: "male" },
-      { id: "MR_aunt_sons_A", title: "ابن عمة لأبيه", options: defaultOptions, gender: "male" },
-      { id: "FR_aunt_daughter_A", title: "بنت عمة لأبيه", options: defaultOptions, gender: "female" },
-      { id: "MR_aunt_daughter_A", title: "بنت عمة لأم", options: defaultOptions, gender: "female" }
-    ]
-
-  },
-  {
-    groupTitle: "9",
-    fields: [
-      { id: "uncle_sons_K", title: "ابن خال", options: defaultOptions, gender: "male" },
-      { id: "uncle_daughters_K", title: "بنت خال", options: defaultOptions, gender: "female" },
-      { id: "aunt_sons_K", title: "ابن خالة", options: defaultOptions, gender: "male" },
-      { id: "aunt_daughters_K", title: "بنت خالة", options: defaultOptions, gender: "female" },
-      { id: "FR_uncle_sons_K", title: "ابن خال لأبيه", options: defaultOptions, gender: "male" },
-      { id: "MR_uncle_sons_K", title: "ابن خال لأمه", options: defaultOptions, gender: "male" },
-      { id: "FR_uncle_daughter_K", title: "بنت خال لأبيه", options: defaultOptions, gender: "female" },
-      { id: "MR_uncle_daughter_K", title: "بنت خال لأمه", options: defaultOptions, gender: "female" },
-      { id: "FR_aunt_sons_K", title: "ابن خالة لأبيه", options: defaultOptions, gender: "male" },
-      { id: "MR_aunt_sons_K", title: "ابن خالة لأم", options: defaultOptions, gender: "male" },
-      { id: "FR_aunt_daughter_K", title: "بنت خالة لأبيه", options: defaultOptions, gender: "female" },
-      { id: "MR_aunt_daughter_K", title: "بنت خالة لأمه", options: defaultOptions, gender: "female" }
-    ]
-
-  }
-];
-
-function numberToArabicWord(number, gender) {
-  const masculineWords = [
-    "الأول", "الثاني", "الثالث", "الرابع", "الخامس",
-    "السادس", "السابع", "الثامن", "التاسع", "العاشر",
-    "الحادي عشر", "الثاني عشر", "الثالث عشر", "الرابع عشر", "الخامس عشر",
-    "السادس عشر", "السابع عشر", "الثامن عشر", "التاسع عشر", "العشرون",
-    "الحادي والعشرون", "الثاني والعشرون", "الثالث والعشرون", "الرابع والعشرون", "الخامس والعشرون",
-    "السادس والعشرون", "السابع والعشرون", "الثامن والعشرون", "التاسع والعشرون", "الثلاثون",
-    "الحادي والثلاثون", "الثاني والثلاثون", "الثالث والثلاثون", "الرابع والثلاثون", "الخامس والثلاثون",
-    "السادس والثلاثون", "السابع والثلاثون", "الثامن والثلاثون", "التاسع والثلاثون", "الأربعون",
-    "الحادي والأربعون", "الثاني والأربعون", "الثالث والأربعون", "الرابع والأربعون", "الخامس والأربعون",
-    "السادس والأربعون", "السابع والأربعون", "الثامن والأربعون", "التاسع والأربعون", "الخمسون"
-  ];
-
-  const feminineWords = [
-    "الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة",
-    "السادسة", "السابعة", "الثامنة", "التاسعة", "العاشرة",
-    "الحادية عشرة", "الثانية عشرة", "الثالثة عشرة", "الرابعة عشرة", "الخامسة عشرة",
-    "السادسة عشرة", "السابعة عشرة", "الثامنة عشرة", "التاسعة عشرة", "العشرون",
-    "الحادية والعشرون", "الثانية والعشرون", "الثالثة والعشرون", "الرابعة والعشرون", "الخامسة والعشرون",
-    "السادسة والعشرون", "السابعة والعشرون", "الثامنة والعشرون", "التاسعة والعشرون", "الثلاثون",
-    "الحادية والثلاثون", "الثانية والثلاثون", "الثالثة والثلاثون", "الرابعة والثلاثون", "الخامسة والثلاثون",
-    "السادسة والثلاثون", "السابعة والثلاثون", "الثامنة والثلاثون", "التاسعة والثلاثون", "الأربعون",
-    "الحادية والأربعون", "الثانية والأربعون", "الثالثة والأربعون", "الرابعة والأربعون", "الخامسة والأربعون",
-    "السادسة والأربعون", "السابعة والأربعون", "الثامنة والأربعون", "التاسعة والأربعون", "الخمسون"
-  ];
-
-  return gender === "male" ? masculineWords[number - 1] : feminineWords[number - 1];
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initCalculatorForm();
-
-  document.getElementById('closeSonsPopup').addEventListener('click', () => {
-    document.getElementById('sons_numbers').classList.remove('show')
-  })
-  document.getElementById('sonsNextBtn').addEventListener('click', () => {
-    document.getElementById('sons_numbers').classList.remove('show')
-    handleCalculatorSubmit();
-  })
-});
-
-function initTabs() {
-  document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', (e) => e.preventDefault());
-  });
-
-  document.querySelector('.tab-button.religious').disabled = true;
-  document.querySelector('.tab-button.shares').disabled = true;
-}
-
-function switchTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-
-  document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-  document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
-}
-
-function initCalculatorForm() {
-  const form = document.getElementById('inheritanceForm');
-  const template = Handlebars.compile(document.getElementById('field-template').innerHTML);
-  document.getElementById('dynamic-fields').innerHTML = template({ groups: fieldsData });
-
-  document.querySelectorAll('input[name="deceased_gender"]').forEach(input => {
-    input.addEventListener('change', toggleSpouseField);
-  });
-
-  form.addEventListener('submit', openSonsModal);
-}
-
-function toggleSpouseField() {
-  const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
-  if (deceasedGender !== 'male') {
-    document.getElementById('spouse_female').classList.add('hidden');
-    document.getElementById('spouse_male').classList.remove('hidden');
-    document.getElementById('wife').value = 'no'
-    all.wife = 0
-  } else {
-    document.getElementById('spouse_female').classList.remove('hidden');
-    document.getElementById('spouse_male').classList.add('hidden');
-    document.getElementById('husband').value = 'no'
-    all.husband = 0
+  // حساب عدد كل نوع من الورثة
+  for (const [type, value] of Object.entries(heirs)) {
+    let heirType = type?.replace(/_[^_]+$/, '');
+    heirCounts[heirType] = (heirCounts[heirType] || 0) + 1;
   }
 
-  calulcateWarth(all)
-}
+  const sonCount = heirCounts['son'] || 0;
+  const daughterCount = heirCounts['daughter'] || 0;
 
-function handleCalculatorSubmit() {
-  const formData = collectFormData();
-  localStorage.setItem("inheritanceData", JSON.stringify(formData));
+  // 1. حساب الأنصبة الثابتة حسب المفاتيح
+  const fixedHeirs = ['husband', 'wife', 'father', 'mother', 'FR_grandmother', 'MR_grandmother', 'FR_grandfather'];
+  
+  let totalFixedShares = 0;
+  for (const heirType of fixedHeirs) {
+    const heirsOfType = Object.entries(heirs).filter(([type]) => 
+      type.replace(/_[^_]+$/, '') === heirType
+    );
 
-  document.querySelector('.tab-button.religious').disabled = false;
-  switchTab('religious');
-  updateReligiousTab(formData);
-}
+    for (const [type, value] of heirsOfType) {
+      let calculationResult;
 
-function collectFormData() {
-  const formData = {
-    deceased_gender: document.querySelector('input[name="deceased_gender"]:checked')?.value || "",
-    deceased_religion: document.getElementById("deceased_religion").value || "",
-    deceased_name: document.getElementById("deceased_name").value || "",
-    amount: document.getElementById("amount").value || "",
-    materials: document.getElementById("materials").value || "",
-    heirs: {}
-  };
-
-  document.querySelectorAll("#inheritanceForm select").forEach(select => {
-    const id = select.id;
-    const title = select.parentElement.querySelector("label").textContent;
-    const value = select.value;
-    const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
-    const gender = fieldConfig?.gender || "male";
-
-    if (id === "wife" && parseInt(value) > 0) {
-      for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "" };
+      switch (heirType) {
+        case 'husband':
+          calculationResult = calculateHusbandHeir(heirs, totalAmount, heirCounts);
+          break;
+        case 'wife':
+          calculationResult = calculateWifeHeir(heirs, totalAmount, heirCounts);
+          break;
+        case 'father':
+          calculationResult = calculateDadHeir(heirs, totalAmount, heirCounts);
+          break;
+        case 'mother':
+          calculationResult = calculateMomHeir(heirs, totalAmount, heirCounts);
+          break;
+        case 'FR_grandmother':
+          calculationResult = calculateFR_grandmotherHeir(heirs, totalAmount, heirCounts);
+          break;
+        case 'MR_grandmother':
+          calculationResult = calculateMR_grandmotherHeir(heirs, totalAmount, heirCounts);
+          break;
+        case 'FR_grandfather':
+          calculationResult = calculateFR_grandfatherHeir(heirs, totalAmount, heirCounts);
+          break;
+        default:
+          calculationResult = { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' };
       }
-      return;
-    }
 
-    if (id === "husband" && value === "yes" && formData.deceased_gender === "female") {
-      formData.heirs[id] = { title: "الزوج", name: "" };
-      return;
-    }
-
-    if (value === "نعم") {
-      formData.heirs[id] = { title: title, name: "" };
-      return;
-    }
-
-    if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
-      for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `${title} (${numberToArabicWord(i, gender)})`, name: "" };
+      if (parseFloat(calculationResult.amount) > 0) {
+        results[type] = {
+          ...value,
+          ...calculationResult
+        };
+        totalFixedShares += parseFloat(calculationResult.amount);
       }
     }
-  });
-
-  return formData;
-}
-
-function updateReligiousTab(data) {
-  let deceasedInfoHTML = "";
-  if (data.deceased_gender) {
-    deceasedInfoHTML = `
-            <tr>
-                <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
-                <td>${data.deceased_religion}</td>
-                <td>${data.deceased_name}</td>
-                <td>${data.amount}</td>
-                <td>${data.materials}</td>
-            </tr>
-        `;
   }
-  document.getElementById('deceasedInfoBody').innerHTML = deceasedInfoHTML;
 
-  let heirsHTML = "";
-  let i = 0;
-  for (let key in data.heirs) {
-    if (data.deceased_gender === 'female' && key.startsWith("wife")) {
-      continue;
-    }
-    i++
-    heirsHTML += `
-            <tr>
-                <td class="counter">${i}</td>
-                <td>${data.heirs[key].title}</td>
-                <td><input type="text" class="heir-name" data-heir-id="${key}" value="${data.heirs[key].name || ''}"></td>
-                <td>
-                    <select class="heir-religion" data-heir-id="${key}">
-                        <option value="مسلم">مسلم</option>
-                        <option value="غير مسلم">غير مسلم</option>
-                    </select>
-                </td>
-            </tr>
-        `;
+  const remainingAmount = totalAmount - totalFixedShares;
+
+  // 2. حساب الأبناء والبنات حسب المفاتيح
+  if (sonCount > 0 && daughterCount > 0) {
+    // المفاتيح 1، 4: للذكر مثل حظ الانثيين
+    handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, heirCounts);
+  } else if (sonCount > 0 && daughterCount === 0) {
+    // المفاتيح 1، 4: الباقي للابن
+    handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts);
+  } else if (daughterCount >= 2 && sonCount === 0) {
+    // المفاتيح 3، 6: الثلثين للبنات + الرد
+    handleMultipleDaughters(results, heirs, totalAmount, remainingAmount, heirCounts);
+  } else if (daughterCount === 1 && sonCount === 0) {
+    // المفاتيح 2، 5: النصف للبنت + الرد
+    handleSingleDaughter(results, heirs, totalAmount, remainingAmount, heirCounts);
   }
-  document.getElementById('resultTableBody').innerHTML = heirsHTML;
 
-  document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
+  // 3. حساب الأخوات مع الابن
+  handleSistersWithSon(results, heirs, totalAmount, heirCounts);
+
+  // 4. معالجة الرد النهائي
+  handleFinalAlRadd(results, totalAmount);
+
+  return results;
 }
 
-function handleReligiousSubmit(event) {
-  event.preventDefault();
-  const data = JSON.parse(localStorage.getItem("inheritanceData"));
-
-  document.querySelectorAll('.heir-name').forEach(input => {
-    const heirId = input.getAttribute('data-heir-id');
-    data.heirs[heirId].name = input.value;
-    data.heirs[heirId].religion = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`).value;
-  });
-
-  localStorage.setItem("inheritanceData", JSON.stringify(data));
-
-  document.querySelector('.tab-button.shares').disabled = false;
-  switchTab('shares');
-
-  const results = distribute(data.amount, data?.heirs)
-
-  updateSharesTab({ ...data, heirs: results });
-}
-
-function updateSharesTab(data) {
-  let deceasedInfoHTML = "";
-  if (data.deceased_gender) {
-    deceasedInfoHTML = `
-        <tr>
-            <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
-            <td>${data.deceased_religion}</td>
-            <td>${data.deceased_name}</td>
-            <td>${data.amount}</td>
-            <td>${data.materials}</td>
-        </tr>
-    `;
+// معالجة: للذكر مثل حظ الانثيين
+function handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, heirCounts) {
+  const sonCount = heirCounts['son'] || 0;
+  const daughterCount = heirCounts['daughter'] || 0;
+  
+  const totalShares = sonCount * 2 + daughterCount;
+  const sharePerUnit = remainingAmount / totalShares;
+  
+  // توزيع على الأبناء
+  const sonHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('son_'));
+  for (const [type, value] of sonHeirs) {
+    results[type] = {
+      ...value,
+      amount: (sharePerUnit * 2).toFixed(2),
+      percentage: (((sharePerUnit * 2) / totalAmount) * 100).toFixed(2),
+      note: 'للذكر مثل حظ الانثيين'
+    };
   }
-  document.getElementById('sharesDeceasedInfoBody').innerHTML = deceasedInfoHTML;
-
-  let sharesHTML = "";
-  let i = 0
-  for (let key in data.heirs) {
-    i++
-    sharesHTML += `
-        <tr>
-            <td class="counter">${i}</td>
-            <td>${data.heirs[key].title}</td>
-            <td>${data.heirs[key].name || '-'}</td>
-            <td>${data.heirs[key].amount || '-'}</td>
-            <td>-</td>
-            <td>${data.heirs[key].percentage + '%' || '-'}</td>
-            <td>${data.heirs[key].note || '-'}</td>
-        </tr>
-    `;
+  
+  // توزيع على البنات
+  const daughterHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('daughter_'));
+  for (const [type, value] of daughterHeirs) {
+    results[type] = {
+      ...value,
+      amount: sharePerUnit.toFixed(2),
+      percentage: ((sharePerUnit / totalAmount) * 100).toFixed(2),
+      note: 'للذكر مثل حظ الانثيين'
+    };
   }
-  document.getElementById('sharesTableBody').innerHTML = sharesHTML;
 }
 
-
-function hasSelectedHeirs() {
-  const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => select.value !== 'لا');
-  const maleChecked = document.getElementById('male').checked;
-  const femaleChecked = document.getElementById('female').checked;
-  const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
-  const husbandSelected = deceasedGender === 'female' && document.getElementById('husband')?.value === 'yes';
-  const wifeSelected = deceasedGender === 'male' && parseInt(document.getElementById('wife')?.value) > 0;
-  return (hasOtherHeirs || husbandSelected || wifeSelected) && (maleChecked || femaleChecked);
+// معالجة: الباقي للابن
+function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts) {
+  const sonCount = heirCounts['son'] || 0;
+  const sharePerSon = remainingAmount / sonCount;
+  
+  const sonHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('son_'));
+  for (const [type, value] of sonHeirs) {
+    results[type] = {
+      ...value,
+      amount: sharePerSon.toFixed(2),
+      percentage: ((sharePerSon / totalAmount) * 100).toFixed(2),
+      note: 'الباقي تعصيباً'
+    };
+  }
 }
 
-
-
-function showModal() {
-  document.getElementById('modalOverlay').style.display = 'block';
-  document.getElementById('validationModal').style.display = 'block';
+// معالجة: ابنتين فصاعدا - الثلثين + الرد
+function handleMultipleDaughters(results, heirs, totalAmount, remainingAmount, heirCounts) {
+  const daughterCount = heirCounts['daughter'] || 0;
+  const daughtersTotalShare = calculateShare(totalAmount, 'twoThirds');
+  
+  const sharePerDaughter = daughtersTotalShare / daughterCount;
+  
+  const daughterHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('daughter_'));
+  for (const [type, value] of daughterHeirs) {
+    results[type] = {
+      ...value,
+      amount: sharePerDaughter.toFixed(2),
+      percentage: ((sharePerDaughter / totalAmount) * 100).toFixed(2),
+      note: 'ثلثين فرض'
+    };
+  }
 }
 
-function closeModal() {
-  document.getElementById('modalOverlay').style.display = 'none';
-  document.getElementById('validationModal').style.display = 'none';
+// معالجة: بنت واحدة - النصف + الرد
+function handleSingleDaughter(results, heirs, totalAmount, remainingAmount, heirCounts) {
+  const daughterShare = calculateShare(totalAmount, 'half');
+  
+  const daughterHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('daughter_'));
+  for (const [type, value] of daughterHeirs) {
+    results[type] = {
+      ...value,
+      amount: daughterShare.toFixed(2),
+      percentage: ((daughterShare / totalAmount) * 100).toFixed(2),
+      note: 'نصف فرض'
+    };
+  }
 }
 
-
-window.addEventListener('DOMContentLoaded', (e) => {
-  const allSelect = [...document.querySelectorAll('select')];
-  allSelect.forEach(el => {
-    all[el.id] = el.value || 0
-    el.addEventListener('change', (e) => {
-      all[el.id] = el.value
-      calulcateWarth(all)
-    })
-  })
-
-  document.getElementById('closeModal').addEventListener('click', closeModal)
-  document.getElementById('backToCalculator').addEventListener('click', () => switchTab('calculator'))
-  document.getElementById('backToReligious').addEventListener('click', () => switchTab('religious'))
-})
-
-function calulcateWarth(all) {
-  let count = 0
-  let hiddenWift = document.getElementById('spouse_female').classList.contains('hidden');
-  let hiddenHasband = document.getElementById('spouse_male').classList.contains('hidden')
-  for (const [key, item] of Object.entries(all)) {
-    if (key === 'dad_sons' || key === 'dad_girls') {
-      console.log('called here');
+// معالجة: الأخت مع الابن
+function handleSistersWithSon(results, heirs, totalAmount, heirCounts) {
+  const sisterCount = heirCounts['sister'] || 0;
+  const sonCount = heirCounts['son'] || 0;
+  
+  if (sisterCount > 0 && sonCount > 0) {
+    // حساب المتبقي بعد كل التوزيعات
+    const totalAssigned = Object.values(results).reduce((sum, result) => 
+      sum + parseFloat(result.amount || 0), 0
+    );
+    const remainingAmount = totalAmount - totalAssigned;
+    
+    if (remainingAmount > 0) {
+      const totalShares = sonCount * 2 + sisterCount;
+      const sharePerUnit = remainingAmount / totalShares;
       
-      continue
-    }
-    if (key === 'wift' && hiddenWift) {
-      continue
-    }
-    if (key === 'husband' && hiddenHasband) {
-      continue
-    }
-
-    if (item === 'نعم' || item === 'yes') {
-      count += 1
-    } else if (item === 'لا' || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
-      continue
-    }
-    else {
-      count += +item
+      const sisterHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('sister_'));
+      for (const [type, value] of sisterHeirs) {
+        results[type] = {
+          ...value,
+          amount: sharePerUnit.toFixed(2),
+          percentage: ((sharePerUnit / totalAmount) * 100).toFixed(2),
+          note: 'للذكر مثل حظ الانثيين مع الابن'
+        };
+      }
     }
   }
-  document.getElementById('worthCount').textContent = count
 }
 
-function openSonsModal(e) {
-  e.preventDefault()
-  let daughter = document.getElementById('daughter').value === 'لا'
-  let mother = document.getElementById('mother').value === 'نعم'
-  let father = document.getElementById('father').value === 'نعم'
-  let son = document.getElementById('son').value === 'لا'
+// معالجة الرد النهائي
+function handleFinalAlRadd(results, totalAmount) {
+  const totalAssigned = Object.values(results).reduce((sum, result) => 
+    sum + parseFloat(result.amount || 0), 0
+  );
+  
+  const remaining = totalAmount - totalAssigned;
 
-  if (!hasSelectedHeirs()) {
-    showModal();
-    return;
+  if (remaining > 0.01) {
+    // الورثة الذين يستفيدون من الرد (غير الزوج/الزوجة والأب)
+    const eligibleHeirs = Object.entries(results).filter(([type, result]) => {
+      const amount = parseFloat(result.amount || 0);
+      const heirType = type.replace(/_[^_]+$/, '');
+      return amount > 0 && 
+             !['wife', 'husband', 'father'].includes(heirType) &&
+             !result.note.includes('تعصيب');
+    });
+
+    if (eligibleHeirs.length > 0) {
+      const sharePerHeir = remaining / eligibleHeirs.length;
+      
+      for (const [type, result] of eligibleHeirs) {
+        const currentAmount = parseFloat(result.amount || 0);
+        results[type].amount = (currentAmount + sharePerHeir).toFixed(2);
+        results[type].percentage = ((parseFloat(results[type].amount) / totalAmount) * 100).toFixed(2);
+        
+        if (!results[type].note.includes('الرد')) {
+          results[type].note += ' + الرد';
+        }
+      }
+    }
   }
 
-  if (mother && father && daughter && son) {
-    document.getElementById('sons_numbers').classList.add('show')
-  } else {
-    document.getElementById('dad_sons').value = 'لا'
-    document.getElementById('dad_girls').value = 'لا'
-    handleCalculatorSubmit()
+  // التأكد من أن المجموع = 100%
+  const finalTotal = Object.values(results).reduce((sum, result) => 
+    sum + parseFloat(result.amount || 0), 0
+  );
+
+  if (Math.abs(finalTotal - totalAmount) > 0.01) {
+    // تصحيح الفروق البسيطة
+    const difference = totalAmount - finalTotal;
+    const firstHeir = Object.keys(results).find(key => parseFloat(results[key].amount || 0) > 0);
+    if (firstHeir) {
+      const currentAmount = parseFloat(results[firstHeir].amount || 0);
+      results[firstHeir].amount = (currentAmount + difference).toFixed(2);
+      results[firstHeir].percentage = ((parseFloat(results[firstHeir].amount) / totalAmount) * 100).toFixed(2);
+    }
   }
+}
+
+// دالة مساعدة للحساب
+function calculateShare(total, shareType) {
+  const shares = {
+    'quarter': 1 / 4,
+    'eighth': 1 / 8,
+    'half': 1 / 2,
+    'third': 1 / 3,
+    'sixth': 1 / 6,
+    'twoThirds': 2 / 3
+  };
+  return total * (shares[shareType] || 0);
+}
+
+// دالة الحصول على نوع المتوفي
+function getDeceasedType() {
+  const maleRadio = document.getElementById('male');
+  return maleRadio?.checked ? 'father' : 'mother';
+}
+
+// دالة مساعدة لحساب إجمالي المبالغ المخصصة
+function getTotalAssignedAmount(results) {
+  return Object.values(results).reduce((total, result) => {
+    return total + (parseFloat(result.amount) || 0);
+  }, 0);
+}
+
+// دالة مساعدة لحساب إجمالي النسب المخصصة
+function getTotalAssignedPercentage(results) {
+  return Object.values(results).reduce((total, result) => {
+    return total + (parseFloat(result.percentage) || 0);
+  }, 0);
 }
