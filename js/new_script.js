@@ -451,3 +451,29 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+function handleReligiousSubmit(event) {
+  event.preventDefault();
+  const data = JSON.parse(localStorage.getItem("inheritanceData"));
+
+  document.querySelectorAll('.heir-name').forEach(input => {
+    const heirId = input.getAttribute('data-heir-id');
+    data.heirs[heirId].name = input.value;
+    data.heirs[heirId].religion = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`).value;
+  });
+
+  localStorage.setItem("inheritanceData", JSON.stringify(data));
+
+  document.querySelector('.tab-button.shares').disabled = false;
+  switchTab('shares');
+
+  // إضافة console.log لرؤية البيانات المرسلة
+  console.log('Data sent to distribute:', data);
+  console.log('Heirs object:', data.heirs);
+
+  const results = distribute(data.amount, data.heirs);
+
+  console.log('Results from distribute:', results);
+
+  updateSharesTab({ ...data, heirs: results });
+}
+
