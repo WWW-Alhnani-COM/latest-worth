@@ -298,68 +298,41 @@ function collectFormData() {
 
     console.log(`Processing field: ${id} = ${value}`);
 
+    // إصلاح: استخدام if منفصل لكل حالة بدلاً من else if متسلسل
     if (id === "wife" && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
         formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "" };
+        console.log(`Added wife: ${id}_${i}`);
       }
     }
-    else if (id === "husband" && value === "نعم" && formData.deceased_gender === "female") {
+    
+    if (id === "husband" && value === "نعم" && formData.deceased_gender === "female") {
       formData.heirs[id] = { title: "الزوج", name: "" };
+      console.log(`Added husband: ${id}`);
     }
-    // إصلاح هنا: يجب أن نتعامل مع "نعم" لجميع الحقول بما فيها الجدة
-    else if (value === "نعم") {
+    
+    // الإصلاح الرئيسي: معالجة "نعم" لجميع الحقول بما فيها الجدة
+    if (value === "نعم") {
       formData.heirs[id] = { title: title, name: "" };
-      console.log(`Added heir: ${id} with title: ${title}`);
+      console.log(`Added heir (نعم): ${id} with title: ${title}`);
     }
-    else if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
+    
+    if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
         formData.heirs[`${id}_${i}`] = { title: `${title} (${numberToArabicWord(i, gender)})`, name: "" };
-        console.log(`Added heir: ${id}_${i} with title: ${title}`);
+        console.log(`Added heir (number): ${id}_${i} with title: ${title}`);
       }
     }
-    else {
+    
+    if (value === "لا") {
       console.log(`Skipped field: ${id} - value: ${value}`);
     }
   });
 
   console.log('Final heirs object:', formData.heirs);
+  console.log('Heirs count:', Object.keys(formData.heirs).length);
   console.log('=== FORM DATA COLLECTION END ===');
   
-  return formData;
-}
-
-  document.querySelectorAll("#inheritanceForm select").forEach(select => {
-    const id = select.id;
-    const title = select.parentElement.querySelector("label").textContent;
-    const value = select.value;
-    const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
-    const gender = fieldConfig?.gender || "male";
-
-    if (id === "wife" && parseInt(value) > 0) {
-      for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "" };
-      }
-      return;
-    }
-
-    if (id === "husband" && value === "نعم" && formData.deceased_gender === "female") {
-      formData.heirs[id] = { title: "الزوج", name: "" };
-      return;
-    }
-
-    if (value === "نعم") {
-      formData.heirs[id] = { title: title, name: "" };
-      return;
-    }
-
-    if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
-      for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `${title} (${numberToArabicWord(i, gender)})`, name: "" };
-      }
-    }
-  });
-
-  console.log('Collected form data:', formData);
   return formData;
 }
 
@@ -441,7 +414,9 @@ function handleReligiousSubmit(event) {
   console.log('=== CALCULATION END ===');
 
   updateSharesTab({ ...data, heirs: results });
-}function updateSharesTab(data) {
+}
+
+function updateSharesTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
     deceasedInfoHTML = `
@@ -564,4 +539,3 @@ function openSonsModal(e) {
     handleCalculatorSubmit();
   }
 }
-
