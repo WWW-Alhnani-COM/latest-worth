@@ -26,7 +26,7 @@ export function distribute(total = 10000, heirs) {
   const sonCount = heirCounts['son'] || 0;
   const daughterCount = heirCounts['daughter'] || 0;
 
-  // 1. حساب الأنصبة الثابتة حسب المفاتيح
+  // 1. حساب الأنصبة الثابتة أولاً (الجدة، الأب، الأم، الزوجة، الزوج)
   const fixedHeirs = ['husband', 'wife', 'father', 'mother', 'FR_grandmother', 'MR_grandmother', 'FR_grandfather'];
   
   let totalFixedShares = 0;
@@ -94,9 +94,6 @@ export function distribute(total = 10000, heirs) {
   // 3. حساب الأخوات مع الابن
   handleSistersWithSon(results, heirs, totalAmount, heirCounts);
 
-  // 4. معالجة الرد النهائي
-  handleFinalAlRadd(results, totalAmount);
-
   return results;
 }
 
@@ -134,7 +131,21 @@ function handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, he
 // معالجة: الباقي للابن
 function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts) {
   const sonCount = heirCounts['son'] || 0;
-  const sharePerSon = remainingAmount / sonCount;
+  
+  // إذا كان هناك جدة، نخصم نصيبها أولاً
+  const hasGrandmother = Object.keys(heirs).some(key => 
+    key.includes('grandmother') && parseFloat(results[key]?.amount || 0) > 0
+  );
+  
+  let actualRemaining = remainingAmount;
+  
+  // إذا كانت الجدة موجودة ولم تحصل على نصيبها بعد
+  if (hasGrandmother) {
+    const grandmotherShare = calculateShare(totalAmount, 'sixth');
+    actualRemaining = remainingAmount - grandmotherShare;
+  }
+  
+  const sharePerSon = actualRemaining / sonCount;
   
   const sonHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('son_'));
   for (const [type, value] of sonHeirs) {
@@ -205,56 +216,6 @@ function handleSistersWithSon(results, heirs, totalAmount, heirCounts) {
           note: 'للذكر مثل حظ الانثيين مع الابن'
         };
       }
-    }
-  }
-}
-
-// معالجة الرد النهائي
-function handleFinalAlRadd(results, totalAmount) {
-  const totalAssigned = Object.values(results).reduce((sum, result) => 
-    sum + parseFloat(result.amount || 0), 0
-  );
-  
-  const remaining = totalAmount - totalAssigned;
-
-  if (remaining > 0.01) {
-    // الورثة الذين يستفيدون من الرد (غير الزوج/الزوجة والأب)
-    const eligibleHeirs = Object.entries(results).filter(([type, result]) => {
-      const amount = parseFloat(result.amount || 0);
-      const heirType = type.replace(/_[^_]+$/, '');
-      return amount > 0 && 
-             !['wife', 'husband', 'father'].includes(heirType) &&
-             !result.note.includes('تعصيب');
-    });
-
-    if (eligibleHeirs.length > 0) {
-      const sharePerHeir = remaining / eligibleHeirs.length;
-      
-      for (const [type, result] of eligibleHeirs) {
-        const currentAmount = parseFloat(result.amount || 0);
-        results[type].amount = (currentAmount + sharePerHeir).toFixed(2);
-        results[type].percentage = ((parseFloat(results[type].amount) / totalAmount) * 100).toFixed(2);
-        
-        if (!results[type].note.includes('الرد')) {
-          results[type].note += ' + الرد';
-        }
-      }
-    }
-  }
-
-  // التأكد من أن المجموع = 100%
-  const finalTotal = Object.values(results).reduce((sum, result) => 
-    sum + parseFloat(result.amount || 0), 0
-  );
-
-  if (Math.abs(finalTotal - totalAmount) > 0.01) {
-    // تصحيح الفروق البسيطة
-    const difference = totalAmount - finalTotal;
-    const firstHeir = Object.keys(results).find(key => parseFloat(results[key].amount || 0) > 0);
-    if (firstHeir) {
-      const currentAmount = parseFloat(results[firstHeir].amount || 0);
-      results[firstHeir].amount = (currentAmount + difference).toFixed(2);
-      results[firstHeir].percentage = ((parseFloat(results[firstHeir].amount) / totalAmount) * 100).toFixed(2);
     }
   }
 }
