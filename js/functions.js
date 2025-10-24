@@ -13,6 +13,10 @@ import {
 } from "./calculations.js";
 
 export function distribute(total = 10000, heirs) {
+  console.log('=== DISTRIBUTE FUNCTION START ===');
+  console.log('Total:', total);
+  console.log('Heirs received:', heirs);
+  
   const results = {};
   const heirCounts = {};
   const totalAmount = parseFloat(total);
@@ -23,17 +27,25 @@ export function distribute(total = 10000, heirs) {
     heirCounts[heirType] = (heirCounts[heirType] || 0) + 1;
   }
 
+  console.log('Heir counts:', heirCounts);
+
   const sonCount = heirCounts['son'] || 0;
   const daughterCount = heirCounts['daughter'] || 0;
+  const hasGrandmother = heirCounts['FR_grandmother'] > 0 || heirCounts['MR_grandmother'] > 0;
 
-  // 1. حساب الأنصبة الثابتة أولاً (الجدة، الأب، الأم، الزوجة، الزوج)
+  console.log('Son count:', sonCount, 'Daughter count:', daughterCount, 'Has grandmother:', hasGrandmother);
+
+  // 1. حساب الأنصبة الثابتة أولاً - الترتيب مهم!
   const fixedHeirs = ['husband', 'wife', 'father', 'mother', 'FR_grandmother', 'MR_grandmother', 'FR_grandfather'];
   
   let totalFixedShares = 0;
+  
   for (const heirType of fixedHeirs) {
     const heirsOfType = Object.entries(heirs).filter(([type]) => 
       type.replace(/_[^_]+$/, '') === heirType
     );
+
+    console.log(`Processing ${heirType}:`, heirsOfType);
 
     for (const [type, value] of heirsOfType) {
       let calculationResult;
@@ -64,35 +76,45 @@ export function distribute(total = 10000, heirs) {
           calculationResult = { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' };
       }
 
+      console.log(`Result for ${type}:`, calculationResult);
+
       if (parseFloat(calculationResult.amount) > 0) {
         results[type] = {
           ...value,
           ...calculationResult
         };
         totalFixedShares += parseFloat(calculationResult.amount);
+        console.log(`Added ${type} with amount: ${calculationResult.amount}`);
       }
     }
   }
 
-  const remainingAmount = totalAmount - totalFixedShares;
+  console.log('Total fixed shares:', totalFixedShares);
+  console.log('Results after fixed heirs:', results);
 
-  // 2. حساب الأبناء والبنات حسب المفاتيح
+  const remainingAmount = totalAmount - totalFixedShares;
+  console.log('Remaining amount after fixed shares:', remainingAmount);
+
+  // 2. حساب الأبناء والبنات
   if (sonCount > 0 && daughterCount > 0) {
-    // المفاتيح 1، 4: للذكر مثل حظ الانثيين
+    console.log('Handling male/female shares');
     handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, heirCounts);
   } else if (sonCount > 0 && daughterCount === 0) {
-    // المفاتيح 1، 4: الباقي للابن
+    console.log('Handling sons only');
     handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts);
   } else if (daughterCount >= 2 && sonCount === 0) {
-    // المفاتيح 3، 6: الثلثين للبنات + الرد
+    console.log('Handling multiple daughters');
     handleMultipleDaughters(results, heirs, totalAmount, remainingAmount, heirCounts);
   } else if (daughterCount === 1 && sonCount === 0) {
-    // المفاتيح 2، 5: النصف للبنت + الرد
+    console.log('Handling single daughter');
     handleSingleDaughter(results, heirs, totalAmount, remainingAmount, heirCounts);
   }
 
   // 3. حساب الأخوات مع الابن
   handleSistersWithSon(results, heirs, totalAmount, heirCounts);
+
+  console.log('Final results:', results);
+  console.log('=== DISTRIBUTE FUNCTION END ===');
 
   return results;
 }
@@ -131,21 +153,7 @@ function handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, he
 // معالجة: الباقي للابن
 function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts) {
   const sonCount = heirCounts['son'] || 0;
-  
-  // إذا كان هناك جدة، نخصم نصيبها أولاً
-  const hasGrandmother = Object.keys(heirs).some(key => 
-    key.includes('grandmother') && parseFloat(results[key]?.amount || 0) > 0
-  );
-  
-  let actualRemaining = remainingAmount;
-  
-  // إذا كانت الجدة موجودة ولم تحصل على نصيبها بعد
-  if (hasGrandmother) {
-    const grandmotherShare = calculateShare(totalAmount, 'sixth');
-    actualRemaining = remainingAmount - grandmotherShare;
-  }
-  
-  const sharePerSon = actualRemaining / sonCount;
+  const sharePerSon = remainingAmount / sonCount;
   
   const sonHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('son_'));
   for (const [type, value] of sonHeirs) {
@@ -231,10 +239,4 @@ function calculateShare(total, shareType) {
     'twoThirds': 2 / 3
   };
   return total * (shares[shareType] || 0);
-}
-
-// دالة الحصول على نوع المتوفي
-function getDeceasedType() {
-  const maleRadio = document.getElementById('male');
-  return maleRadio?.checked ? 'father' : 'mother';
 }
