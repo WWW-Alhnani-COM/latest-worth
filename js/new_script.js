@@ -287,6 +287,47 @@ function collectFormData() {
     heirs: {}
   };
 
+  console.log('=== COLLECTING FORM DATA ===');
+  
+  document.querySelectorAll("#inheritanceForm select").forEach(select => {
+    const id = select.id;
+    const title = select.parentElement.querySelector("label").textContent;
+    const value = select.value;
+    const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
+    const gender = fieldConfig?.gender || "male";
+
+    console.log(`Processing field: ${id} = ${value}`);
+
+    if (id === "wife" && parseInt(value) > 0) {
+      for (let i = 1; i <= parseInt(value); i++) {
+        formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "" };
+      }
+    }
+    else if (id === "husband" && value === "نعم" && formData.deceased_gender === "female") {
+      formData.heirs[id] = { title: "الزوج", name: "" };
+    }
+    // إصلاح هنا: يجب أن نتعامل مع "نعم" لجميع الحقول بما فيها الجدة
+    else if (value === "نعم") {
+      formData.heirs[id] = { title: title, name: "" };
+      console.log(`Added heir: ${id} with title: ${title}`);
+    }
+    else if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
+      for (let i = 1; i <= parseInt(value); i++) {
+        formData.heirs[`${id}_${i}`] = { title: `${title} (${numberToArabicWord(i, gender)})`, name: "" };
+        console.log(`Added heir: ${id}_${i} with title: ${title}`);
+      }
+    }
+    else {
+      console.log(`Skipped field: ${id} - value: ${value}`);
+    }
+  });
+
+  console.log('Final heirs object:', formData.heirs);
+  console.log('=== FORM DATA COLLECTION END ===');
+  
+  return formData;
+}
+
   document.querySelectorAll("#inheritanceForm select").forEach(select => {
     const id = select.id;
     const title = select.parentElement.querySelector("label").textContent;
@@ -378,10 +419,21 @@ function handleReligiousSubmit(event) {
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
 
-  // إضافة console.log لرؤية البيانات المرسلة
+  // إضافة تحقق إضافي
   console.log('=== CALCULATION START ===');
   console.log('Data sent to distribute:', data);
-  console.log('Heirs object:', data.heirs);
+  console.log('Heirs object keys:', Object.keys(data.heirs));
+  console.log('Heirs object values:', Object.values(data.heirs));
+  
+  // تحقق من وجود الجدة بشكل خاص
+  const hasGrandmother = Object.keys(data.heirs).some(key => key.includes('grandmother'));
+  console.log('Has grandmother in data:', hasGrandmother);
+  
+  if (hasGrandmother) {
+    const grandmotherKey = Object.keys(data.heirs).find(key => key.includes('grandmother'));
+    console.log('Grandmother key:', grandmotherKey);
+    console.log('Grandmother data:', data.heirs[grandmotherKey]);
+  }
 
   const results = distribute(data.amount, data.heirs);
 
@@ -389,9 +441,7 @@ function handleReligiousSubmit(event) {
   console.log('=== CALCULATION END ===');
 
   updateSharesTab({ ...data, heirs: results });
-}
-
-function updateSharesTab(data) {
+}function updateSharesTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
     deceasedInfoHTML = `
@@ -514,3 +564,4 @@ function openSonsModal(e) {
     handleCalculatorSubmit();
   }
 }
+
