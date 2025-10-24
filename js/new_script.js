@@ -1,6 +1,5 @@
 import { distribute } from "./functions.js";
 
-
 const all = {};
 const booleanOptions = ["لا", "نعم"];
 const defaultOptions = ["لا", ...Array.from({ length: 49 }, (_, i) => i + 1)];
@@ -157,13 +156,14 @@ function numberToArabicWord(number, gender) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM loaded - initializing calculator');
   initTabs();
   initCalculatorForm();
 
-  document.getElementById('closeSonsPopup').addEventListener('click', () => {
+  document.getElementById('closeSonsPopup')?.addEventListener('click', () => {
     document.getElementById('sons_numbers').classList.remove('show')
   })
-  document.getElementById('sonsNextBtn').addEventListener('click', () => {
+  document.getElementById('sonsNextBtn')?.addEventListener('click', () => {
     document.getElementById('sons_numbers').classList.remove('show')
     handleCalculatorSubmit();
   })
@@ -188,31 +188,84 @@ function switchTab(tabId) {
 
 function initCalculatorForm() {
   const form = document.getElementById('inheritanceForm');
-  const template = Handlebars.compile(document.getElementById('field-template').innerHTML);
-  document.getElementById('dynamic-fields').innerHTML = template({ groups: fieldsData });
+  const dynamicFields = document.getElementById('dynamic-fields');
+  
+  if (!dynamicFields) {
+    console.error('Element with id "dynamic-fields" not found');
+    return;
+  }
 
+  // استخدام Template Literals بدلاً من Handlebars للبساطة
+  let html = '';
+  fieldsData.forEach(group => {
+    html += `<div class="field-group">
+              <h3>${group.groupTitle}</h3>
+              <div class="fields-grid">`;
+    
+    group.fields.forEach(field => {
+      html += `<div class="field-item">
+                <label for="${field.id}">${field.title}</label>
+                <select id="${field.id}" name="${field.id}">
+                  ${field.options.map(option => 
+                    `<option value="${option}">${option}</option>`
+                  ).join('')}
+                </select>
+              </div>`;
+    });
+    
+    html += `</div></div>`;
+  });
+
+  dynamicFields.innerHTML = html;
+
+  // إضافة event listeners للحقول
   document.querySelectorAll('input[name="deceased_gender"]').forEach(input => {
     input.addEventListener('change', toggleSpouseField);
   });
 
   form.addEventListener('submit', openSonsModal);
+  
+  // تهيئة الحقول
+  toggleSpouseField();
+  initializeFieldListeners();
+}
+
+function initializeFieldListeners() {
+  // إضافة event listeners لجميع الحقول
+  const allSelects = document.querySelectorAll('#dynamic-fields select');
+  allSelects.forEach(select => {
+    all[select.id] = select.value || 'لا';
+    select.addEventListener('change', (e) => {
+      all[select.id] = select.value;
+      calulcateWarth(all);
+    });
+  });
+
+  // إضافة event listeners لجنس المتوفي
+  document.querySelectorAll('input[name="deceased_gender"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      calulcateWarth(all);
+    });
+  });
 }
 
 function toggleSpouseField() {
   const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
+  console.log('Deceased gender:', deceasedGender);
+  
   if (deceasedGender !== 'male') {
     document.getElementById('spouse_female').classList.add('hidden');
     document.getElementById('spouse_male').classList.remove('hidden');
-    document.getElementById('wife').value = 'no'
-    all.wife = 0
+    document.getElementById('wife').value = 'لا';
+    all.wife = 'لا';
   } else {
     document.getElementById('spouse_female').classList.remove('hidden');
     document.getElementById('spouse_male').classList.add('hidden');
-    document.getElementById('husband').value = 'no'
-    all.husband = 0
+    document.getElementById('husband').value = 'لا';
+    all.husband = 'لا';
   }
 
-  calulcateWarth(all)
+  calulcateWarth(all);
 }
 
 function handleCalculatorSubmit() {
@@ -229,11 +282,13 @@ function collectFormData() {
     deceased_gender: document.querySelector('input[name="deceased_gender"]:checked')?.value || "",
     deceased_religion: document.getElementById("deceased_religion").value || "",
     deceased_name: document.getElementById("deceased_name").value || "",
-    amount: document.getElementById("amount").value || "",
+    amount: document.getElementById("amount").value || "1000",
     materials: document.getElementById("materials").value || "",
     heirs: {}
   };
 
+  console.log('=== COLLECTING FORM DATA ===');
+  
   document.querySelectorAll("#inheritanceForm select").forEach(select => {
     const id = select.id;
     const title = select.parentElement.querySelector("label").textContent;
@@ -241,30 +296,43 @@ function collectFormData() {
     const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
     const gender = fieldConfig?.gender || "male";
 
+    console.log(`Processing field: ${id} = ${value}`);
+
+    // إصلاح: استخدام if منفصل لكل حالة بدلاً من else if متسلسل
     if (id === "wife" && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
         formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "" };
+        console.log(`Added wife: ${id}_${i}`);
       }
-      return;
     }
-
-    if (id === "husband" && value === "yes" && formData.deceased_gender === "female") {
+    
+    if (id === "husband" && value === "نعم" && formData.deceased_gender === "female") {
       formData.heirs[id] = { title: "الزوج", name: "" };
-      return;
+      console.log(`Added husband: ${id}`);
     }
-
+    
+    // الإصلاح الرئيسي: معالجة "نعم" لجميع الحقول بما فيها الجدة
     if (value === "نعم") {
       formData.heirs[id] = { title: title, name: "" };
-      return;
+      console.log(`Added heir (نعم): ${id} with title: ${title}`);
     }
-
+    
     if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
         formData.heirs[`${id}_${i}`] = { title: `${title} (${numberToArabicWord(i, gender)})`, name: "" };
+        console.log(`Added heir (number): ${id}_${i} with title: ${title}`);
       }
+    }
+    
+    if (value === "لا") {
+      console.log(`Skipped field: ${id} - value: ${value}`);
     }
   });
 
+  console.log('Final heirs object:', formData.heirs);
+  console.log('Heirs count:', Object.keys(formData.heirs).length);
+  console.log('=== FORM DATA COLLECTION END ===');
+  
   return formData;
 }
 
@@ -297,7 +365,7 @@ function updateReligiousTab(data) {
                 <td><input type="text" class="heir-name" data-heir-id="${key}" value="${data.heirs[key].name || ''}"></td>
                 <td>
                     <select class="heir-religion" data-heir-id="${key}">
-                        <option value="مسلم">مسلم</option>
+                        <option value="مسلم" selected>مسلم</option>
                         <option value="غير مسلم">غير مسلم</option>
                     </select>
                 </td>
@@ -324,7 +392,26 @@ function handleReligiousSubmit(event) {
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
 
-  const results = distribute(data.amount, data?.heirs)
+  // إضافة تحقق إضافي
+  console.log('=== CALCULATION START ===');
+  console.log('Data sent to distribute:', data);
+  console.log('Heirs object keys:', Object.keys(data.heirs));
+  console.log('Heirs object values:', Object.values(data.heirs));
+  
+  // تحقق من وجود الجدة بشكل خاص
+  const hasGrandmother = Object.keys(data.heirs).some(key => key.includes('grandmother'));
+  console.log('Has grandmother in data:', hasGrandmother);
+  
+  if (hasGrandmother) {
+    const grandmotherKey = Object.keys(data.heirs).find(key => key.includes('grandmother'));
+    console.log('Grandmother key:', grandmotherKey);
+    console.log('Grandmother data:', data.heirs[grandmotherKey]);
+  }
+
+  const results = distribute(data.amount, data.heirs);
+
+  console.log('Results from distribute:', results);
+  console.log('=== CALCULATION END ===');
 
   updateSharesTab({ ...data, heirs: results });
 }
@@ -363,18 +450,15 @@ function updateSharesTab(data) {
   document.getElementById('sharesTableBody').innerHTML = sharesHTML;
 }
 
-
 function hasSelectedHeirs() {
   const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => select.value !== 'لا');
   const maleChecked = document.getElementById('male').checked;
   const femaleChecked = document.getElementById('female').checked;
   const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
-  const husbandSelected = deceasedGender === 'female' && document.getElementById('husband')?.value === 'yes';
+  const husbandSelected = deceasedGender === 'female' && document.getElementById('husband')?.value === 'نعم';
   const wifeSelected = deceasedGender === 'male' && parseInt(document.getElementById('wife')?.value) > 0;
   return (hasOtherHeirs || husbandSelected || wifeSelected) && (maleChecked || femaleChecked);
 }
-
-
 
 function showModal() {
   document.getElementById('modalOverlay').style.display = 'block';
@@ -386,68 +470,73 @@ function closeModal() {
   document.getElementById('validationModal').style.display = 'none';
 }
 
-
 window.addEventListener('DOMContentLoaded', (e) => {
+  console.log('Window DOM loaded');
+  
   const allSelect = [...document.querySelectorAll('select')];
   allSelect.forEach(el => {
-    all[el.id] = el.value || 0
+    all[el.id] = el.value || 'لا';
     el.addEventListener('change', (e) => {
-      all[el.id] = el.value
-      calulcateWarth(all)
-    })
-  })
+      all[el.id] = el.value;
+      calulcateWarth(all);
+    });
+  });
 
-  document.getElementById('closeModal').addEventListener('click', closeModal)
-  document.getElementById('backToCalculator').addEventListener('click', () => switchTab('calculator'))
-  document.getElementById('backToReligious').addEventListener('click', () => switchTab('religious'))
-})
+  document.getElementById('closeModal')?.addEventListener('click', closeModal);
+  document.getElementById('backToCalculator')?.addEventListener('click', () => switchTab('calculator'));
+  document.getElementById('backToReligious')?.addEventListener('click', () => switchTab('religious'));
+});
 
 function calulcateWarth(all) {
-  let count = 0
-  let hiddenWift = document.getElementById('spouse_female').classList.contains('hidden');
-  let hiddenHasband = document.getElementById('spouse_male').classList.contains('hidden')
+  let count = 0;
+  let hiddenWift = document.getElementById('spouse_female')?.classList.contains('hidden');
+  let hiddenHasband = document.getElementById('spouse_male')?.classList.contains('hidden');
+  
   for (const [key, item] of Object.entries(all)) {
     if (key === 'dad_sons' || key === 'dad_girls') {
-      console.log('called here');
-      
-      continue
+      continue;
     }
-    if (key === 'wift' && hiddenWift) {
-      continue
+    if (key === 'wife' && hiddenWift) {
+      continue;
     }
     if (key === 'husband' && hiddenHasband) {
-      continue
+      continue;
     }
 
     if (item === 'نعم' || item === 'yes') {
-      count += 1
+      count += 1;
     } else if (item === 'لا' || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
-      continue
-    }
-    else {
-      count += +item
+      continue;
+    } else {
+      count += +item;
     }
   }
-  document.getElementById('worthCount').textContent = count
+  
+  const worthCountElement = document.getElementById('worthCount');
+  if (worthCountElement) {
+    worthCountElement.textContent = count;
+  }
 }
 
 function openSonsModal(e) {
-  e.preventDefault()
-  let daughter = document.getElementById('daughter').value === 'لا'
-  let mother = document.getElementById('mother').value === 'نعم'
-  let father = document.getElementById('father').value === 'نعم'
-  let son = document.getElementById('son').value === 'لا'
-
+  e.preventDefault();
+  
   if (!hasSelectedHeirs()) {
     showModal();
     return;
   }
 
+  let daughter = document.getElementById('daughter')?.value === 'لا';
+  let mother = document.getElementById('mother')?.value === 'نعم';
+  let father = document.getElementById('father')?.value === 'نعم';
+  let son = document.getElementById('son')?.value === 'لا';
+
   if (mother && father && daughter && son) {
-    document.getElementById('sons_numbers').classList.add('show')
+    document.getElementById('sons_numbers').classList.add('show');
   } else {
-    document.getElementById('dad_sons').value = 'لا'
-    document.getElementById('dad_girls').value = 'لا'
-    handleCalculatorSubmit()
+    document.getElementById('dad_sons').value = 'لا';
+    document.getElementById('dad_girls').value = 'لا';
+    handleCalculatorSubmit();
   }
 }
+
