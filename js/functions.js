@@ -9,72 +9,13 @@ import {
   calculateMR_grandfatherHeir,
   calculateFR_grandmotherHeir,
   calculateMR_grandmotherHeir,
-  calculateSN_grandsonHeir,
-  calculateSN_granddaughterHeir,
-  calculateDR_grandsonHeir,
-  calculateDR_granddaughterHeir,
-  calculateBrotherHeir,
   calculateSisterHeir,
-  calculateMR_brotherHeir,
-  calculateMR_mother_sisterHeir,
-  calculateFR_brotherHeir,
-  calculateFR_sisterHeir,
-  calculateBR_boysHeir,
-  calculateSR_boysHeir,
-  calculateMR_BR_boysHeir,
-  calculateMR_SR_boysHeir,
-  calculateFR_BR_boysHeir,
-  calculateFR_SR_boysHeir,
-  calculateBR_girlsHeir,
-  calculateSR_girlsHeir,
-  calculateMR_BR_girlsHeir,
-  calculateMR_SR_girlsHeir,
-  calculateFR_BR_girlsHeir,
-  calculateFR_SR_girlsHeir,
-  calculateFR_uncleHeir,
-  calculateFR_auntHeir,
-  calculateMR_uncleHeir,
-  calculateMR_auntHeir,
-  calculateMR_uncle_motherHeir,
-  calculateFR_uncle_fatherHeir,
-  calculateMR_aunt_motherHeir,
-  calculateFR_aunt_fatherHeir,
-  calculateFR_uncle_father_AHeir,
-  calculateMR_uncle_mother_AHeir,
-  calculateFR_aunt_father_KHeir,
-  calculateMR_aunt_mother_KHeir,
-  calculateUncle_sons_AHeir,
-  calculateUncle_daughters_AHeir,
-  calculateAunt_sons_AHeir,
-  calculateAunt_daughters_AHeir,
-  calculateFR_uncle_sons_AHeir,
-  calculateMR_uncle_sons_AHeir,
-  calculateFR_uncle_daughter_AHeir,
-  calculateMR_uncle_daughter_AHeir,
-  calculateFR_aunt_sons_AHeir,
-  calculateMR_aunt_sons_AHeir,
-  calculateFR_aunt_daughter_AHeir,
-  calculateMR_aunt_daughter_AHeir,
-  calculateUncle_sons_KHeir,
-  calculateUncle_daughters_KHeir,
-  calculateAunt_sons_KHeir,
-  calculateAunt_daughters_KHeir,
-  calculateFR_uncle_sons_KHeir,
-  calculateMR_uncle_sons_KHeir,
-  calculateFR_uncle_daughter_KHeir,
-  calculateMR_uncle_daughter_KHeir,
-  calculateFR_aunt_sons_KHeir,
-  calculateMR_aunt_sons_KHeir,
-  calculateFR_aunt_daughter_KHeir,
-  calculateMR_aunt_daughter_KHeir,
-
 } from "./calculations.js";
 
 export function distribute(total = 10000, heirs) {
   const results = {};
   const heirCounts = {};
   const totalAmount = parseFloat(total);
-  const deceasedType = getDeceasedType();
 
   // حساب عدد كل نوع من الورثة
   for (const [type, value] of Object.entries(heirs)) {
@@ -335,18 +276,4 @@ function calculateShare(total, shareType) {
 function getDeceasedType() {
   const maleRadio = document.getElementById('male');
   return maleRadio?.checked ? 'father' : 'mother';
-}
-
-// دالة مساعدة لحساب إجمالي المبالغ المخصصة
-function getTotalAssignedAmount(results) {
-  return Object.values(results).reduce((total, result) => {
-    return total + (parseFloat(result.amount) || 0);
-  }, 0);
-}
-
-// دالة مساعدة لحساب إجمالي النسب المخصصة
-function getTotalAssignedPercentage(results) {
-  return Object.values(results).reduce((total, result) => {
-    return total + (parseFloat(result.percentage) || 0);
-  }, 0);
 }
