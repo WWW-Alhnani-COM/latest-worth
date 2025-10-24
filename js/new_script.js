@@ -432,25 +432,48 @@ function updateSharesTab(data) {
   document.getElementById('sharesDeceasedInfoBody').innerHTML = deceasedInfoHTML;
 
   let sharesHTML = "";
-  let i = 0
-  for (let key in data.heirs) {
-    i++
+  let i = 0;
+  
+  // الإصلاح: ترتيب الورثة حسب النصيب (من الأكبر إلى الأصغر)
+  const sortedHeirs = Object.entries(data.heirs).sort(([,a], [,b]) => {
+    const amountA = parseFloat(a.amount || 0);
+    const amountB = parseFloat(b.amount || 0);
+    return amountB - amountA;
+  });
+
+  for (const [key, heir] of sortedHeirs) {
+    i++;
+    
+    // الإصلاح: استخدام القيم من heir بدلاً من data.heirs[key]
+    const amount = parseFloat(heir.amount || 0).toFixed(2);
+    const percentage = parseFloat(heir.percentage || 0).toFixed(2);
+    const note = heir.note || '-';
+    
+    // الإصلاح: عرض العنوان بشكل صحيح
+    const title = heir.title || '-';
+    
     sharesHTML += `
         <tr>
             <td class="counter">${i}</td>
-            <td>${data.heirs[key].title}</td>
-            <td>${data.heirs[key].name || '-'}</td>
-            <td>${data.heirs[key].amount || '-'}</td>
+            <td>${title}</td>
+            <td>${heir.name || '-'}</td>
+            <td>${amount}</td>
             <td>-</td>
-            <td>${data.heirs[key].percentage + '%' || '-'}</td>
-            <td>${data.heirs[key].note || '-'}</td>
+            <td>${percentage}%</td>
+            <td>${note}</td>
         </tr>
     `;
   }
+  
   document.getElementById('sharesTableBody').innerHTML = sharesHTML;
-}
-
-function hasSelectedHeirs() {
+  
+  // الإصلاح: حساب المجموع النهائي
+  const totalAmount = Object.values(data.heirs).reduce((sum, heir) => 
+    sum + parseFloat(heir.amount || 0), 0
+  );
+  
+  console.log('Total calculated amount:', totalAmount);
+}function hasSelectedHeirs() {
   const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => select.value !== 'لا');
   const maleChecked = document.getElementById('male').checked;
   const femaleChecked = document.getElementById('female').checked;
@@ -539,3 +562,4 @@ function openSonsModal(e) {
     handleCalculatorSubmit();
   }
 }
+
