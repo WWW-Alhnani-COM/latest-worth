@@ -31,9 +31,14 @@ export function distribute(total = 10000, heirs) {
 
   const sonCount = heirCounts['son'] || 0;
   const daughterCount = heirCounts['daughter'] || 0;
-  const hasGrandmother = heirCounts['FR_grandmother'] > 0 || heirCounts['MR_grandmother'] > 0;
+  
+  // الإصلاح: التحقق من وجود الجدة بشكل صحيح
+  const hasFRGrandmother = heirs.hasOwnProperty('FR_grandmother');
+  const hasMRGrandmother = heirs.hasOwnProperty('MR_grandmother');
+  const hasGrandmother = hasFRGrandmother || hasMRGrandmother;
 
   console.log('Son count:', sonCount, 'Daughter count:', daughterCount, 'Has grandmother:', hasGrandmother);
+  console.log('Has FR_grandmother:', hasFRGrandmother, 'Has MR_grandmother:', hasMRGrandmother);
 
   // 1. حساب الأنصبة الثابتة أولاً - الترتيب مهم!
   const fixedHeirs = ['husband', 'wife', 'father', 'mother', 'FR_grandmother', 'MR_grandmother', 'FR_grandfather'];
@@ -41,9 +46,11 @@ export function distribute(total = 10000, heirs) {
   let totalFixedShares = 0;
   
   for (const heirType of fixedHeirs) {
-    const heirsOfType = Object.entries(heirs).filter(([type]) => 
-      type.replace(/_[^_]+$/, '') === heirType
-    );
+    // الإصلاح: البحث في heirs مباشرة بدلاً من filter
+    const heirsOfType = Object.entries(heirs).filter(([type]) => {
+      // مطابقة exact أو partial
+      return type === heirType || type.startsWith(heirType + '_');
+    });
 
     console.log(`Processing ${heirType}:`, heirsOfType);
 
@@ -101,7 +108,7 @@ export function distribute(total = 10000, heirs) {
     handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, heirCounts);
   } else if (sonCount > 0 && daughterCount === 0) {
     console.log('Handling sons only');
-    handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts);
+    handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts, hasGrandmother);
   } else if (daughterCount >= 2 && sonCount === 0) {
     console.log('Handling multiple daughters');
     handleMultipleDaughters(results, heirs, totalAmount, remainingAmount, heirCounts);
@@ -151,9 +158,38 @@ function handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, he
 }
 
 // معالجة: الباقي للابن
-function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts) {
+function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts, hasGrandmother) {
   const sonCount = heirCounts['son'] || 0;
-  const sharePerSon = remainingAmount / sonCount;
+  
+  let actualRemaining = remainingAmount;
+  
+  // الإصلاح: إذا كانت الجدة موجودة ولم تحصل على نصيبها بعد
+  if (hasGrandmother && !results['FR_grandmother'] && !results['MR_grandmother']) {
+    console.log('Grandmother exists but not in results, calculating her share...');
+    const grandmotherShare = calculateShare(totalAmount, 'sixth');
+    actualRemaining = remainingAmount - grandmotherShare;
+    
+    // إضافة الجدة إلى النتائج
+    if (heirs['FR_grandmother']) {
+      results['FR_grandmother'] = {
+        ...heirs['FR_grandmother'],
+        amount: grandmotherShare.toFixed(2),
+        percentage: ((grandmotherShare / totalAmount) * 100).toFixed(2),
+        note: 'السدس فرض'
+      };
+      console.log('Added FR_grandmother to results');
+    } else if (heirs['MR_grandmother']) {
+      results['MR_grandmother'] = {
+        ...heirs['MR_grandmother'],
+        amount: grandmotherShare.toFixed(2),
+        percentage: ((grandmotherShare / totalAmount) * 100).toFixed(2),
+        note: 'السدس فرض'
+      };
+      console.log('Added MR_grandmother to results');
+    }
+  }
+  
+  const sharePerSon = actualRemaining / sonCount;
   
   const sonHeirs = Object.entries(heirs).filter(([type]) => type.startsWith('son_'));
   for (const [type, value] of sonHeirs) {
