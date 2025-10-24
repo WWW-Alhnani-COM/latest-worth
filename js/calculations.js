@@ -207,6 +207,7 @@ export function calculateFR_grandfatherHeir(heirs, total, heirCounts = {}) {
   return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
 }
 
+// الدوال الأخرى تبقى فارغة
 export function calculateMR_grandfatherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
 export function calculateSN_grandsonHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
 export function calculateSN_granddaughterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
@@ -265,4 +266,3 @@ export function calculateFR_aunt_sons_KHeir() { return { amount: '0.00', percent
 export function calculateMR_aunt_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
 export function calculateFR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
 export function calculateMR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-
