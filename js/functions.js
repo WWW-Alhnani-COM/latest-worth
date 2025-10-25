@@ -19,7 +19,27 @@ export function distribute(total = 10000, heirs) {
   
   const results = {};
   const heirCounts = {};
-  const totalAmount = parseFloat(total);
+  
+  // ========== الإصلاح 1: استخدام قيمة افتراضية إذا لم يتم إدخال مبلغ ==========
+  const totalAmount = parseFloat(total) || 100; // قيمة افتراضية 100% إذا لم يتم إدخال مبلغ
+  console.log('Total amount after fix:', totalAmount);
+
+  // ========== الإصلاح 2: التحقق من وجود ورثة لبيت المال ==========
+  const hasHeirs = Object.keys(heirs).length > 0;
+  if (!hasHeirs) {
+    console.log('No heirs found - going to Bayt Al Mal');
+    return {
+      bayt_al_mal: {
+        title: 'بيت المال',
+        name: 'بيت المال',
+        amount: totalAmount.toFixed(2),
+        percentage: '100.000',
+        note: 'المال كاملاً يذهب إلى بيت المال لعدم وجود ورثة'
+      }
+    };
+  }
+
+  console.log('Heirs received:', heirs);
 
   // حساب عدد كل نوع من الورثة
   for (const [type, value] of Object.entries(heirs)) {
@@ -80,16 +100,21 @@ export function distribute(total = 10000, heirs) {
           calculationResult = calculateFR_grandfatherHeir(heirs, totalAmount, heirCounts);
           break;
         default:
-          calculationResult = { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' };
+          calculationResult = { amount: '0.000', percentage: '0.000', note: 'لم يتم التنفيذ' };
       }
 
       console.log(`Result for ${type}:`, calculationResult);
 
       if (parseFloat(calculationResult.amount) > 0) {
-        results[type] = {
+        // ========== الإصلاح 3: تحديث تنسيق النسب المئوية ==========
+        const updatedResult = {
           ...value,
-          ...calculationResult
+          amount: calculationResult.amount,
+          percentage: formatPercentage(calculationResult.percentage), // استخدام 3 خانات عشرية
+          note: calculationResult.note
         };
+        
+        results[type] = updatedResult;
         totalFixedShares += parseFloat(calculationResult.amount);
         console.log(`Added ${type} with amount: ${calculationResult.amount}`);
       }
@@ -120,11 +145,37 @@ export function distribute(total = 10000, heirs) {
   // 3. حساب الأخوات مع الابن
   handleSistersWithSon(results, heirs, totalAmount, heirCounts);
 
+  // ========== الإصلاح 4: التحقق من المتبقي لبيت المال ==========
+  const finalTotal = Object.values(results).reduce((sum, result) => 
+    sum + parseFloat(result.amount || 0), 0
+  );
+  
+  const finalRemaining = totalAmount - finalTotal;
+  
+  if (finalRemaining > 0.01) { // تحقق من وجود متبقي مهم
+    results.bayt_al_mal = {
+      title: 'بيت المال',
+      name: 'بيت المال',
+      amount: finalRemaining.toFixed(2),
+      percentage: formatPercentage((finalRemaining / totalAmount) * 100),
+      note: 'المال كاملاً يوزع لـ بيت المال'
+    };
+    console.log('Added remaining to Bayt Al Mal:', finalRemaining);
+  }
+
   console.log('Final results:', results);
   console.log('=== DISTRIBUTE FUNCTION END ===');
 
   return results;
 }
+
+// ========== الإصلاح 5: دالة تنسيق النسب المئوية ب 3 خانات عشرية ==========
+function formatPercentage(percentage) {
+  const num = parseFloat(percentage);
+  return isNaN(num) ? '0.000' : num.toFixed(3);
+}
+
+// ========== الإصلاح 6: تحديث المصطلحات في دوال المعالجة ==========
 
 // معالجة: للذكر مثل حظ الانثيين
 function handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, heirCounts) {
@@ -140,7 +191,7 @@ function handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, he
     results[type] = {
       ...value,
       amount: (sharePerUnit * 2).toFixed(2),
-      percentage: (((sharePerUnit * 2) / totalAmount) * 100).toFixed(2),
+      percentage: formatPercentage(((sharePerUnit * 2) / totalAmount) * 100),
       note: 'للذكر مثل حظ الانثيين'
     };
   }
@@ -151,13 +202,13 @@ function handleMaleFemaleShares(results, heirs, totalAmount, remainingAmount, he
     results[type] = {
       ...value,
       amount: sharePerUnit.toFixed(2),
-      percentage: ((sharePerUnit / totalAmount) * 100).toFixed(2),
+      percentage: formatPercentage((sharePerUnit / totalAmount) * 100),
       note: 'للذكر مثل حظ الانثيين'
     };
   }
 }
 
-// معالجة: الباقي للابن
+// معالجة: الباقي للابن - تم تغيير المصطلح
 function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts, hasGrandmother) {
   const sonCount = heirCounts['son'] || 0;
   
@@ -174,7 +225,7 @@ function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts
       results['FR_grandmother'] = {
         ...heirs['FR_grandmother'],
         amount: grandmotherShare.toFixed(2),
-        percentage: ((grandmotherShare / totalAmount) * 100).toFixed(2),
+        percentage: formatPercentage((grandmotherShare / totalAmount) * 100),
         note: 'السدس فرض'
       };
       console.log('Added FR_grandmother to results');
@@ -182,7 +233,7 @@ function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts
       results['MR_grandmother'] = {
         ...heirs['MR_grandmother'],
         amount: grandmotherShare.toFixed(2),
-        percentage: ((grandmotherShare / totalAmount) * 100).toFixed(2),
+        percentage: formatPercentage((grandmotherShare / totalAmount) * 100),
         note: 'السدس فرض'
       };
       console.log('Added MR_grandmother to results');
@@ -196,8 +247,8 @@ function handleSonsOnly(results, heirs, totalAmount, remainingAmount, heirCounts
     results[type] = {
       ...value,
       amount: sharePerSon.toFixed(2),
-      percentage: ((sharePerSon / totalAmount) * 100).toFixed(2),
-      note: 'الباقي تعصيباً'
+      percentage: formatPercentage((sharePerSon / totalAmount) * 100),
+      note: 'المال كاملاً يوزع لـ الأبناء' // تم تغيير المصطلح
     };
   }
 }
@@ -214,7 +265,7 @@ function handleMultipleDaughters(results, heirs, totalAmount, remainingAmount, h
     results[type] = {
       ...value,
       amount: sharePerDaughter.toFixed(2),
-      percentage: ((sharePerDaughter / totalAmount) * 100).toFixed(2),
+      percentage: formatPercentage((sharePerDaughter / totalAmount) * 100),
       note: 'ثلثين فرض'
     };
   }
@@ -229,7 +280,7 @@ function handleSingleDaughter(results, heirs, totalAmount, remainingAmount, heir
     results[type] = {
       ...value,
       amount: daughterShare.toFixed(2),
-      percentage: ((daughterShare / totalAmount) * 100).toFixed(2),
+      percentage: formatPercentage((daughterShare / totalAmount) * 100),
       note: 'نصف فرض'
     };
   }
@@ -256,7 +307,7 @@ function handleSistersWithSon(results, heirs, totalAmount, heirCounts) {
         results[type] = {
           ...value,
           amount: sharePerUnit.toFixed(2),
-          percentage: ((sharePerUnit / totalAmount) * 100).toFixed(2),
+          percentage: formatPercentage((sharePerUnit / totalAmount) * 100),
           note: 'للذكر مثل حظ الانثيين مع الابن'
         };
       }
