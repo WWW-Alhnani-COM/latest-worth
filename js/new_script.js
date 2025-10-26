@@ -267,107 +267,45 @@ function collectFormData() {
   return formData;
 }
 
-function updateSharesTab(data) {
+function updateReligiousTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
     deceasedInfoHTML = `
-        <tr>
-            <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
-            <td>${data.deceased_religion}</td>
-            <td>${data.deceased_name}</td>
-            <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
-            <td>${data.materials || 'لا توجد'}</td>
-        </tr>
-    `;
+            <tr>
+                <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
+                <td>${data.deceased_religion}</td>
+                <td>${data.deceased_name}</td>
+                <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
+                <td>${data.materials || 'لا توجد'}</td>
+            </tr>
+        `;
   }
-  document.getElementById('sharesDeceasedInfoBody').innerHTML = deceasedInfoHTML;
+  document.getElementById('deceasedInfoBody').innerHTML = deceasedInfoHTML;
 
-  let sharesHTML = "";
+  let heirsHTML = "";
   let i = 0;
-  
-  // ========== التحكم في عرض المبالغ بناء على وجود مبلغ تركة ==========
-  const showAmounts = data.hasAmount; // عرض المبالغ فقط إذا كان هناك مبلغ تركة
-  
   for (let key in data.heirs) {
-    i++;
-    
-    // ========== الإصلاح 1: معالجة صلة القرابة لمنع undefined ==========
-    let relationship = data.heirs[key].title;
-    
-    // إذا كان العنوان غير محدد، نستخدم معرف الوارث لاستنتاج الصلة
-    if (!relationship || relationship === 'undefined') {
-      if (key.startsWith('son_')) {
-        relationship = 'ابن';
-      } else if (key.startsWith('daughter_')) {
-        relationship = 'ابنة';
-      } else if (key.startsWith('wife_')) {
-        relationship = 'زوجة';
-      } else if (key.startsWith('sister_')) {
-        relationship = 'أخت';
-      } else {
-        relationship = key; // استخدام المعرف كبديل
-      }
+    if (data.deceased_gender === 'female' && key.startsWith("wife")) {
+      continue;
     }
-    
-    // ========== الإصلاح 2: تنظيف رسائل التوضيح ==========
-    let note = data.heirs[key].note || '';
-    
-    // استبدال العبارات في الملاحظات
-    if (note.includes('الباقي يرد')) {
-      note = note.replace('الباقي يرد', 'الباقي يرد رحم');
-    }
-    if (note.includes('حسب سهامهم')) {
-      note = note.replace('حسب سهامهم', 'حسب سهامهما');
-    }
-    if (note.includes('حسب سهامها')) {
-      note = note.replace('حسب سهامها', 'حسب سهامهما');
-    }
-    
-    // الحصول على كمية المواد لهذا الوريث
-    const materialsData = data.materialsDistribution?.[key];
-    const materialsAmount = materialsData?.materialsAmount || '0.00';
-    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
-    
-    sharesHTML += `
-        <tr>
-            <td class="counter">${i}</td>
-            <td>${relationship}</td>
-            <td>${data.heirs[key].name || '-'}</td>
-            <td>${showAmounts ? (data.heirs[key].amount || '-') : '-'}</td>
-            <td>${materialsDisplay}</td>
-            <td>${data.heirs[key].percentage + '%' || '-'}</td>
-            <td>${note}</td>
-        </tr>
-    `;
+    i++
+    heirsHTML += `
+            <tr>
+                <td class="counter">${i}</td>
+                <td>${data.heirs[key].title}</td>
+                <td><input type="text" class="heir-name" data-heir-id="${key}" value="${data.heirs[key].name || ''}"></td>
+                <td>
+                    <select class="heir-religion" data-heir-id="${key}">
+                        <option value="مسلم">مسلم</option>
+                        <option value="غير مسلم">غير مسلم</option>
+                    </select>
+                </td>
+            </tr>
+        `;
   }
-  
-  // ========== إضافة بيت المال إذا كان موجوداً في النتائج ==========
-  if (data.heirs.bayt_al_mal) {
-    i++;
-    const materialsData = data.materialsDistribution?.bayt_al_mal;
-    const materialsAmount = materialsData?.materialsAmount || '0.00';
-    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
-    
-    // تنظيف ملاحظة بيت المال أيضاً
-    let baytNote = data.heirs.bayt_al_mal.note || '';
-    if (baytNote.includes('الباقي يرد')) {
-      baytNote = baytNote.replace('الباقي يرد', 'الباقي يرد رحم');
-    }
-    
-    sharesHTML += `
-        <tr>
-            <td class="counter">${i}</td>
-            <td>${data.heirs.bayt_al_mal.title}</td>
-            <td>${data.heirs.bayt_al_mal.name || '-'}</td>
-            <td>${showAmounts ? (data.heirs.bayt_al_mal.amount || '-') : '-'}</td>
-            <td>${materialsDisplay}</td>
-            <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
-            <td>${baytNote}</td>
-        </tr>
-    `;
-  }
-  
-  document.getElementById('sharesTableBody').innerHTML = sharesHTML;
+  document.getElementById('resultTableBody').innerHTML = heirsHTML;
+
+  document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
 }
 
 function handleReligiousSubmit(event) {
@@ -460,6 +398,61 @@ function updateSharesTab(data) {
   for (let key in data.heirs) {
     i++;
     
+    // ========== الإصلاح 1: معالجة صلة القرابة لمنع undefined ==========
+    let relationship = data.heirs[key].title;
+    
+    // إذا كان العنوان غير محدد، نستخدم معرف الوارث لاستنتاج الصلة
+    if (!relationship || relationship === 'undefined' || relationship.includes('undefined')) {
+      if (key.startsWith('son_')) {
+        const sonNumber = key.split('_')[1] || '';
+        relationship = sonNumber ? `ابن (${numberToArabicWord(parseInt(sonNumber), 'male')})` : 'ابن';
+      } else if (key.startsWith('daughter_')) {
+        const daughterNumber = key.split('_')[1] || '';
+        relationship = daughterNumber ? `ابنة (${numberToArabicWord(parseInt(daughterNumber), 'female')})` : 'ابنة';
+      } else if (key.startsWith('wife_')) {
+        const wifeNumber = key.split('_')[1] || '';
+        relationship = wifeNumber ? `زوجة (${numberToArabicWord(parseInt(wifeNumber), 'female')})` : 'زوجة';
+      } else if (key.startsWith('sister_')) {
+        const sisterNumber = key.split('_')[1] || '';
+        relationship = sisterNumber ? `أخت (${numberToArabicWord(parseInt(sisterNumber), 'female')})` : 'أخت';
+      } else if (key === 'father') {
+        relationship = 'أب';
+      } else if (key === 'mother') {
+        relationship = 'أم';
+      } else if (key === 'husband') {
+        relationship = 'زوج';
+      } else if (key === 'FR_grandmother') {
+        relationship = 'جدة لاب';
+      } else if (key === 'MR_grandmother') {
+        relationship = 'جدة لأم';
+      } else {
+        relationship = key; // استخدام المعرف كبديل
+      }
+    }
+    
+    // ========== الإصلاح 2: تنظيف رسائل التوضيح ==========
+    let note = data.heirs[key].note || '';
+    
+    // استبدال العبارات في الملاحظات
+    if (note.includes('الباقي يرد')) {
+      note = note.replace('الباقي يرد', 'الباقي يرد رحم');
+    }
+    if (note.includes('حسب سهامهم')) {
+      note = note.replace('حسب سهامهم', 'حسب سهامهما');
+    }
+    if (note.includes('حسب سهامها')) {
+      note = note.replace('حسب سهامها', 'حسب سهامهما');
+    }
+    if (note.includes('يرد على الابنة')) {
+      note = note.replace('يرد على الابنة', 'يرد رحم على الابنة');
+    }
+    if (note.includes('يرد للابنة')) {
+      note = note.replace('يرد للابنة', 'يرد رحم للابنة');
+    }
+    if (note.includes('يرد على البنات')) {
+      note = note.replace('يرد على البنات', 'يرد رحم على البنات');
+    }
+    
     // الحصول على كمية المواد لهذا الوريث
     const materialsData = data.materialsDistribution?.[key];
     const materialsAmount = materialsData?.materialsAmount || '0.00';
@@ -468,12 +461,12 @@ function updateSharesTab(data) {
     sharesHTML += `
         <tr>
             <td class="counter">${i}</td>
-            <td>${data.heirs[key].title}</td>
+            <td>${relationship}</td>
             <td>${data.heirs[key].name || '-'}</td>
             <td>${showAmounts ? (data.heirs[key].amount || '-') : '-'}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs[key].percentage + '%' || '-'}</td>
-            <td>${data.heirs[key].note || '-'}</td>
+            <td>${note}</td>
         </tr>
     `;
   }
@@ -485,6 +478,12 @@ function updateSharesTab(data) {
     const materialsAmount = materialsData?.materialsAmount || '0.00';
     const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
     
+    // تنظيف ملاحظة بيت المال أيضاً
+    let baytNote = data.heirs.bayt_al_mal.note || '';
+    if (baytNote.includes('الباقي يرد')) {
+      baytNote = baytNote.replace('الباقي يرد', 'الباقي يرد رحم');
+    }
+    
     sharesHTML += `
         <tr>
             <td class="counter">${i}</td>
@@ -493,7 +492,7 @@ function updateSharesTab(data) {
             <td>${showAmounts ? (data.heirs.bayt_al_mal.amount || '-') : '-'}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
-            <td>${data.heirs.bayt_al_mal.note || '-'}</td>
+            <td>${baytNote}</td>
         </tr>
     `;
   }
@@ -585,4 +584,3 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
-
