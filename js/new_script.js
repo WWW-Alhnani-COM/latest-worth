@@ -323,36 +323,49 @@ function handleReligiousSubmit(event) {
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
 
-  // ========== الإصلاح: معالجة حقل المواد والمبلغ بشكل منفصل ==========
-  const totalAmount = processTotalAmount(data.amount);
+  // ========== الإصلاح: حساب التوزيع بدون قيمة افتراضية للمبلغ ==========
+  const hasAmount = data.amount && parseFloat(data.amount) > 0;
+  const totalAmount = hasAmount ? parseFloat(data.amount) : 0;
+  
   const materialsAmount = parseFloat(data.materials) || 0;
   
-  // حساب توزيع المال
-  const moneyResults = distribute(totalAmount, data?.heirs);
+  // حساب توزيع المال (فقط إذا كان هناك مبلغ)
+  const moneyResults = hasAmount ? distribute(totalAmount, data?.heirs) : calculatePercentagesOnly(data?.heirs);
   
-  // حساب توزيع المواد (بنفس النسب)
-  const materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+  // حساب توزيع المواد (بنفس النسب) فقط إذا كانت هناك مواد
+  let materialsResults = null;
+  if (materialsAmount > 0) {
+    materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+  }
 
   updateSharesTab({ 
     ...data, 
     heirs: moneyResults,
-    materialsDistribution: materialsResults 
+    materialsDistribution: materialsResults,
+    hasAmount: hasAmount
   });
 }
 
-// ========== الإصلاح: دالة معالجة المبلغ فقط (بدون مواد) ==========
-function processTotalAmount(amount) {
-  let total = parseFloat(amount) || 0;
+// ========== الإصلاح الجديد: دالة حساب النسب فقط بدون مبالغ ==========
+function calculatePercentagesOnly(heirs) {
+  // استخدام قيمة افتراضية 100 للحساب النسبي فقط
+  const tempResults = distribute(100, heirs);
   
-  // إذا لم يتم إدخال أي مبلغ، نستخدم قيمة افتراضية للحسابات النسبية
-  if (total === 0) {
-    total = 100; // قيمة افتراضية للحسابات النسبية
+  // إزالة المبالغ من النتائج، والاحتفاظ بالنسب فقط
+  const percentageResults = {};
+  
+  for (const [key, heirData] of Object.entries(tempResults)) {
+    percentageResults[key] = {
+      ...heirData,
+      amount: '0.00', // تعيين المبلغ إلى صفر
+      // الاحتفاظ بالنسبة والملاحظة كما هي
+    };
   }
   
-  return total;
+  return percentageResults;
 }
 
-// ========== الإصلاح الجديد: دالة حساب توزيع المواد ==========
+// ========== دالة حساب توزيع المواد ==========
 function calculateMaterialsDistribution(moneyResults, materialsAmount) {
   const materialsDistribution = {};
   
@@ -388,7 +401,9 @@ function updateSharesTab(data) {
   let sharesHTML = "";
   let i = 0;
   
-  // ========== الإصلاح: عرض توزيع المال والمواد بشكل منفصل ==========
+  // ========== الإصلاح: التحكم في عرض المبالغ بناء على وجود مبلغ تركة ==========
+  const showAmounts = data.hasAmount; // عرض المبالغ فقط إذا كان هناك مبلغ تركة
+  
   for (let key in data.heirs) {
     i++;
     
@@ -402,7 +417,7 @@ function updateSharesTab(data) {
             <td class="counter">${i}</td>
             <td>${data.heirs[key].title}</td>
             <td>${data.heirs[key].name || '-'}</td>
-            <td>${data.heirs[key].amount || '-'}</td>
+            <td>${showAmounts ? (data.heirs[key].amount || '-') : '-'}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs[key].percentage + '%' || '-'}</td>
             <td>${data.heirs[key].note || '-'}</td>
@@ -410,7 +425,7 @@ function updateSharesTab(data) {
     `;
   }
   
-  // ========== الإصلاح: إضافة بيت المال إذا كان موجوداً ==========
+  // إضافة بيت المال إذا كان موجوداً
   if (data.heirs.bayt_al_mal) {
     i++;
     const materialsData = data.materialsDistribution?.bayt_al_mal;
@@ -422,7 +437,7 @@ function updateSharesTab(data) {
             <td class="counter">${i}</td>
             <td>${data.heirs.bayt_al_mal.title}</td>
             <td>${data.heirs.bayt_al_mal.name || '-'}</td>
-            <td>${data.heirs.bayt_al_mal.amount || '-'}</td>
+            <td>${showAmounts ? (data.heirs.bayt_al_mal.amount || '-') : '-'}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
             <td>${data.heirs.bayt_al_mal.note || '-'}</td>
