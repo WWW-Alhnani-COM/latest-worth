@@ -1,4 +1,4 @@
-import { distribute } from "./functions.js";
+import { calculateInheritance } from "./functions.js";
 
 const all = {};
 const booleanOptions = ["لا", "نعم"];
@@ -323,14 +323,12 @@ function handleReligiousSubmit(event) {
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
 
-  // ========== الإصلاح: حساب التوزيع بدون قيمة افتراضية للمبلغ ==========
-  const hasAmount = data.amount && parseFloat(data.amount) > 0;
-  const totalAmount = hasAmount ? parseFloat(data.amount) : 0;
-  
+  // ========== استخدام النظام الجديد للمفاتيح الستة ==========
+  const totalAmount = processTotalAmount(data.amount);
   const materialsAmount = parseFloat(data.materials) || 0;
   
-  // حساب توزيع المال (فقط إذا كان هناك مبلغ)
-  const moneyResults = hasAmount ? distribute(totalAmount, data?.heirs) : calculatePercentagesOnly(data?.heirs);
+  // حساب توزيع المال باستخدام النظام الجديد
+  const moneyResults = calculateInheritance(totalAmount, data?.heirs);
   
   // حساب توزيع المواد (بنفس النسب) فقط إذا كانت هناك مواد
   let materialsResults = null;
@@ -342,27 +340,20 @@ function handleReligiousSubmit(event) {
     ...data, 
     heirs: moneyResults,
     materialsDistribution: materialsResults,
-    hasAmount: hasAmount
+    hasAmount: !!data.amount && parseFloat(data.amount) > 0
   });
 }
 
-// ========== الإصلاح الجديد: دالة حساب النسب فقط بدون مبالغ ==========
-function calculatePercentagesOnly(heirs) {
-  // استخدام قيمة افتراضية 100 للحساب النسبي فقط
-  const tempResults = distribute(100, heirs);
+// ========== دالة معالجة المبلغ فقط (بدون مواد) ==========
+function processTotalAmount(amount) {
+  let total = parseFloat(amount) || 0;
   
-  // إزالة المبالغ من النتائج، والاحتفاظ بالنسب فقط
-  const percentageResults = {};
-  
-  for (const [key, heirData] of Object.entries(tempResults)) {
-    percentageResults[key] = {
-      ...heirData,
-      amount: '0.00', // تعيين المبلغ إلى صفر
-      // الاحتفاظ بالنسبة والملاحظة كما هي
-    };
+  // إذا لم يتم إدخال أي مبلغ، نستخدم قيمة افتراضية للحسابات النسبية
+  if (total === 0) {
+    total = 100; // قيمة افتراضية للحسابات النسبية
   }
   
-  return percentageResults;
+  return total;
 }
 
 // ========== دالة حساب توزيع المواد ==========
@@ -401,7 +392,7 @@ function updateSharesTab(data) {
   let sharesHTML = "";
   let i = 0;
   
-  // ========== الإصلاح: التحكم في عرض المبالغ بناء على وجود مبلغ تركة ==========
+  // ========== التحكم في عرض المبالغ بناء على وجود مبلغ تركة ==========
   const showAmounts = data.hasAmount; // عرض المبالغ فقط إذا كان هناك مبلغ تركة
   
   for (let key in data.heirs) {
@@ -425,7 +416,7 @@ function updateSharesTab(data) {
     `;
   }
   
-  // إضافة بيت المال إذا كان موجوداً
+  // ========== إضافة بيت المال إذا كان موجوداً في النتائج ==========
   if (data.heirs.bayt_al_mal) {
     i++;
     const materialsData = data.materialsDistribution?.bayt_al_mal;
