@@ -13,6 +13,12 @@ export function calculateShare(total, shareType) {
   return total * (shares[shareType] || 0);
 }
 
+// ========== الإصلاح: دالة تنسيق النسب المئوية ب 3 خانات عشرية ==========
+function formatPercentage(percentage) {
+  const num = parseFloat(percentage);
+  return isNaN(num) ? '0.000' : num.toFixed(3);
+}
+
 // ================ Calculate Husband ================
 export function calculateHusbandHeir(heirs, total, heirCounts = {}) {
   const deceasedType = getDeceasedType();
@@ -37,7 +43,11 @@ export function calculateHusbandHeir(heirs, total, heirCounts = {}) {
     note = 'لا يرث مع المتوفي أب';
   }
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
 // ================ Calculate Wife ================
@@ -68,7 +78,11 @@ export function calculateWifeHeir(heirs, total, heirCounts = {}) {
     note = 'لا ترث مع المتوفي أم';
   }
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
 // ================ Calculate DAD ================
@@ -78,17 +92,22 @@ export function calculateDadHeir(heirs, total, heirCounts = {}) {
   let note = '';
 
   // المفاتيح 1، 2، 3، 4، 5، 6: الأب السدس مع وجود الأبناء
+  // ========== الإصلاح: تغيير مصطلح "فرع" إلى "أبناء" ==========
   if (checkHeirs(heirs, CONDITIONS.hasSon) || checkHeirs(heirs, CONDITIONS.hasDaughter)) {
     amount = calculateShare(total, SHARES.sixth);
     percentage = (amount / total) * 100;
-    note = 'السدس فرض لوجود فرع وارث';
+    note = 'السدس فرض لوجود أبناء'; // تم التغيير من "فرع وارث" إلى "أبناء"
   } else {
     amount = total;
     percentage = 100;
-    note = 'الباقي تعصيب لعدم وجود فرع وارث';
+    note = 'المال كاملاً يوزع لـ الأب'; // تم التغيير من "الباقي تعصيب" إلى "المال كاملاً يوزع لـ"
   }
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
 // ================ Calculate MOM ================
@@ -98,17 +117,22 @@ export function calculateMomHeir(heirs, total, heirCounts = {}) {
   let note = '';
 
   // المفاتيح 1، 2، 3، 4، 5، 6: الأم السدس مع وجود الأبناء
+  // ========== الإصلاح: تغيير مصطلح "فرع" إلى "أبناء" ==========
   if (checkHeirs(heirs, CONDITIONS.hasSon) || checkHeirs(heirs, CONDITIONS.hasDaughter)) {
     amount = calculateShare(total, SHARES.sixth);
     percentage = (amount / total) * 100;
-    note = 'السدس فرض لوجود فرع وارث';
+    note = 'السدس فرض لوجود أبناء'; // تم التغيير من "فرع وارث" إلى "أبناء"
   } else {
     amount = calculateShare(total, SHARES.third);
     percentage = (amount / total) * 100;
-    note = 'الثلث فرض لعدم وجود فرع وارث';
+    note = 'الثلث فرض لعدم وجود أبناء'; // تم التغيير من "فرع وارث" إلى "أبناء"
   }
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
 // ================ Calculate SON ================
@@ -125,11 +149,19 @@ export function calculateSonHeir(heirs, total, heirCounts = {}) {
   if (daughterCount > 0) {
     // للذكر مثل حظ الانثيين - يتم حسابه في دالة التوزيع
     note = 'للذكر مثل حظ الانثيين';
-    return { amount: '0.00', percentage: '0.00', note };
+    return { 
+      amount: '0.00', 
+      percentage: '0.000', // تحديث التنسيق
+      note 
+    };
   } else {
     // الباقي تعصيباً - يتم حسابه في دالة التوزيع
-    note = 'الباقي تعصيباً';
-    return { amount: '0.00', percentage: '0.00', note };
+    note = 'المال كاملاً يوزع لـ الأبناء'; // تم التغيير من "الباقي تعصيباً"
+    return { 
+      amount: '0.00', 
+      percentage: '0.000', // تحديث التنسيق
+      note 
+    };
   }
 }
 
@@ -145,7 +177,11 @@ export function calculateDaughterHeir(heirs, total, heirCounts = {}) {
   if (sonCount > 0) {
     // للذكر مثل حظ الانثيين - المفاتيح 1، 4
     note = 'للذكر مثل حظ الانثيين';
-    return { amount: '0.00', percentage: '0.00', note };
+    return { 
+      amount: '0.00', 
+      percentage: '0.000', // تحديث التنسيق
+      note 
+    };
   } else if (daughterCount >= 2) {
     // ابنتين فصاعدا - الثلثين - المفاتيح 3، 6
     const totalShare = calculateShare(total, SHARES.twoThirds);
@@ -159,7 +195,11 @@ export function calculateDaughterHeir(heirs, total, heirCounts = {}) {
     note = 'نصف فرض';
   }
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
 // ================ Calculate SISTER ================
@@ -174,10 +214,18 @@ export function calculateSisterHeir(heirs, total, heirCounts = {}) {
   // المفتاح 1 و 4: الابن مع الأخت - للذكر مثل حظ الانثيين
   if (sonCount > 0) {
     note = 'للذكر مثل حظ الانثيين مع الابن';
-    return { amount: '0.00', percentage: '0.00', note };
+    return { 
+      amount: '0.00', 
+      percentage: '0.000', // تحديث التنسيق
+      note 
+    };
   } else {
     note = 'لا توجد معالجة في المفاتيح المطلوبة';
-    return { amount: '0.00', percentage: '0.00', note };
+    return { 
+      amount: '0.00', 
+      percentage: '0.000', // تحديث التنسيق
+      note 
+    };
   }
 }
 
@@ -187,7 +235,11 @@ export function calculateFR_grandmotherHeir(heirs, total, heirCounts = {}) {
   const percentage = (amount / total) * 100;
   const note = 'السدس فرض';
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
 export function calculateMR_grandmotherHeir(heirs, total, heirCounts = {}) {
@@ -195,7 +247,11 @@ export function calculateMR_grandmotherHeir(heirs, total, heirCounts = {}) {
   const percentage = (amount / total) * 100;
   const note = 'السدس فرض';
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
 // ================ Calculate GRANDFATHER ================
@@ -204,65 +260,140 @@ export function calculateFR_grandfatherHeir(heirs, total, heirCounts = {}) {
   const percentage = (amount / total) * 100;
   const note = 'السدس فرض';
 
-  return { amount: amount.toFixed(2), percentage: percentage.toFixed(2), note };
+  return { 
+    amount: amount.toFixed(2), 
+    percentage: formatPercentage(percentage), // تطبيق التنسيق الجديد
+    note 
+  };
 }
 
-// الدوال الأخرى تبقى فارغة
-export function calculateMR_grandfatherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateSN_grandsonHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateSN_granddaughterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateDR_grandsonHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateDR_granddaughterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateBrotherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_brotherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_mother_sisterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_brotherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_sisterHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateBR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateSR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_BR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_SR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_BR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_SR_boysHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateBR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateSR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_BR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_SR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_BR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_SR_girlsHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_uncleHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_auntHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_uncleHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_auntHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_uncle_motherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_uncle_fatherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_aunt_motherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_aunt_fatherHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_uncle_father_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_uncle_mother_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_aunt_father_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_aunt_mother_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateUncle_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateUncle_daughters_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateAunt_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateAunt_daughters_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_uncle_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_uncle_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_uncle_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_uncle_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_aunt_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_aunt_sons_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_aunt_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_aunt_daughter_AHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateUncle_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateUncle_daughters_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateAunt_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateAunt_daughters_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_uncle_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_uncle_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_uncle_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_uncle_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_aunt_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_aunt_sons_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateFR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
-export function calculateMR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.00', note: 'لم يتم التنفيذ' }; }
+// الدوال الأخرى تبقى فارغة مع تحديث التنسيق
+export function calculateMR_grandfatherHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', // تحديث التنسيق
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateSN_grandsonHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', // تحديث التنسيق
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateSN_granddaughterHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', // تحديث التنسيق
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateDR_grandsonHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', // تحديث التنسيق
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateDR_granddaughterHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', // تحديث التنسيق
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+// تحديث جميع الدوال الأخرى بنفس التنسيق
+export function calculateBrotherHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', 
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateMR_brotherHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', 
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateMR_mother_sisterHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', 
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateFR_brotherHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', 
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateFR_sisterHeir() { 
+  return { 
+    amount: '0.00', 
+    percentage: '0.000', 
+    note: 'لم يتم التنفيذ' 
+  }; 
+}
+
+export function calculateBR_boysHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateSR_boysHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_BR_boysHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_SR_boysHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_BR_boysHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_SR_boysHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateBR_girlsHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateSR_girlsHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_BR_girlsHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_SR_girlsHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_BR_girlsHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_SR_girlsHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncleHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_auntHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncleHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_auntHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_motherHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_fatherHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_motherHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_fatherHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_father_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_mother_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_father_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_mother_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_sons_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_daughters_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_sons_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_daughters_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_sons_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_sons_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_daughter_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_daughter_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_sons_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_sons_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_daughter_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_daughter_AHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_sons_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateUncle_daughters_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_sons_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateAunt_daughters_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_sons_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_sons_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_uncle_daughter_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_uncle_daughter_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_sons_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_sons_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateFR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
+export function calculateMR_aunt_daughter_KHeir() { return { amount: '0.00', percentage: '0.000', note: 'لم يتم التنفيذ' }; }
