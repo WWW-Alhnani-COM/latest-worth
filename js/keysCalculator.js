@@ -137,7 +137,7 @@ applyRaddToDaughtersOnly(note = '') {
         ...this.results[son],
         amount: newAmount.toFixed(2),
         percentage: newPercentage,
-        note: 'الباقي يرد رحم للابن فقط'
+        note: 'والباقي كاملاً للابن'
       };
     }
     
