@@ -323,29 +323,51 @@ function handleReligiousSubmit(event) {
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
 
-  // ========== الإصلاح: معالجة حقل المواد والمبلغ ==========
-  const totalAmount = processTotalAmount(data.amount, data.materials);
-  const results = distribute(totalAmount, data?.heirs)
+  // ========== الإصلاح: معالجة حقل المواد والمبلغ بشكل منفصل ==========
+  const totalAmount = processTotalAmount(data.amount);
+  const materialsAmount = parseFloat(data.materials) || 0;
+  
+  // حساب توزيع المال
+  const moneyResults = distribute(totalAmount, data?.heirs);
+  
+  // حساب توزيع المواد (بنفس النسب)
+  const materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
 
-  updateSharesTab({ ...data, heirs: results });
+  updateSharesTab({ 
+    ...data, 
+    heirs: moneyResults,
+    materialsDistribution: materialsResults 
+  });
 }
 
-// ========== الإصلاح: دالة معالجة المبلغ والمواد ==========
-function processTotalAmount(amount, materials) {
+// ========== الإصلاح: دالة معالجة المبلغ فقط (بدون مواد) ==========
+function processTotalAmount(amount) {
   let total = parseFloat(amount) || 0;
   
-  // إذا تم إدخال مواد، نضيفها إلى المبلغ الإجمالي
-  if (materials && materials.trim() !== '') {
-    const materialsValue = parseFloat(materials) || 0;
-    total += materialsValue;
-  }
-  
-  // إذا لم يتم إدخال أي مبلغ أو مواد، نستخدم قيمة افتراضية للحسابات النسبية
+  // إذا لم يتم إدخال أي مبلغ، نستخدم قيمة افتراضية للحسابات النسبية
   if (total === 0) {
     total = 100; // قيمة افتراضية للحسابات النسبية
   }
   
   return total;
+}
+
+// ========== الإصلاح الجديد: دالة حساب توزيع المواد ==========
+function calculateMaterialsDistribution(moneyResults, materialsAmount) {
+  const materialsDistribution = {};
+  
+  for (const [key, heirData] of Object.entries(moneyResults)) {
+    const percentage = parseFloat(heirData.percentage) || 0;
+    const materialsShare = (percentage / 100) * materialsAmount;
+    
+    materialsDistribution[key] = {
+      ...heirData,
+      materialsAmount: materialsShare.toFixed(2),
+      materialsPercentage: heirData.percentage // نفس النسبة المئوية
+    };
+  }
+  
+  return materialsDistribution;
 }
 
 function updateSharesTab(data) {
@@ -364,21 +386,50 @@ function updateSharesTab(data) {
   document.getElementById('sharesDeceasedInfoBody').innerHTML = deceasedInfoHTML;
 
   let sharesHTML = "";
-  let i = 0
+  let i = 0;
+  
+  // ========== الإصلاح: عرض توزيع المال والمواد بشكل منفصل ==========
   for (let key in data.heirs) {
-    i++
+    i++;
+    
+    // الحصول على كمية المواد لهذا الوريث
+    const materialsData = data.materialsDistribution?.[key];
+    const materialsAmount = materialsData?.materialsAmount || '0.00';
+    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
+    
     sharesHTML += `
         <tr>
             <td class="counter">${i}</td>
             <td>${data.heirs[key].title}</td>
             <td>${data.heirs[key].name || '-'}</td>
             <td>${data.heirs[key].amount || '-'}</td>
-            <td>-</td>
+            <td>${materialsDisplay}</td>
             <td>${data.heirs[key].percentage + '%' || '-'}</td>
             <td>${data.heirs[key].note || '-'}</td>
         </tr>
     `;
   }
+  
+  // ========== الإصلاح: إضافة بيت المال إذا كان موجوداً ==========
+  if (data.heirs.bayt_al_mal) {
+    i++;
+    const materialsData = data.materialsDistribution?.bayt_al_mal;
+    const materialsAmount = materialsData?.materialsAmount || '0.00';
+    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
+    
+    sharesHTML += `
+        <tr>
+            <td class="counter">${i}</td>
+            <td>${data.heirs.bayt_al_mal.title}</td>
+            <td>${data.heirs.bayt_al_mal.name || '-'}</td>
+            <td>${data.heirs.bayt_al_mal.amount || '-'}</td>
+            <td>${materialsDisplay}</td>
+            <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
+            <td>${data.heirs.bayt_al_mal.note || '-'}</td>
+        </tr>
+    `;
+  }
+  
   document.getElementById('sharesTableBody').innerHTML = sharesHTML;
 }
 
