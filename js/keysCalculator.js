@@ -52,85 +52,59 @@ export class InheritanceCalculator {
   }
 
   // تطبيق الرد (الباقي) على مجموعة من الورثة
-  applyRadd(eligibleHeirs, note = '') {
-    if (this.remainingAmount <= 0) return;
+applyRadd(eligibleHeirs, note = '') {
+  if (this.remainingAmount <= 0) return;
 
-    const totalShares = eligibleHeirs.reduce((sum, heir) => {
-      return sum + parseFloat(this.results[heir]?.percentage || 0);
-    }, 0);
+  const totalShares = eligibleHeirs.reduce((sum, heir) => {
+    return sum + parseFloat(this.results[heir]?.percentage || 0);
+  }, 0);
 
-    if (totalShares === 0) return;
+  if (totalShares === 0) return;
 
-    for (const heir of eligibleHeirs) {
-      if (this.results[heir]) {
-        const heirPercentage = parseFloat(this.results[heir].percentage);
-        const additionalAmount = (heirPercentage / totalShares) * this.remainingAmount;
-        const newAmount = parseFloat(this.results[heir].amount) + additionalAmount;
-        const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
-        
-        this.results[heir] = {
-          ...this.results[heir],
-          amount: newAmount.toFixed(2),
-          percentage: newPercentage,
-          note: this.results[heir].note + (this.results[heir].note ? ' + ' : '') + note
-        };
-      }
+  for (const heir of eligibleHeirs) {
+    if (this.results[heir]) {
+      const heirPercentage = parseFloat(this.results[heir].percentage);
+      const additionalAmount = (heirPercentage / totalShares) * this.remainingAmount;
+      const newAmount = parseFloat(this.results[heir].amount) + additionalAmount;
+      const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
+      
+      this.results[heir] = {
+        ...this.results[heir],
+        amount: newAmount.toFixed(2),
+        percentage: newPercentage,
+        note: this.results[heir].note + (this.results[heir].note ? ' + ' : '') + 'الباقي يرد رحم حسب سهامهما'
+      };
     }
-    
-    this.remainingAmount = 0;
   }
-
+  
+  this.remainingAmount = 0;
+}
   // تطبيق الرد على البنات فقط بالتساوي
-  applyRaddToDaughtersOnly(note = '') {
-    if (this.remainingAmount <= 0) return;
+applyRaddToDaughtersOnly(note = '') {
+  if (this.remainingAmount <= 0) return;
 
-    const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
-    const daughterCount = daughterHeirs.length;
-    
-    if (daughterCount === 0) return;
+  const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
+  const daughterCount = daughterHeirs.length;
+  
+  if (daughterCount === 0) return;
 
-    const sharePerDaughter = this.remainingAmount / daughterCount;
+  const sharePerDaughter = this.remainingAmount / daughterCount;
+  
+  for (const daughter of daughterHeirs) {
+    const currentAmount = parseFloat(this.results[daughter]?.amount || 0);
+    const newAmount = currentAmount + sharePerDaughter;
+    const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
     
-    for (const daughter of daughterHeirs) {
-      const currentAmount = parseFloat(this.results[daughter]?.amount || 0);
-      const newAmount = currentAmount + sharePerDaughter;
-      const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
-      
-      this.results[daughter] = {
-        ...this.results[daughter],
-        amount: newAmount.toFixed(2),
-        percentage: newPercentage,
-        note: (this.results[daughter]?.note || '') + (this.results[daughter]?.note ? ' + ' : '') + note
-      };
-    }
-    
-    this.remainingAmount = 0;
+    this.results[daughter] = {
+      ...this.results[daughter],
+      amount: newAmount.toFixed(2),
+      percentage: newPercentage,
+      note: (this.results[daughter]?.note || '') + (this.results[daughter]?.note ? ' + ' : '') + 'الباقي يرد رحم على البنات فقط بالتساوي'
+    };
   }
-
-  // إعطاء الباقي للابن فقط
-  giveRemainingToSonOnly(note = '') {
-    if (this.remainingAmount <= 0) return;
-
-    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
-    if (sonHeirs.length === 0) return;
-
-    const sharePerSon = this.remainingAmount / sonHeirs.length;
-    
-    for (const son of sonHeirs) {
-      const currentAmount = parseFloat(this.results[son]?.amount || 0);
-      const newAmount = currentAmount + sharePerSon;
-      const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
-      
-      this.results[son] = {
-        ...this.results[son],
-        amount: newAmount.toFixed(2),
-        percentage: newPercentage,
-        note: note
-      };
-    }
-    
-    this.remainingAmount = 0;
-  }
+  
+  this.remainingAmount = 0;
+}
 
   // للذكر مثل حظ الانثيين
   applyMaleFemaleRatio() {
