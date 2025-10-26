@@ -580,7 +580,7 @@ h1 {
   text-align: center;
 }
 
-/* الفوتر الثابت */
+  /* الفوتر الثابت */
 .fixed-footer {
   position: fixed;
   bottom: 0;
@@ -601,16 +601,25 @@ h1 {
   margin: 0 auto;
 }
 
-/* تعديل مساحة المحتوى الرئيسي ليتناسب مع الفوتر الثابت */
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto 20px;
-  padding-bottom: 80px; /* مساحة إضافية أسفل المحتوى لتجنب تداخل الفوتر */
+.footer-right-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
-/* إظهار وإخفاء الأزرار حسب الحاجة */
-.hidden {
-  display: none;
+/* تنسيق زر الطباعة */
+.btn-print {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-print:hover {
+  background-color: #0056b3;
 }
 
 /* تنسيق الأزرار في الفوتر */
@@ -630,11 +639,17 @@ h1 {
     gap: 10px;
   }
   
-  .fixed-footer .button {
+  .footer-right-buttons {
     width: 100%;
+    justify-content: space-between;
+  }
+  
+  .fixed-footer .button {
+    width: 48%;
   }
   
   .app-container {
-    padding-bottom: 120px; /* مساحة أكبر للشاشات الصغيرة */
+    padding-bottom: 120px;
   }
 }
+
