@@ -171,9 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // دالة جديدة للتحكم في أزرار الفوتر
+// دالة جديدة للتحكم في أزرار الفوتر
 function initFooterButtons() {
   const prevBtn = document.getElementById('footer-prev-btn');
   const nextBtn = document.getElementById('footer-next-btn');
+  const printBtn = document.getElementById('footer-print-btn');
 
   // زر السابق
   prevBtn.addEventListener('click', () => {
@@ -196,16 +198,11 @@ function initFooterButtons() {
       document.getElementById('resultForm').dispatchEvent(new Event('submit'));
     }
   });
-}
-function initTabs() {
-  document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', (e) => e.preventDefault());
+
+  // زر الطباعة
+  printBtn.addEventListener('click', () => {
+    window.print();
   });
-
-  document.querySelector('.tab-button.religious').disabled = true;
-  document.querySelector('.tab-button.shares').disabled = true;
-    updateFooterButtons('calculator');
-
 }
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -635,4 +632,5 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
