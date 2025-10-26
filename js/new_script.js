@@ -435,13 +435,13 @@ function updateSharesTab(data) {
     
     // استبدال العبارات في الملاحظات
     if (note.includes('الباقي يرد')) {
-      note = note.replace('الباقي يرد', 'الباقي يرد رحم');
+      note = note.replace('الباقي يرد', 'الباقي يرد ');
     }
     if (note.includes('حسب سهامهم')) {
       note = note.replace('حسب سهامهم', 'حسب سهامهما');
     }
     if (note.includes('حسب سهامها')) {
-      note = note.replace('حسب سهامها', 'حسب سهامهما');
+      note = note.replace('حسب سهامها',  'حسب سهامهما');
     }
     if (note.includes('يرد على الابنة')) {
       note = note.replace('يرد على الابنة', 'يرد رحم على الابنة');
