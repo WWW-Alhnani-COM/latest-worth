@@ -579,3 +579,62 @@ h1 {
   margin-bottom: 30px;
   text-align: center;
 }
+
+/* الفوتر الثابت */
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid var(--border-color);
+  padding: 15px 20px;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.footer-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* تعديل مساحة المحتوى الرئيسي ليتناسب مع الفوتر الثابت */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  padding-bottom: 80px; /* مساحة إضافية أسفل المحتوى لتجنب تداخل الفوتر */
+}
+
+/* إظهار وإخفاء الأزرار حسب الحاجة */
+.hidden {
+  display: none;
+}
+
+/* تنسيق الأزرار في الفوتر */
+.fixed-footer .button {
+  margin: 0;
+  min-width: 120px;
+}
+
+/* تنسيق الاستجابة للشاشات الصغيرة */
+@media (max-width: 768px) {
+  .fixed-footer {
+    padding: 10px 15px;
+  }
+  
+  .footer-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .fixed-footer .button {
+    width: 100%;
+  }
+  
+  .app-container {
+    padding-bottom: 120px; /* مساحة أكبر للشاشات الصغيرة */
+  }
+}
