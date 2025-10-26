@@ -241,17 +241,22 @@
         </div>
       </div>
     </div>
- <!-- الفوتر الثابت الجديد -->
-    <div class="fixed-footer">
-      <div class="footer-buttons">
-        <button id="footer-next-btn" class="button btn-next">
-          التالي
-        </button>
-                <button id="footer-prev-btn" class="button btn-previous hidden">
-          السابق
-        </button>
-      </div>
+<!-- الفوتر الثابت الجديد -->
+<div class="fixed-footer">
+  <div class="footer-buttons">
+    <button id="footer-prev-btn" class="button btn-previous hidden">
+      السابق
+    </button>
+    <div class="footer-right-buttons">
+      <button id="footer-print-btn" class="button btn-print hidden">
+        طباعة
+      </button>
+      <button id="footer-next-btn" class="button btn-next">
+        التالي
+      </button>
     </div>
+  </div>
+</div>
     <script id="field-template" type="text/x-handlebars-template">
       {{#each groups}}
         <div class="form-group-container">
@@ -280,6 +285,7 @@
     <script type="module" src="js/new_script.js"></script>
   </body>
 </html>
+
 
 
 
