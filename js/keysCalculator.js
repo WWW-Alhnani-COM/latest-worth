@@ -145,48 +145,49 @@ applyRaddToDaughtersOnly(note = '') {
   }
 
   // للذكر مثل حظ الانثيين
-  applyMaleFemaleRatio() {
-    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
-    const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
-    const sisterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('sister_'));
+  // للذكر مثل حظ الانثيين
+applyMaleFemaleRatio() {
+  const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
+  const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
+  const sisterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('sister_'));
 
-    const totalShares = (sonHeirs.length * 2) + daughterHeirs.length + sisterHeirs.length;
-    if (totalShares === 0) return;
+  const totalShares = (sonHeirs.length * 2) + daughterHeirs.length + sisterHeirs.length;
+  if (totalShares === 0) return;
 
-    const sharePerUnit = this.remainingAmount / totalShares;
+  const sharePerUnit = this.remainingAmount / totalShares;
 
-    // توزيع على الأبناء
-    for (const son of sonHeirs) {
-      this.results[son] = {
-        ...this.heirs[son],
-        amount: (sharePerUnit * 2).toFixed(2),
-        percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
-        note: 'للذكر مثل حظ الانثيين'
-      };
-    }
-
-    // توزيع على البنات
-    for (const daughter of daughterHeirs) {
-      this.results[daughter] = {
-        ...this.heirs[daughter],
-        amount: sharePerUnit.toFixed(2),
-        percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-        note: 'للذكر مثل حظ الانثيين'
-      };
-    }
-
-    // توزيع على الأخوات
-    for (const sister of sisterHeirs) {
-      this.results[sister] = {
-        ...this.heirs[sister],
-        amount: sharePerUnit.toFixed(2),
-        percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-        note: 'للذكر مثل حظ الانثيين'
-      };
-    }
-
-    this.remainingAmount = 0;
+  // توزيع على الأبناء
+  for (const son of sonHeirs) {
+    this.results[son] = {
+      ...this.heirs[son],
+      amount: (sharePerUnit * 2).toFixed(2),
+      percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
+      note: 'للذكر مثل حظ الانثيين'
+    };
   }
+
+  // ========== الإصلاح: توزيع على البنات وإضافتهن إلى النتائج ==========
+  for (const daughter of daughterHeirs) {
+    this.results[daughter] = {
+      ...this.heirs[daughter],
+      amount: sharePerUnit.toFixed(2),
+      percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
+      note: 'للذكر مثل حظ الانثيين'
+    };
+  }
+
+  // توزيع على الأخوات
+  for (const sister of sisterHeirs) {
+    this.results[sister] = {
+      ...this.heirs[sister],
+      amount: sharePerUnit.toFixed(2),
+      percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
+      note: 'للذكر مثل حظ الانثيين'
+    };
+  }
+
+  this.remainingAmount = 0;
+        }
 
   // ========== المفاتيح الستة الرئيسية ==========
 
