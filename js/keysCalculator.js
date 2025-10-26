@@ -52,59 +52,85 @@ export class InheritanceCalculator {
   }
 
   // تطبيق الرد (الباقي) على مجموعة من الورثة
-applyRadd(eligibleHeirs, note = '') {
-  if (this.remainingAmount <= 0) return;
+  applyRadd(eligibleHeirs, note = '') {
+    if (this.remainingAmount <= 0) return;
 
-  const totalShares = eligibleHeirs.reduce((sum, heir) => {
-    return sum + parseFloat(this.results[heir]?.percentage || 0);
-  }, 0);
+    const totalShares = eligibleHeirs.reduce((sum, heir) => {
+      return sum + parseFloat(this.results[heir]?.percentage || 0);
+    }, 0);
 
-  if (totalShares === 0) return;
+    if (totalShares === 0) return;
 
-  for (const heir of eligibleHeirs) {
-    if (this.results[heir]) {
-      const heirPercentage = parseFloat(this.results[heir].percentage);
-      const additionalAmount = (heirPercentage / totalShares) * this.remainingAmount;
-      const newAmount = parseFloat(this.results[heir].amount) + additionalAmount;
+    for (const heir of eligibleHeirs) {
+      if (this.results[heir]) {
+        const heirPercentage = parseFloat(this.results[heir].percentage);
+        const additionalAmount = (heirPercentage / totalShares) * this.remainingAmount;
+        const newAmount = parseFloat(this.results[heir].amount) + additionalAmount;
+        const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
+        
+        this.results[heir] = {
+          ...this.results[heir],
+          amount: newAmount.toFixed(2),
+          percentage: newPercentage,
+          note: this.results[heir].note + (this.results[heir].note ? ' + ' : '') + 'الباقي يرد رحم حسب سهامهما'
+        };
+      }
+    }
+    
+    this.remainingAmount = 0;
+  }
+
+  // تطبيق الرد على البنات فقط بالتساوي
+  applyRaddToDaughtersOnly(note = '') {
+    if (this.remainingAmount <= 0) return;
+
+    const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
+    const daughterCount = daughterHeirs.length;
+    
+    if (daughterCount === 0) return;
+
+    const sharePerDaughter = this.remainingAmount / daughterCount;
+    
+    for (const daughter of daughterHeirs) {
+      const currentAmount = parseFloat(this.results[daughter]?.amount || 0);
+      const newAmount = currentAmount + sharePerDaughter;
       const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
       
-      this.results[heir] = {
-        ...this.results[heir],
+      this.results[daughter] = {
+        ...this.results[daughter],
         amount: newAmount.toFixed(2),
         percentage: newPercentage,
-        note: this.results[heir].note + (this.results[heir].note ? ' + ' : '') + 'الباقي يرد رحم حسب سهامهما'
+        note: (this.results[daughter]?.note || '') + (this.results[daughter]?.note ? ' + ' : '') + 'الباقي يرد رحم على البنات فقط بالتساوي'
       };
     }
-  }
-  
-  this.remainingAmount = 0;
-}
-  // تطبيق الرد على البنات فقط بالتساوي
-applyRaddToDaughtersOnly(note = '') {
-  if (this.remainingAmount <= 0) return;
-
-  const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
-  const daughterCount = daughterHeirs.length;
-  
-  if (daughterCount === 0) return;
-
-  const sharePerDaughter = this.remainingAmount / daughterCount;
-  
-  for (const daughter of daughterHeirs) {
-    const currentAmount = parseFloat(this.results[daughter]?.amount || 0);
-    const newAmount = currentAmount + sharePerDaughter;
-    const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
     
-    this.results[daughter] = {
-      ...this.results[daughter],
-      amount: newAmount.toFixed(2),
-      percentage: newPercentage,
-      note: (this.results[daughter]?.note || '') + (this.results[daughter]?.note ? ' + ' : '') + 'الباقي يرد رحم على البنات فقط بالتساوي'
-    };
+    this.remainingAmount = 0;
   }
-  
-  this.remainingAmount = 0;
-}
+
+  // ========== إضافة الدالة المفقودة: إعطاء الباقي للابن فقط ==========
+  giveRemainingToSonOnly(note = '') {
+    if (this.remainingAmount <= 0) return;
+
+    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
+    if (sonHeirs.length === 0) return;
+
+    const sharePerSon = this.remainingAmount / sonHeirs.length;
+    
+    for (const son of sonHeirs) {
+      const currentAmount = parseFloat(this.results[son]?.amount || 0);
+      const newAmount = currentAmount + sharePerSon;
+      const newPercentage = this.formatPercentage((newAmount / this.totalAmount) * 100);
+      
+      this.results[son] = {
+        ...this.results[son],
+        amount: newAmount.toFixed(2),
+        percentage: newPercentage,
+        note: 'الباقي يرد رحم للابن فقط'
+      };
+    }
+    
+    this.remainingAmount = 0;
+  }
 
   // للذكر مثل حظ الانثيين
   applyMaleFemaleRatio() {
@@ -170,22 +196,22 @@ applyRaddToDaughtersOnly(note = '') {
     if (hasFather && hasMother) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الأب
     else if (hasFather) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الأم
     else if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الجدة
     else if (hasGrandmother) {
       this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الزوجة
     else if (hasWife) {
@@ -204,7 +230,7 @@ applyRaddToDaughtersOnly(note = '') {
         this.remainingAmount -= sharePerWife;
       }
       
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
   }
 
@@ -227,31 +253,31 @@ applyRaddToDaughtersOnly(note = '') {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد على الابنة والأب والأم حسب سهامهم');
+      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب والأم حسب سهامهما');
     }
     // الابنة مع الأب
     else if (hasFather) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد على الابنة والأب حسب سهامهم');
+      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب حسب سهامهما');
     }
     // الابنة مع الأم
     else if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد على الابنة والأم حسب سهامهم');
+      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأم حسب سهامهما');
     }
     // الابنة مع الزوجة
     else if (hasWife) {
       this.assignFixedShare('wife_1', SHARES.eighth, 'الثمن فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
     }
     // الابنة مع الجدة
     else if (hasGrandmother) {
       this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
     }
   }
 
@@ -290,7 +316,7 @@ applyRaddToDaughtersOnly(note = '') {
       }
       
       const eligibleHeirs = ['father', 'mother', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد على البنات والأب والأم حسب سهامهم');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأب والأم حسب سهامهما');
     }
     // ابنتين مع الأب
     else if (hasFather) {
@@ -310,7 +336,7 @@ applyRaddToDaughtersOnly(note = '') {
       }
       
       const eligibleHeirs = ['father', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد على البنات والأب حسب سهامهم');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأب حسب سهامهما');
     }
     // ابنتين مع الأم
     else if (hasMother) {
@@ -330,7 +356,7 @@ applyRaddToDaughtersOnly(note = '') {
       }
       
       const eligibleHeirs = ['mother', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد على البنات والأم حسب سهامهم');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأم حسب سهامهما');
     }
     // ابنتين مع الزوجة
     else if (hasWife) {
@@ -349,7 +375,7 @@ applyRaddToDaughtersOnly(note = '') {
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
     }
     // ابنتين مع الجدة
     else if (hasGrandmother) {
@@ -368,7 +394,7 @@ applyRaddToDaughtersOnly(note = '') {
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
     }
   }
 
@@ -390,27 +416,27 @@ applyRaddToDaughtersOnly(note = '') {
     if (hasFather && hasMother) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الأب
     else if (hasFather) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الأم
     else if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الجدة
     else if (hasGrandmother) {
       this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
     // الابن مع الزوج
     else if (hasHusband) {
       this.assignFixedShare('husband', SHARES.quarter, 'الربع فرض');
-      this.giveRemainingToSonOnly('الباقي يرد للابن فقط');
+      this.giveRemainingToSonOnly('الباقي يرد رحم للابن فقط');
     }
   }
 
@@ -433,31 +459,31 @@ applyRaddToDaughtersOnly(note = '') {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد على الابنة والأب والأم حسب سهامهم');
+      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب والأم حسب سهامهما');
     }
     // الابنة مع الأب
     else if (hasFather) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد على الابنة والأب حسب سهامهم');
+      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب حسب سهامهما');
     }
     // الابنة مع الأم
     else if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد على الابنة والأم حسب سهامهم');
+      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأم حسب سهامهما');
     }
     // الابنة مع الزوج
     else if (hasHusband) {
       this.assignFixedShare('husband', SHARES.quarter, 'الربع فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
     }
     // الابنة مع الجدة
     else if (hasGrandmother) {
       this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
     }
   }
 
@@ -495,7 +521,7 @@ applyRaddToDaughtersOnly(note = '') {
       }
       
       const eligibleHeirs = ['father', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد على البنات والأب حسب سهامهم');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأب حسب سهامهما');
     }
     // ابنتين مع الأم
     else if (hasMother) {
@@ -515,7 +541,7 @@ applyRaddToDaughtersOnly(note = '') {
       }
       
       const eligibleHeirs = ['mother', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد على البنات والأم حسب سهامهم');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأم حسب سهامهما');
     }
     // ابنتين مع الزوج
     else if (hasHusband) {
@@ -534,7 +560,7 @@ applyRaddToDaughtersOnly(note = '') {
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
     }
     // ابنتين مع الجدة
     else if (hasGrandmother) {
@@ -553,7 +579,7 @@ applyRaddToDaughtersOnly(note = '') {
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
     }
   }
 
