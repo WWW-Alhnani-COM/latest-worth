@@ -646,7 +646,7 @@ calculate() {
 
   return this.results;
 }
-
+}
 // دالة التوزيع الرئيسية للاستيراد
 export function distribute(total = 100, heirs, deceasedType) {
   const calculator = new InheritanceCalculator(deceasedType, heirs, total);
