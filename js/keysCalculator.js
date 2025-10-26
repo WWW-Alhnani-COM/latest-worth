@@ -143,49 +143,50 @@ applyRaddToDaughtersOnly(note = '') {
     
     this.remainingAmount = 0;
   }
-// للذكر مثل حظ الانثيين
-applyMaleFemaleRatio() {
-  const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
-  const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
-  const sisterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('sister_'));
 
-  const totalShares = (sonHeirs.length * 2) + daughterHeirs.length + sisterHeirs.length;
-  if (totalShares === 0) return;
+  // للذكر مثل حظ الانثيين
+  applyMaleFemaleRatio() {
+    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
+    const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
+    const sisterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('sister_'));
 
-  const sharePerUnit = this.remainingAmount / totalShares;
+    const totalShares = (sonHeirs.length * 2) + daughterHeirs.length + sisterHeirs.length;
+    if (totalShares === 0) return;
 
-  // توزيع على الأبناء
-  for (const son of sonHeirs) {
-    this.results[son] = {
-      ...this.heirs[son],
-      amount: (sharePerUnit * 2).toFixed(2),
-      percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
-      note: 'للذكر مثل حظ الانثيين'
-    };
+    const sharePerUnit = this.remainingAmount / totalShares;
+
+    // توزيع على الأبناء
+    for (const son of sonHeirs) {
+      this.results[son] = {
+        ...this.heirs[son],
+        amount: (sharePerUnit * 2).toFixed(2),
+        percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
+        note: 'للذكر مثل حظ الانثيين'
+      };
+    }
+
+    // توزيع على البنات
+    for (const daughter of daughterHeirs) {
+      this.results[daughter] = {
+        ...this.heirs[daughter],
+        amount: sharePerUnit.toFixed(2),
+        percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
+        note: 'للذكر مثل حظ الانثيين'
+      };
+    }
+
+    // توزيع على الأخوات
+    for (const sister of sisterHeirs) {
+      this.results[sister] = {
+        ...this.heirs[sister],
+        amount: sharePerUnit.toFixed(2),
+        percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
+        note: 'للذكر مثل حظ الانثيين'
+      };
+    }
+
+    this.remainingAmount = 0;
   }
-
-  // ========== الإصلاح: توزيع على البنات وإضافتهن إلى النتائج ==========
-  for (const daughter of daughterHeirs) {
-    this.results[daughter] = {
-      ...this.heirs[daughter],
-      amount: sharePerUnit.toFixed(2),
-      percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-      note: 'للذكر مثل حظ الانثيين'
-    };
-  }
-
-  // توزيع على الأخوات
-  for (const sister of sisterHeirs) {
-    this.results[sister] = {
-      ...this.heirs[sister],
-      amount: sharePerUnit.toFixed(2),
-      percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-      note: 'للذكر مثل حظ الانثيين'
-    };
-  }
-
-  this.remainingAmount = 0;
-}
 
   // ========== المفاتيح الستة الرئيسية ==========
 
@@ -236,7 +237,7 @@ applyMaleFemaleRatio() {
           ...this.heirs[wife],
           amount: sharePerWife.toFixed(2),
           percentage: this.formatPercentage((sharePerWife / this.totalAmount) * 100),
-          note: `حصة الزوجة ${wifeCount > 1 ? `(${wifeCount} زوجات)` : ''}`
+          note: `حصة الزوجة ${wifeCount > 1 ? (${wifeCount} زوجات) : ''}`
         };
         this.remainingAmount -= sharePerWife;
       }
@@ -593,60 +594,39 @@ applyMaleFemaleRatio() {
       this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
     }
   }
-// الدالة الرئيسية لتحديد المفتاح المناسب
-calculate() {
-  const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
-  const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
-  const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
 
-  console.log('=== CALCULATION DEBUG ===');
-  console.log('Deceased Type:', this.deceasedType);
-  console.log('Has Son:', hasSon);
-  console.log('Has Daughter:', hasDaughter);
-  console.log('Has Multiple Daughters:', hasMultipleDaughters);
-  console.log('All Heirs:', Object.keys(this.heirs));
+  // الدالة الرئيسية لتحديد المفتاح المناسب
+  calculate() {
+    const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
+    const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
+    const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
 
-  // ========== الإصلاح: عندما يوجد ابن وابنة معاً ==========
-  if (hasSon && hasDaughter) {
-    console.log('Applying MALE/FEMALE RATIO: للذكر مثل حظ الانثيين');
-    this.applyMaleFemaleRatio();
+    if (this.deceasedType === DECEASED_TYPE.FATHER) {
+      if (hasSon) {
+        this.applyKey1();
+      } else if (hasDaughter) {
+        if (hasMultipleDaughters) {
+          this.applyKey3();
+        } else {
+          this.applyKey2();
+        }
+      }
+    } else if (this.deceasedType === DECEASED_TYPE.MOTHER) {
+      if (hasSon) {
+        this.applyKey4();
+      } else if (hasDaughter) {
+        if (hasMultipleDaughters) {
+          this.applyKey6();
+        } else {
+          this.applyKey5();
+        }
+      }
+    }
+
     return this.results;
   }
-
-  if (this.deceasedType === DECEASED_TYPE.FATHER) {
-    if (hasSon) {
-      console.log('Applying KEY 1: الابن + متوفي أب');
-      this.applyKey1();
-    } else if (hasDaughter) {
-      if (hasMultipleDaughters) {
-        console.log('Applying KEY 3: ابنتين فصاعدا + متوفي أب');
-        this.applyKey3();
-      } else {
-        console.log('Applying KEY 2: الابنة + متوفي أب');
-        this.applyKey2();
-      }
-    }
-  } else if (this.deceasedType === DECEASED_TYPE.MOTHER) {
-    if (hasSon) {
-      console.log('Applying KEY 4: الابن + متوفي أم');
-      this.applyKey4();
-    } else if (hasDaughter) {
-      if (hasMultipleDaughters) {
-        console.log('Applying KEY 6: ابنتين فصاعدا + متوفي أم');
-        this.applyKey6();
-      } else {
-        console.log('Applying KEY 5: الابنة + متوفي أم');
-        this.applyKey5();
-      }
-    }
-  }
-
-  console.log('Final Results:', this.results);
-  console.log('=== END CALCULATION DEBUG ===');
-
-  return this.results;
 }
-}
+
 // دالة التوزيع الرئيسية للاستيراد
 export function distribute(total = 100, heirs, deceasedType) {
   const calculator = new InheritanceCalculator(deceasedType, heirs, total);
