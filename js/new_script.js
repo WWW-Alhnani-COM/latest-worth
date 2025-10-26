@@ -160,38 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initCalculatorForm();
 
   document.getElementById('closeSonsPopup').addEventListener('click', () => {
-    document.getElementById('sons_numbers').classList.remove('show');
-    document.querySelector('.floating-buttons').style.display = 'flex';
-  });
-  
+    document.getElementById('sons_numbers').classList.remove('show')
+  })
   document.getElementById('sonsNextBtn').addEventListener('click', () => {
-    document.getElementById('sons_numbers').classList.remove('show');
-    document.querySelector('.floating-buttons').style.display = 'flex';
+    document.getElementById('sons_numbers').classList.remove('show')
     handleCalculatorSubmit();
-  });
+  })
 });
-
-function openSonsModal(e) {
-  e.preventDefault();
-  let daughter = document.getElementById('daughter').value === 'لا';
-  let mother = document.getElementById('mother').value === 'نعم';
-  let father = document.getElementById('father').value === 'نعم';
-  let son = document.getElementById('son').value === 'لا';
-
-  if (!hasSelectedHeirs()) {
-    showModal();
-    return;
-  }
-
-  if (mother && father && daughter && son) {
-    document.getElementById('sons_numbers').classList.add('show');
-    document.querySelector('.floating-buttons').style.display = 'none';
-  } else {
-    document.getElementById('dad_sons').value = 'لا';
-    document.getElementById('dad_girls').value = 'لا';
-    handleCalculatorSubmit();
-  }
-}
 
 function initTabs() {
   document.querySelectorAll('.tab-button').forEach(button => {
@@ -200,78 +175,6 @@ function initTabs() {
 
   document.querySelector('.tab-button.religious').disabled = true;
   document.querySelector('.tab-button.shares').disabled = true;
-
-  // ========== إضافة الأزرار العائمة ==========
-  const floatingButtonsHTML = `
-    <div class="floating-buttons">
-        <button class="btn-previous" onclick="goToPreviousTab()" style="display: none;">
-            ‹ السابق
-        </button>
-        <button class="btn-next" onclick="goToNextTab()">
-            التالي ›
-        </button>
-    </div>
-  `;
-  
-  document.body.insertAdjacentHTML('beforeend', floatingButtonsButtonsHTML);
-}
-// ========== دوال التنقل بين التبويبات ==========
-function goToNextTab() {
-    const currentTab = document.querySelector('.tab-content.active').id;
-    
-    switch(currentTab) {
-        case 'calculator':
-            if (hasSelectedHeirs()) {
-                handleCalculatorSubmit();
-            } else {
-                showModal();
-            }
-            break;
-        case 'religious':
-            document.getElementById('resultForm').dispatchEvent(new Event('submit'));
-            break;
-        case 'shares':
-            switchTab('calculator');
-            updateFloatingButtons('calculator');
-            break;
-    }
-}
-
-function goToPreviousTab() {
-    const currentTab = document.querySelector('.tab-content.active').id;
-    
-    switch(currentTab) {
-        case 'religious':
-            switchTab('calculator');
-            updateFloatingButtons('calculator');
-            break;
-        case 'shares':
-            switchTab('religious');
-            updateFloatingButtons('religious');
-            break;
-        case 'calculator':
-            break;
-    }
-}
-
-function updateFloatingButtons(currentTab) {
-    const btnPrevious = document.querySelector('.btn-previous');
-    const btnNext = document.querySelector('.btn-next');
-    
-    switch(currentTab) {
-        case 'calculator':
-            btnPrevious.style.display = 'none';
-            btnNext.textContent = 'التالي ›';
-            break;
-        case 'religious':
-            btnPrevious.style.display = 'block';
-            btnNext.textContent = 'التالي ›';
-            break;
-        case 'shares':
-            btnPrevious.style.display = 'block';
-            btnNext.textContent = 'العودة للبداية ›';
-            break;
-    }
 }
 
 function switchTab(tabId) {
@@ -280,10 +183,8 @@ function switchTab(tabId) {
 
   document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
   document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
-
-  // تحديث الأزرار العائمة
-  updateFloatingButtons(tabId);
 }
+
 function initCalculatorForm() {
   const form = document.getElementById('inheritanceForm');
   const template = Handlebars.compile(document.getElementById('field-template').innerHTML);
