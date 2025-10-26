@@ -143,9 +143,7 @@ applyRaddToDaughtersOnly(note = '') {
     
     this.remainingAmount = 0;
   }
-
-  // للذكر مثل حظ الانثيين
-  // للذكر مثل حظ الانثيين
+// للذكر مثل حظ الانثيين
 applyMaleFemaleRatio() {
   const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
   const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
@@ -187,7 +185,7 @@ applyMaleFemaleRatio() {
   }
 
   this.remainingAmount = 0;
-        }
+}
 
   // ========== المفاتيح الستة الرئيسية ==========
 
@@ -595,8 +593,7 @@ applyMaleFemaleRatio() {
       this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
     }
   }
-
-  // الدالة الرئيسية لتحديد المفتاح المناسب
+// الدالة الرئيسية لتحديد المفتاح المناسب
 calculate() {
   const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
   const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
@@ -648,7 +645,6 @@ calculate() {
   console.log('=== END CALCULATION DEBUG ===');
 
   return this.results;
-
 }
 
 // دالة التوزيع الرئيسية للاستيراد
