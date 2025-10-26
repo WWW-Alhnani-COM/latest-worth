@@ -4,7 +4,7 @@ export const SHARES = {
   half: 'half',
   third: 'third',
   sixth: 'sixth',
-  twoThirds: 'twoThirds',
+  twoThirds: 'twoThirds'
 }
 
 export const DECEASED_TYPE = {
@@ -12,17 +12,27 @@ export const DECEASED_TYPE = {
   MOTHER: 'mother'
 }
 
+export const HEIR_TYPES = {
+  SON: 'son',
+  DAUGHTER: 'daughter',
+  FATHER: 'father',
+  MOTHER: 'mother',
+  GRANDMOTHER: 'grandmother',
+  HUSBAND: 'husband',
+  WIFE: 'wife',
+  SISTER: 'sister'
+}
+
 export const CONDITIONS = {
   hasSon: 'HAS_SON',
   hasDaughter: 'HAS_DAUGHTER',
-  hasDad: 'HAS_DAD',
-  hasMom: 'HAS_MOM',
-  hasSister: 'HAS_SISTER',
-  hasWife: 'HAS_WIFE',
-  hasHusband: 'HAS_HUSBAND',
+  hasMultipleDaughters: 'HAS_MULTIPLE_DAUGHTERS',
+  hasFather: 'HAS_FATHER',
+  hasMother: 'HAS_MOTHER',
   hasGrandmother: 'HAS_GRANDMOTHER',
-  hasGrandfather: 'HAS_GRANDFATHER',
-  hasMultipleDaughters: 'HAS_MULTIPLE_DAUGHTERS'
+  hasHusband: 'HAS_HUSBAND',
+  hasWife: 'HAS_WIFE',
+  hasSister: 'HAS_SISTER'
 }
 
 export function checkHeirs(heirs, condition) {
@@ -34,20 +44,18 @@ export function checkHeirs(heirs, condition) {
     case CONDITIONS.hasMultipleDaughters:
       const daughterCount = Object.keys(heirs).filter(key => key.startsWith('daughter_')).length;
       return daughterCount >= 2;
-    case CONDITIONS.hasDad:
+    case CONDITIONS.hasFather:
       return heirs.father;
-    case CONDITIONS.hasMom:
+    case CONDITIONS.hasMother:
       return heirs.mother;
-    case CONDITIONS.hasSister:
-      return Object.keys(heirs).some(key => key.startsWith('sister_'));
-    case CONDITIONS.hasWife:
-      return Object.keys(heirs).some(key => key.startsWith('wife_'));
-    case CONDITIONS.hasHusband:
-      return heirs.husband;
     case CONDITIONS.hasGrandmother:
       return heirs.FR_grandmother || heirs.MR_grandmother;
-    case CONDITIONS.hasGrandfather:
-      return heirs.FR_grandfather || heirs.MR_grandfather;
+    case CONDITIONS.hasHusband:
+      return heirs.husband;
+    case CONDITIONS.hasWife:
+      return Object.keys(heirs).some(key => key.startsWith('wife_'));
+    case CONDITIONS.hasSister:
+      return Object.keys(heirs).some(key => key.startsWith('sister_'));
     default:
       return false;
   }
@@ -56,4 +64,14 @@ export function checkHeirs(heirs, condition) {
 export function getDeceasedType() {
   const maleRadio = document.getElementById('male');
   return maleRadio?.checked ? DECEASED_TYPE.FATHER : DECEASED_TYPE.MOTHER;
+}
+
+// دالة مساعدة للحصول على عدد كل نوع من الورثة
+export function getHeirCounts(heirs) {
+  const counts = {};
+  for (const [type, value] of Object.entries(heirs)) {
+    let heirType = type?.replace(/_[^_]+$/, '');
+    counts[heirType] = (counts[heirType] || 0) + 1;
+  }
+  return counts;
 }
