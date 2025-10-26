@@ -158,6 +158,8 @@ function numberToArabicWord(number, gender) {
 document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initCalculatorForm();
+  initFooterButtons(); // دالة جديدة للتحكم في أزرار الفوتر
+
 
   document.getElementById('closeSonsPopup').addEventListener('click', () => {
     document.getElementById('sons_numbers').classList.remove('show')
@@ -168,6 +170,33 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 });
 
+// دالة جديدة للتحكم في أزرار الفوتر
+function initFooterButtons() {
+  const prevBtn = document.getElementById('footer-prev-btn');
+  const nextBtn = document.getElementById('footer-next-btn');
+
+  // زر السابق
+  prevBtn.addEventListener('click', () => {
+    const currentTab = document.querySelector('.tab-content.active').id;
+    
+    if (currentTab === 'religious') {
+      switchTab('calculator');
+    } else if (currentTab === 'shares') {
+      switchTab('religious');
+    }
+  });
+
+  // زر التالي
+  nextBtn.addEventListener('click', () => {
+    const currentTab = document.querySelector('.tab-content.active').id;
+    
+    if (currentTab === 'calculator') {
+      document.getElementById('inheritanceForm').dispatchEvent(new Event('submit'));
+    } else if (currentTab === 'religious') {
+      document.getElementById('resultForm').dispatchEvent(new Event('submit'));
+    }
+  });
+}
 function initTabs() {
   document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', (e) => e.preventDefault());
@@ -175,16 +204,38 @@ function initTabs() {
 
   document.querySelector('.tab-button.religious').disabled = true;
   document.querySelector('.tab-button.shares').disabled = true;
-}
+    updateFooterButtons('calculator');
 
+}
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
 
   document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
   document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
-}
 
+  // التحكم في إظهار/إخفاء أزرار الفوتر حسب التبويب النشط
+  updateFooterButtons(tabId);
+}
+function updateFooterButtons(activeTab) {
+  const prevBtn = document.getElementById('footer-prev-btn');
+  const nextBtn = document.getElementById('footer-next-btn');
+
+  switch(activeTab) {
+    case 'calculator':
+      prevBtn.classList.add('hidden');
+      nextBtn.textContent = 'التالي';
+      break;
+    case 'religious':
+      prevBtn.classList.remove('hidden');
+      nextBtn.textContent = 'النتيجة';
+      break;
+    case 'shares':
+      prevBtn.classList.remove('hidden');
+      nextBtn.classList.add('hidden');
+      break;
+  }
+}
 function initCalculatorForm() {
   const form = document.getElementById('inheritanceForm');
   const template = Handlebars.compile(document.getElementById('field-template').innerHTML);
@@ -584,3 +635,4 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
