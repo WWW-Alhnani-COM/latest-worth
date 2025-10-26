@@ -597,35 +597,58 @@ applyMaleFemaleRatio() {
   }
 
   // الدالة الرئيسية لتحديد المفتاح المناسب
-  calculate() {
-    const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
-    const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
-    const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
+calculate() {
+  const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
+  const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
+  const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
 
-    if (this.deceasedType === DECEASED_TYPE.FATHER) {
-      if (hasSon) {
-        this.applyKey1();
-      } else if (hasDaughter) {
-        if (hasMultipleDaughters) {
-          this.applyKey3();
-        } else {
-          this.applyKey2();
-        }
-      }
-    } else if (this.deceasedType === DECEASED_TYPE.MOTHER) {
-      if (hasSon) {
-        this.applyKey4();
-      } else if (hasDaughter) {
-        if (hasMultipleDaughters) {
-          this.applyKey6();
-        } else {
-          this.applyKey5();
-        }
-      }
-    }
+  console.log('=== CALCULATION DEBUG ===');
+  console.log('Deceased Type:', this.deceasedType);
+  console.log('Has Son:', hasSon);
+  console.log('Has Daughter:', hasDaughter);
+  console.log('Has Multiple Daughters:', hasMultipleDaughters);
+  console.log('All Heirs:', Object.keys(this.heirs));
 
+  // ========== الإصلاح: عندما يوجد ابن وابنة معاً ==========
+  if (hasSon && hasDaughter) {
+    console.log('Applying MALE/FEMALE RATIO: للذكر مثل حظ الانثيين');
+    this.applyMaleFemaleRatio();
     return this.results;
   }
+
+  if (this.deceasedType === DECEASED_TYPE.FATHER) {
+    if (hasSon) {
+      console.log('Applying KEY 1: الابن + متوفي أب');
+      this.applyKey1();
+    } else if (hasDaughter) {
+      if (hasMultipleDaughters) {
+        console.log('Applying KEY 3: ابنتين فصاعدا + متوفي أب');
+        this.applyKey3();
+      } else {
+        console.log('Applying KEY 2: الابنة + متوفي أب');
+        this.applyKey2();
+      }
+    }
+  } else if (this.deceasedType === DECEASED_TYPE.MOTHER) {
+    if (hasSon) {
+      console.log('Applying KEY 4: الابن + متوفي أم');
+      this.applyKey4();
+    } else if (hasDaughter) {
+      if (hasMultipleDaughters) {
+        console.log('Applying KEY 6: ابنتين فصاعدا + متوفي أم');
+        this.applyKey6();
+      } else {
+        console.log('Applying KEY 5: الابنة + متوفي أم');
+        this.applyKey5();
+      }
+    }
+  }
+
+  console.log('Final Results:', this.results);
+  console.log('=== END CALCULATION DEBUG ===');
+
+  return this.results;
+
 }
 
 // دالة التوزيع الرئيسية للاستيراد
