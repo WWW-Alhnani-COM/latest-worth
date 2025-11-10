@@ -6,11 +6,153 @@ const defaultOptions = ["لا", ...Array.from({ length: 49 }, (_, i) => i + 1)];
 const customOptions = ["لا", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
 
 const fieldsData = [
-  // ... (الحقول الموجودة حالياً - لم تتغير)
+  {
+    groupTitle: "1",
+    fields: [
+      { id: "father", title: "أب", options: booleanOptions, gender: "male" },
+      { id: "mother", title: "أم", options: booleanOptions, gender: "female" },
+      { id: "son", title: "ابن", options: defaultOptions, gender: "male" },
+      { id: "daughter", title: "ابنة", options: defaultOptions, gender: "female" },
+    ]
+  },
+  {
+    groupTitle: "2",
+    fields: [
+      { id: "FR_grandfather", title: "جد لاب", options: booleanOptions, gender: "male" },
+      { id: "MR_grandfather", title: "جد لأم", options: booleanOptions, gender: "male" },
+      { id: "FR_grandmother", title: "جدة لاب", options: booleanOptions, gender: "female" },
+      { id: "MR_grandmother", title: "جدة لأم", options: booleanOptions, gender: "female" }
+    ]
+  },
+  {
+    groupTitle: "3",
+    fields: [
+      { id: "SN_grandson", title: "ابن ابن", options: defaultOptions, gender: "male" },
+      { id: "SN_granddaughter", title: "ابنة ابن", options: defaultOptions, gender: "female" },
+      { id: "DR_grandson", title: "ابن بنت", options: defaultOptions, gender: "male" },
+      { id: "DR_granddaughter", title: "ابنة بنت", options: defaultOptions, gender: "female" }
+    ]
+  },
+  {
+    groupTitle: "4",
+    fields: [
+      { id: "brother", title: "أخ", options: defaultOptions, gender: "male" },
+      { id: "sister", title: "أخت", options: defaultOptions, gender: "female" },
+      { id: "MR_brother", title: "أخ لأم", options: defaultOptions, gender: "male" },
+      { id: "MR_mother_sister", title: "أخت لأم", options: defaultOptions, gender: "female" },
+      { id: "FR_brother", title: "أخ لأبيه", options: defaultOptions, gender: "male" },
+      { id: "FR_sister", title: "أخت لأبيه", options: defaultOptions, gender: "female" }
+    ]
+
+  },
+  {
+    groupTitle: "5",
+    fields: [
+      { id: "BR_boys", title: "ولد أخ", options: defaultOptions, gender: "male" },
+      { id: "SR_boys", title: "ولد أخت", options: defaultOptions, gender: "male" },
+      { id: "MR_BR_boys", title: "ولد أخ لأم", options: defaultOptions, gender: "male" },
+      { id: "MR_SR_boys", title: "ولد أخت لأم", options: defaultOptions, gender: "male" },
+      { id: "FR_BR_boys", title: "ولد أخ لأبيه", options: defaultOptions, gender: "male" },
+      { id: "FR_SR_boys", title: "ولد أخت لأبيه", options: defaultOptions, gender: "male" }
+    ]
+
+  }, {
+    groupTitle: "6",
+    fields: [
+      { id: "BR_girls", title: "بنت أخ", options: defaultOptions, gender: "female" },
+      { id: "SR_girls", title: "بنت أخت", options: defaultOptions, gender: "female" },
+      { id: "MR_BR_girls", title: "بنت أخ لأم", options: defaultOptions, gender: "female" },
+      { id: "MR_SR_girls", title: "بنت أخت لأم", options: defaultOptions, gender: "female" },
+      { id: "FR_BR_girls", title: "بنت أخ لأبيه", options: defaultOptions, gender: "female" },
+      { id: "FR_SR_girls", title: "بنت أخت لأبيه", options: defaultOptions, gender: "female" }
+    ]
+
+  },
+
+  {
+    groupTitle: "7",
+    fields: [
+      { id: "FR_uncle", title: "عم", options: defaultOptions, gender: "male" },
+      { id: "FR_aunt", title: "عمة", options: defaultOptions, gender: "female" },
+      { id: "MR_uncle", title: "خال", options: defaultOptions, gender: "male" },
+      { id: "MR_aunt", title: "خالة", options: defaultOptions, gender: "female" },
+      { id: "MR_uncle_mother", title: "خال لأم", options: defaultOptions, gender: "male" },
+      { id: "FR_uncle_father", title: "خال لأب", options: defaultOptions, gender: "male" },
+      { id: "MR_aunt_mother", title: "خالة لأم", options: defaultOptions, gender: "female" },
+      { id: "FR_aunt_father", title: "خالة لأب", options: defaultOptions, gender: "female" },
+      { id: "FR_uncle_father_A", title: "عم لأبيه", options: defaultOptions, gender: "male" },
+      { id: "MR_uncle_mother_A", title: "عم لأمه", options: defaultOptions, gender: "male" },
+      { id: "FR_aunt_father_K", title: "عمة لأبيه", options: defaultOptions, gender: "female" },
+      { id: "MR_aunt_mother_K", title: "عمة لأمه", options: defaultOptions, gender: "female" }
+    ]
+
+  },
+  {
+    groupTitle: "8",
+    fields: [
+      { id: "uncle_sons_A", title: "ابن عم", options: defaultOptions, gender: "male" },
+      { id: "uncle_daughters_A", title: "بنت عم", options: defaultOptions, gender: "female" },
+      { id: "aunt_sons_A", title: "ابن عمة", options: defaultOptions, gender: "male" },
+      { id: "aunt_daughters_A", title: "بنت عمة", options: defaultOptions, gender: "female" },
+      { id: "FR_uncle_sons_A", title: "ابن عم لأبيه", options: defaultOptions, gender: "male" },
+      { id: "MR_uncle_sons_A", title: "ابن عم لأمه", options: defaultOptions, gender: "male" },
+      { id: "FR_uncle_daughter_A", title: "بنت عم لأبيه", options: defaultOptions, gender: "female" },
+      { id: "MR_uncle_daughter_A", title: "بنت عم لأمه", options: defaultOptions, gender: "female" },
+      { id: "FR_aunt_sons_A", title: "ابن عمة لأم", options: defaultOptions, gender: "male" },
+      { id: "MR_aunt_sons_A", title: "ابن عمة لأبيه", options: defaultOptions, gender: "male" },
+      { id: "FR_aunt_daughter_A", title: "بنت عمة لأبيه", options: defaultOptions, gender: "female" },
+      { id: "MR_aunt_daughter_A", title: "بنت عمة لأم", options: defaultOptions, gender: "female" }
+    ]
+
+  },
+  {
+    groupTitle: "9",
+    fields: [
+      { id: "uncle_sons_K", title: "ابن خال", options: defaultOptions, gender: "male" },
+      { id: "uncle_daughters_K", title: "بنت خال", options: defaultOptions, gender: "female" },
+      { id: "aunt_sons_K", title: "ابن خالة", options: defaultOptions, gender: "male" },
+      { id: "aunt_daughters_K", title: "بنت خالة", options: defaultOptions, gender: "female" },
+      { id: "FR_uncle_sons_K", title: "ابن خال لأبيه", options: defaultOptions, gender: "male" },
+      { id: "MR_uncle_sons_K", title: "ابن خال لأمه", options: defaultOptions, gender: "male" },
+      { id: "FR_uncle_daughter_K", title: "بنت خال لأبيه", options: defaultOptions, gender: "female" },
+      { id: "MR_uncle_daughter_K", title: "بنت خال لأمه", options: defaultOptions, gender: "female" },
+      { id: "FR_aunt_sons_K", title: "ابن خالة لأبيه", options: defaultOptions, gender: "male" },
+      { id: "MR_aunt_sons_K", title: "ابن خالة لأم", options: defaultOptions, gender: "male" },
+      { id: "FR_aunt_daughter_K", title: "بنت خالة لأبيه", options: defaultOptions, gender: "female" },
+      { id: "MR_aunt_daughter_K", title: "بنت خالة لأمه", options: defaultOptions, gender: "female" }
+    ]
+
+  }
 ];
 
 function numberToArabicWord(number, gender) {
-  // ... (الدالة الموجودة حالياً - لم تتغير)
+  const masculineWords = [
+    "الأول", "الثاني", "الثالث", "الرابع", "الخامس",
+    "السادس", "السابع", "الثامن", "التاسع", "العاشر",
+    "الحادي عشر", "الثاني عشر", "الثالث عشر", "الرابع عشر", "الخامس عشر",
+    "السادس عشر", "السابع عشر", "الثامن عشر", "التاسع عشر", "العشرون",
+    "الحادي والعشرون", "الثاني والعشرون", "الثالث والعشرون", "الرابع والعشرون", "الخامس والعشرون",
+    "السادس والعشرون", "السابع والعشرون", "الثامن والعشرون", "التاسع والعشرون", "الثلاثون",
+    "الحادي والثلاثون", "الثاني والثلاثون", "الثالث والثلاثون", "الرابع والثلاثون", "الخامس والثلاثون",
+    "السادس والثلاثون", "السابع والثلاثون", "الثامن والثلاثون", "التاسع والثلاثون", "الأربعون",
+    "الحادي والأربعون", "الثاني والأربعون", "الثالث والأربعون", "الرابع والأربعون", "الخامس والأربعون",
+    "السادس والأربعون", "السابع والأربعون", "الثامن والأربعون", "التاسع والأربعون", "الخمسون"
+  ];
+
+  const feminineWords = [
+    "الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة",
+    "السادسة", "السابعة", "الثامنة", "التاسعة", "العاشرة",
+    "الحادية عشرة", "الثانية عشرة", "الثالثة عشرة", "الرابعة عشرة", "الخامسة عشرة",
+    "السادسة عشرة", "السابعة عشرة", "الثامنة عشرة", "التاسعة عشرة", "العشرون",
+    "الحادية والعشرون", "الثانية والعشرون", "الثالثة والعشرون", "الرابعة والعشرون", "الخامسة والعشرون",
+    "السادسة والعشرون", "السابعة والعشرون", "الثامنة والعشرون", "التاسعة والعشرون", "الثلاثون",
+    "الحادية والثلاثون", "الثانية والثلاثون", "الثالثة والثلاثون", "الرابعة والثلاثون", "الخامسة والثلاثون",
+    "السادسة والثلاثون", "السابعة والثلاثون", "الثامنة والثلاثون", "التاسعة والثلاثون", "الأربعون",
+    "الحادية والأربعون", "الثانية والأربعون", "الثالثة والأربعون", "الرابعة والأربعون", "الخامسة والأربعون",
+    "السادسة والأربعون", "السابعة والأربعون", "الثامنة والأربعون", "التاسعة والأربعون", "الخمسون"
+  ];
+
+  return gender === "male" ? masculineWords[number - 1] : feminineWords[number - 1];
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -222,9 +364,18 @@ function updateReligiousTab(data) {
             <tr>
                 <td class="counter">${i}</td>
                 <td>${data.heirs[key].title}</td>
-                <td><input type="text" class="heir-name" data-heir-id="${key}" value="${data.heirs[key].name || ''}"></td>
                 <td>
-                    <select class="heir-religion" data-heir-id="${key}">
+                  <input 
+                    type="text" 
+                    class="heir-name" 
+                    data-heir-id="${key}" 
+                    value="${data.heirs[key].name || ''}" 
+                    placeholder="أدخل اسم الوريث"
+                    title="اسم الوريث ${data.heirs[key].title}"
+                  >
+                </td>
+                <td>
+                    <select class="heir-religion" data-heir-id="${key}" title="ديانة الوريث ${data.heirs[key].title}">
                         <option value="مسلم">مسلم</option>
                         <option value="غير مسلم">غير مسلم</option>
                     </select>
@@ -510,4 +661,4 @@ function openSonsModal(e) {
     document.getElementById('dad_girls').value = 'لا'
     handleCalculatorSubmit()
   }
-}
+       }
