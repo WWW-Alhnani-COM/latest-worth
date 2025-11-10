@@ -18,7 +18,7 @@
         <h2>كم عدد أبناء و بنات الأب <br />(أخوان و أخوات المتوفي)</h2>
         <div class="form-group input-group">
           <label for="dad_sons">عدد اولاد الأب</label>
-          <select id="dad_sons" name="dad_sons">
+          <select id="dad_sons" name="dad_sons" title="عدد أولاد الأب">
             <option value="لا">لا</option>
             <option value="1">ولد</option>
             <option value="2">ولدين</option>
@@ -27,7 +27,7 @@
         </div>
         <div class="form-group input-group">
           <label for="dad_girls">عدد بنات الأب</label>
-          <select id="dad_girls" name="dad_girls">
+          <select id="dad_girls" name="dad_girls" title="عدد بنات الأب">
             <option value="لا">لا</option>
             <option value="1">بنت</option>
             <option value="2">بنتين</option>
@@ -37,8 +37,8 @@
           </select>
         </div>
         <div class="btn-group">
-          <button class="btn-next" id="closeSonsPopup">أغلاق</button>
-          <button class="btn-next" id="sonsNextBtn">التالي</button>
+          <button class="btn-next" id="closeSonsPopup" title="إغلاق النافذة">أغلاق</button>
+          <button class="btn-next" id="sonsNextBtn" title="المتابعة إلى الخطوة التالية">التالي</button>
         </div>
       </div>
     </div>
@@ -50,13 +50,14 @@
             class="tab-button active calculator"
             data-tab="calculator"
             disabled
+            title="الخطوة الأولى: إدخال البيانات الأساسية"
           >
             الخطوة الاولى
           </button>
-          <button class="tab-button religious" data-tab="religious" disabled>
+          <button class="tab-button religious" data-tab="religious" disabled title="الخطوة الثانية: إدخال بيانات الورثة">
             الخطوة الثانية
           </button>
-          <button class="tab-button shares" data-tab="shares" disabled>
+          <button class="tab-button shares" data-tab="shares" disabled title="الخطوة الثالثة: عرض نتائج التوزيع">
             الخطوة الثالثة
           </button>
         </div>
@@ -84,6 +85,7 @@
                       id="male"
                       name="deceased_gender"
                       value="male"
+                      title="المتوفى ذكر"
                     />
                     <label for="male">ذكر</label>
                   </div>
@@ -93,6 +95,7 @@
                       id="female"
                       name="deceased_gender"
                       value="female"
+                      title="المتوفى أنثى"
                     />
                     <label for="female">أنثى</label>
                   </div>
@@ -101,7 +104,7 @@
                   <label for="deceased_religion" class="inline-label"
                     >الديانة</label
                   >
-                  <select id="deceased_religion" name="deceased_religion">
+                  <select id="deceased_religion" name="deceased_religion" title="ديانة المتوفى">
                     <option value="مسلم">مسلم</option>
                     <option value="غير مسلم">غير مسلم</option>
                   </select>
@@ -120,6 +123,7 @@
                     id="deceased_name"
                     name="deceased_name"
                     placeholder="أدخل اسم المتوفى"
+                    title="اسم المتوفى"
                   />
                 </div>
 
@@ -129,6 +133,7 @@
                     type="number"
                     id="amount"
                     placeholder="أدخل المبلغ إذا كان معروف"
+                    title="مبلغ التركة بالريال"
                   />
                   <span class="unit">ريال</span>
                 </div>
@@ -139,6 +144,7 @@
                     type="number"
                     id="materials"
                     placeholder="أدخل الأمتار المراد توزيعها إذا كانت معروفة"
+                    title="الأمتار المراد توزيعها"
                   />
                   <span class="unit">متر</span>
                 </div>
@@ -146,7 +152,7 @@
 
               <div class="form-group hidden" id="spouse_female">
                 <label for="wife">عدد الزوجات</label>
-                <select id="wife" name="wife">
+                <select id="wife" name="wife" title="عدد زوجات المتوفى">
                   <option value="no">لا</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -157,7 +163,7 @@
 
               <div class="form-group hidden" id="spouse_male">
                 <label for="husband">هل يوجد زوج؟</label>
-                <select id="husband" name="husband">
+                <select id="husband" name="husband" title="وجود زوج للمتوفى">
                   <option value="no">لا</option>
                   <option value="yes">نعم</option>
                 </select>
@@ -165,8 +171,6 @@
 
               <hr />
               <div id="dynamic-fields"></div>
-
-             
             </form>
           </div>
         </div>
@@ -199,7 +203,6 @@
                 </thead>
                 <tbody id="resultTableBody"></tbody>
               </table>
-             
             </form>
           </div>
         </div>
@@ -237,33 +240,34 @@
               <tbody id="sharesTableBody"></tbody>
             </table>
           </div>
-         
         </div>
       </div>
     </div>
-<!-- الفوتر الثابت الجديد -->
-<div class="fixed-footer">
-  <div class="footer-buttons">
-    <button id="footer-prev-btn" class="button btn-previous hidden">
-      السابق
-    </button>
-    <div class="footer-right-buttons">
-      <button id="footer-print-btn" class="button btn-print hidden">
-        طباعة
-      </button>
-      <button id="footer-next-btn" class="button btn-next">
-        التالي
-      </button>
+
+    <!-- الفوتر الثابت الجديد -->
+    <div class="fixed-footer">
+      <div class="footer-buttons">
+        <button id="footer-prev-btn" class="button btn-previous hidden" title="الرجوع إلى الخطوة السابقة">
+          السابق
+        </button>
+        <div class="footer-right-buttons">
+          <button id="footer-print-btn" class="button btn-print hidden" title="طباعة نتيجة التوزيع">
+            طباعة
+          </button>
+          <button id="footer-next-btn" class="button btn-next" title="الانتقال إلى الخطوة التالية">
+            التالي
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+
     <script id="field-template" type="text/x-handlebars-template">
       {{#each groups}}
         <div class="form-group-container">
           {{#each fields}}
             <div class="form-group">
               <label for="{{id}}">{{title}}</label>
-              <select id="{{id}}" name="{{id}}">
+              <select id="{{id}}" name="{{id}}" title="{{title}}">
                 {{#each options}}
                   <option value="{{this}}">{{this}}</option>
                 {{/each}}
@@ -278,14 +282,10 @@
     <div class="modal-overlay" id="modalOverlay">
       <div class="modal" id="validationModal">
         <div class="modal-content">يجب اختيار وريث واحد على الأقل للمتابعة</div>
-        <button class="modal-button" id="closeModal">حسناً</button>
+        <button class="modal-button" id="closeModal" title="موافق">حسناً</button>
       </div>
     </div>
 
     <script type="module" src="js/new_script.js"></script>
   </body>
 </html>
-
-
-
-
