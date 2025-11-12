@@ -8,11 +8,28 @@
       http-equiv="Content-Security-Policy"
       content="upgrade-insecure-requests"
     />
-    <title>الفتح السليماني الطيبي</title>
+    <title>الفتح السليماني الطيبي - حاسبة الميراث</title>
     <link rel="stylesheet" href="css/worth.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <style>
+      body {
+        font-family: 'Tajawal', 'Amiri', sans-serif;
+      }
+      .header {
+        text-align: center;
+        color: var(--primary-dark);
+        margin: 1.5rem 0 1rem;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      }
+    </style>
   </head>
-  <body data-theme_bg="green">
+  <body>
+    <!-- محتوى الصفحة كما هو مع تعديلات طفيفة في التنسيق -->
     <div id="sons_numbers" class="sons-modal">
       <div class="sons-modal-content">
         <h2>كم عدد أبناء و بنات الأب <br />(أخوان و أخوات المتوفي)</h2>
@@ -43,7 +60,7 @@
       </div>
     </div>
     <div class="app-container">
-      <h1>حاسبة تقسيم الميراث</h1>
+      <h1>حاسبة تقسيم الميراث</h>
       <div class="container">
         <div class="tabs">
           <button
@@ -61,13 +78,11 @@
             الخطوة الثالثة
           </button>
         </div>
-        <div class="tab-content active" id="calculator">
-          <div class="form-container">
-            <p class="alert">
-              قم بادخال جنس المتوفي واسمه ومبلغ التركه ان كان معروف والامتار
-              المراد تقسيمها ان كانت معروفه وقم بتحديد جميع ورثته ثم اضغط على
-              التالي
-            </p>
+               <div class="tab-content active" id="calculator">
+          <!-- محتوى التبويب الأول -->
+          <p class="alert">
+            قم بادخال جنس المتوفي واسمه ومبلغ التركه ان كان معروف والامتار المراد تقسيمها ان كانت معروفه وقم بتحديد جميع ورثته ثم اضغط على التالي
+          </p>
             <form id="inheritanceForm">
               <div class="form-group-inline">
                 <div class="flex-container">
@@ -174,11 +189,11 @@
             </form>
           </div>
         </div>
-        <div class="tab-content" id="religious">
-          <div class="form-container">
-            <p class="alert">
-              اكتب اسماء الورثه واختر ديانة كل وريث ثم اضغط على التالي
-            </p>
+               <div class="tab-content" id="religious">
+          <!-- محتوى التبويب الثاني -->
+          <p class="alert">
+            اكتب اسماء الورثه واختر ديانة كل وريث ثم اضغط على التالي
+          </p>
             <table>
               <thead>
                 <tr>
@@ -207,8 +222,8 @@
           </div>
         </div>
 
-        <div class="tab-content" id="shares">
-          <p class="alert">
+         <div class="tab-content" id="shares">
+          <p class="alert alert-deceased">
             تمت القسمة ويمكنك طباعة نتيجة القسمة او اضغط على السابق للتعديل
           </p>
           <h3 class="header">حسب مذهب آل البيت عليهم الصلاة والسلام</h3>
@@ -289,3 +304,4 @@
     <script type="module" src="js/new_script.js"></script>
   </body>
 </html>
+
