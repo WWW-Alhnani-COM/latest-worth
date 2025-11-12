@@ -229,11 +229,18 @@
         </div>
 
         <div class="tab-content" id="shares">
-          <p class="alert alert-deceased">
+          <!-- إخفاء التنبيه من الطباعة -->
+          <p class="alert alert-deceased print-hide">
             تمت القسمة ويمكنك طباعة نتيجة القسمة او اضغط على السابق للتعديل
           </p>
-          <h3 class="header">حسب مذهب آل البيت عليهم الصلاة والسلام</h3>
-          <div class="table-container">
+          
+          <!-- إضافة عنوان للطباعة فقط -->
+          <div class="print-only-title">
+            نتيجة تقسيم الميراث
+          </div>
+          
+          <h3 class="header print-hide">حسب مذهب آل البيت عليهم الصلاة والسلام</h3>
+          <div class="table-container deceased-info">
             <table class="deceased">
               <thead>
                 <tr>
@@ -246,6 +253,8 @@
               </thead>
               <tbody id="sharesDeceasedInfoBody"></tbody>
             </table>
+          </div>
+          <div class="table-container">
             <table>
               <thead>
                 <tr>
@@ -317,4 +326,3 @@
     <script type="module" src="js/new_script.js"></script>
   </body>
 </html>
-
