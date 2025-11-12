@@ -119,7 +119,7 @@ const fieldsData = [
       { id: "FR_aunt_sons_K", title: "ابن خالة لأبيه", options: defaultOptions, gender: "male" },
       { id: "MR_aunt_sons_K", title: "ابن خالة لأم", options: defaultOptions, gender: "male" },
       { id: "FR_aunt_daughter_K", title: "بنت خالة لأبيه", options: defaultOptions, gender: "female" },
-      { id: "MR_aunt_daughter_K", title: "بنتخالة لأمه", options: defaultOptions, gender: "female" }
+      { id: "MR_aunt_daughter_K", title: "بنت خالة لأمه", options: defaultOptions, gender: "female" }
     ]
 
   }
@@ -319,25 +319,24 @@ function collectFormData() {
 
     if (id === "wife" && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "", religion: "مسلم" };
+        formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "" };
       }
       return;
     }
 
     if (id === "husband" && value === "yes" && formData.deceased_gender === "female") {
-      formData.heirs[id] = { title: "الزوج", name: "", religion: "مسلم" };
+      formData.heirs[id] = { title: "الزوج", name: "" };
       return;
     }
 
     if (value === "نعم") {
-      formData.heirs[id] = { title: title, name: "", religion: "مسلم" };
+      formData.heirs[id] = { title: title, name: "" };
       return;
     }
 
     if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
-        // إصلاح: إزالة الأقواس من تنسيق العنوان
-        formData.heirs[`${id}_${i}`] = { title: `${title} ${numberToArabicWord(i, gender)}`, name: "", religion: "مسلم" };
+        formData.heirs[`${id}_${i}`] = { title: `${title} ${numberToArabicWord(i, gender)}`, name: "" };
       }
     }
   });
@@ -349,21 +348,14 @@ function updateReligiousTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
     deceasedInfoHTML = `
-      <tr>
-        <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
-        <td>
-          <select id="deceasedReligionInput" class="deceased-input">
-            <option value="مسلم" ${data.deceased_religion === "مسلم" ? "selected" : ""}>مسلم</option>
-            <option value="غير مسلم" ${data.deceased_religion === "غير مسلم" ? "selected" : ""}>غير مسلم</option>
-          </select>
-        </td>
-        <td>
-          <input type="text" id="deceasedNameInput" class="deceased-input" value="${data.deceased_name || ''}" placeholder="أدخل اسم المتوفى">
-        </td>
-        <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
-        <td>${data.materials || 'لا توجد'}</td>
-      </tr>
-    `;
+            <tr>
+                <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
+                <td>${data.deceased_religion}</td>
+                <td>${data.deceased_name}</td>
+                <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
+                <td>${data.materials || 'لا توجد'}</td>
+            </tr>
+        `;
   }
   document.getElementById('deceasedInfoBody').innerHTML = deceasedInfoHTML;
 
@@ -375,42 +367,29 @@ function updateReligiousTab(data) {
     }
     i++
     heirsHTML += `
-      <tr>
-        <td class="counter">${i}</td>
-        <td>${data.heirs[key].title}</td>
-        <td>
-          <input 
-            type="text" 
-            class="heir-name" 
-            data-heir-id="${key}" 
-            value="${data.heirs[key].name || ''}" 
-            placeholder="أدخل اسم الوريث"
-            title="اسم الوريث ${data.heirs[key].title}"
-          >
-        </td>
-        <td>
-          <select class="heir-religion" data-heir-id="${key}" title="ديانة الوريث ${data.heirs[key].title}">
-            <option value="مسلم" ${data.heirs[key].religion === "مسلم" ? "selected" : ""}>مسلم</option>
-            <option value="غير مسلم" ${data.heirs[key].religion === "غير مسلم" ? "selected" : ""}>غير مسلم</option>
-          </select>
-        </td>
-      </tr>
-    `;
+            <tr>
+                <td class="counter">${i}</td>
+                <td>${data.heirs[key].title}</td>
+                <td>
+                  <input 
+                    type="text" 
+                    class="heir-name" 
+                    data-heir-id="${key}" 
+                    value="${data.heirs[key].name || ''}" 
+                    placeholder="أدخل اسم الوريث"
+                    title="اسم الوريث ${data.heirs[key].title}"
+                  >
+                </td>
+                <td>
+                    <select class="heir-religion" data-heir-id="${key}" title="ديانة الوريث ${data.heirs[key].title}">
+                        <option value="مسلم">مسلم</option>
+                        <option value="غير مسلم">غير مسلم</option>
+                    </select>
+                </td>
+            </tr>
+        `;
   }
   document.getElementById('resultTableBody').innerHTML = heirsHTML;
-
-  // إضافة مستمعات للأحداث لتحديث بيانات المتوفى
-  document.getElementById('deceasedNameInput').addEventListener('input', (e) => {
-    const data = JSON.parse(localStorage.getItem("inheritanceData"));
-    data.deceased_name = e.target.value;
-    localStorage.setItem("inheritanceData", JSON.stringify(data));
-  });
-
-  document.getElementById('deceasedReligionInput').addEventListener('change', (e) => {
-    const data = JSON.parse(localStorage.getItem("inheritanceData"));
-    data.deceased_religion = e.target.value;
-    localStorage.setItem("inheritanceData", JSON.stringify(data));
-  });
 
   document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
 }
@@ -419,27 +398,16 @@ function handleReligiousSubmit(event) {
   event.preventDefault();
   const data = JSON.parse(localStorage.getItem("inheritanceData"));
 
-  // تحديث اسم المتوفى وديانته من الحقول في هذه الصفحة
-  data.deceased_name = document.getElementById('deceasedNameInput').value;
-  data.deceased_religion = document.getElementById('deceasedReligionInput').value;
-
   document.querySelectorAll('.heir-name').forEach(input => {
     const heirId = input.getAttribute('data-heir-id');
     data.heirs[heirId].name = input.value;
-  });
-
-  document.querySelectorAll('.heir-religion').forEach(select => {
-    const heirId = select.getAttribute('data-heir-id');
-    data.heirs[heirId].religion = select.value;
+    data.heirs[heirId].religion = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`).value;
   });
 
   localStorage.setItem("inheritanceData", JSON.stringify(data));
 
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
-
-  // حفظ حالة التبويب
-  localStorage.setItem("currentTab", "shares");
 
   // ========== استخدام النظام الجديد للمفاتيح الستة ==========
   const totalAmount = processTotalAmount(data.amount);
@@ -458,8 +426,7 @@ function handleReligiousSubmit(event) {
     ...data, 
     heirs: moneyResults,
     materialsDistribution: materialsResults,
-    hasAmount: !!data.amount && parseFloat(data.amount) > 0,
-    fromReligiousTab: true
+    hasAmount: !!data.amount && parseFloat(data.amount) > 0
   });
 }
 
@@ -497,22 +464,13 @@ function updateSharesTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
     deceasedInfoHTML = `
-      <tr>
-        <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
-        <td>
-          <select id="sharesDeceasedReligionInput" class="deceased-input ${data.fromReligiousTab ? 'hidden' : ''}">
-            <option value="مسلم" ${data.deceased_religion === "مسلم" ? "selected" : ""}>مسلم</option>
-            <option value="غير مسلم" ${data.deceased_religion === "غير مسلم" ? "selected" : ""}>غير مسلم</option>
-          </select>
-          <span class="religion-display ${data.fromReligiousTab ? '' : 'hidden'}">${data.deceased_religion}</span>
-        </td>
-        <td>
-          <input type="text" id="sharesDeceasedNameInput" class="deceased-input ${data.fromReligiousTab ? 'hidden' : ''}" value="${data.deceased_name || ''}" placeholder="أدخل اسم المتوفى">
-          <span class="name-display ${data.fromReligiousTab ? '' : 'hidden'}">${data.deceased_name}</span>
-        </td>
-        <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
-        <td>${data.materials || 'لا توجد'}</td>
-      </tr>
+        <tr>
+            <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
+            <td>${data.deceased_religion}</td>
+            <td>${data.deceased_name}</td>
+            <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
+            <td>${data.materials || 'لا توجد'}</td>
+        </tr>
     `;
   }
   document.getElementById('sharesDeceasedInfoBody').innerHTML = deceasedInfoHTML;
@@ -533,16 +491,16 @@ function updateSharesTab(data) {
     if (!relationship || relationship === 'undefined' || relationship.includes('undefined')) {
       if (key.startsWith('son_')) {
         const sonNumber = key.split('_')[1] || '';
-        relationship = sonNumber ? `ابن ${numberToArabicWord(parseInt(sonNumber), 'male')}` : 'ابن';
+        relationship = sonNumber ? `ابن (${numberToArabicWord(parseInt(sonNumber), 'male')})` : 'ابن';
       } else if (key.startsWith('daughter_')) {
         const daughterNumber = key.split('_')[1] || '';
-        relationship = daughterNumber ? `ابنة ${numberToArabicWord(parseInt(daughterNumber), 'female')}` : 'ابنة';
+        relationship = daughterNumber ? `ابنة (${numberToArabicWord(parseInt(daughterNumber), 'female')})` : 'ابنة';
       } else if (key.startsWith('wife_')) {
         const wifeNumber = key.split('_')[1] || '';
-        relationship = wifeNumber ? `الزوجة ${numberToArabicWord(parseInt(wifeNumber), 'female')}` : 'الزوجة';
+        relationship = wifeNumber ? `زوجة (${numberToArabicWord(parseInt(wifeNumber), 'female')})` : 'زوجة';
       } else if (key.startsWith('sister_')) {
         const sisterNumber = key.split('_')[1] || '';
-        relationship = sisterNumber ? `أخت ${numberToArabicWord(parseInt(sisterNumber), 'female')}` : 'أخت';
+        relationship = sisterNumber ? `أخت (${numberToArabicWord(parseInt(sisterNumber), 'female')})` : 'أخت';
       } else if (key === 'father') {
         relationship = 'أب';
       } else if (key === 'mother') {
@@ -590,25 +548,15 @@ function updateSharesTab(data) {
     const moneyDisplay = showAmounts ? moneyAmount : '-';
     
     sharesHTML += `
-      <tr>
-        <td class="counter">${i}</td>
-        <td>${relationship}</td>
-        <td>
-          <input type="text" class="heir-name shares-input ${data.fromReligiousTab ? 'hidden' : ''}" data-heir-id="${key}" value="${data.heirs[key].name || ''}" placeholder="اسم الوريث">
-          <span class="name-display ${data.fromReligiousTab ? '' : 'hidden'}">${data.heirs[key].name || '-'}</span>
-        </td>
-        <td>
-          <select class="heir-religion shares-input ${data.fromReligiousTab ? 'hidden' : ''}" data-heir-id="${key}">
-            <option value="مسلم" ${data.heirs[key].religion === "مسلم" ? "selected" : ""}>مسلم</option>
-            <option value="غير مسلم" ${data.heirs[key].religion === "غير مسلم" ? "selected" : ""}>غير مسلم</option>
-          </select>
-          <span class="religion-display ${data.fromReligiousTab ? '' : 'hidden'}">${data.heirs[key].religion || '-'}</span>
-        </td>
-        <td>${moneyDisplay}</td>
-        <td>${materialsDisplay}</td>
-        <td>${data.heirs[key].percentage + '%' || '-'}</td>
-        <td>${note}</td>
-      </tr>
+        <tr>
+            <td class="counter">${i}</td>
+            <td>${relationship}</td>
+            <td>${data.heirs[key].name || '-'}</td>
+            <td>${moneyDisplay}</td>
+            <td>${materialsDisplay}</td>
+            <td>${data.heirs[key].percentage + '%' || '-'}</td>
+            <td>${note}</td>
+        </tr>
     `;
   }
   
@@ -629,62 +577,19 @@ function updateSharesTab(data) {
     }
     
     sharesHTML += `
-      <tr>
-        <td class="counter">${i}</td>
-        <td>${data.heirs.bayt_al_mal.title}</td>
-        <td>
-          <input type="text" class="heir-name shares-input ${data.fromReligiousTab ? 'hidden' : ''}" data-heir-id="bayt_al_mal" value="${data.heirs.bayt_al_mal.name || ''}" placeholder="اسم الوريث">
-          <span class="name-display ${data.fromReligiousTab ? '' : 'hidden'}">${data.heirs.bayt_al_mal.name || '-'}</span>
-        </td>
-        <td>
-          <select class="heir-religion shares-input ${data.fromReligiousTab ? 'hidden' : ''}" data-heir-id="bayt_al_mal">
-            <option value="مسلم" ${data.heirs.bayt_al_mal.religion === "مسلم" ? "selected" : ""}>مسلم</option>
-            <option value="غير مسلم" ${data.heirs.bayt_al_mal.religion === "غير مسلم" ? "selected" : ""}>غير مسلم</option>
-          </select>
-          <span class="religion-display ${data.fromReligiousTab ? '' : 'hidden'}">${data.heirs.bayt_al_mal.religion || '-'}</span>
-        </td>
-        <td>${baytMoneyDisplay}</td>
-        <td>${materialsDisplay}</td>
-        <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
-        <td>${baytNote}</td>
-      </tr>
+        <tr>
+            <td class="counter">${i}</td>
+            <td>${data.heirs.bayt_al_mal.title}</td>
+            <td>${data.heirs.bayt_al_mal.name || '-'}</td>
+            <td>${baytMoneyDisplay}</td>
+            <td>${materialsDisplay}</td>
+            <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
+            <td>${baytNote}</td>
+        </tr>
     `;
   }
   
   document.getElementById('sharesTableBody').innerHTML = sharesHTML;
-  
-  // إضافة مستمعات للأحداث لتحديث البيانات في خطوة النتائج
-  if (!data.fromReligiousTab) {
-    document.getElementById('sharesDeceasedNameInput').addEventListener('input', (e) => {
-      const data = JSON.parse(localStorage.getItem("inheritanceData"));
-      data.deceased_name = e.target.value;
-      localStorage.setItem("inheritanceData", JSON.stringify(data));
-    });
-
-    document.getElementById('sharesDeceasedReligionInput').addEventListener('change', (e) => {
-      const data = JSON.parse(localStorage.getItem("inheritanceData"));
-      data.deceased_religion = e.target.value;
-      localStorage.setItem("inheritanceData", JSON.stringify(data));
-    });
-
-    document.querySelectorAll('.heir-name').forEach(input => {
-      input.addEventListener('input', (e) => {
-        const heirId = e.target.getAttribute('data-heir-id');
-        const data = JSON.parse(localStorage.getItem("inheritanceData"));
-        data.heirs[heirId].name = e.target.value;
-        localStorage.setItem("inheritanceData", JSON.stringify(data));
-      });
-    });
-
-    document.querySelectorAll('.heir-religion').forEach(select => {
-      select.addEventListener('change', (e) => {
-        const heirId = e.target.getAttribute('data-heir-id');
-        const data = JSON.parse(localStorage.getItem("inheritanceData"));
-        data.heirs[heirId].religion = e.target.value;
-        localStorage.setItem("inheritanceData", JSON.stringify(data));
-      });
-    });
-  }
 }
 
 function hasSelectedHeirs() {
@@ -727,6 +632,7 @@ function calulcateWarth(all) {
   for (const [key, item] of Object.entries(all)) {
     if (key === 'dad_sons' || key === 'dad_girls') {
       console.log('called here');
+      
       continue
     }
     if (key === 'wift' && hiddenWift) {
@@ -767,4 +673,4 @@ function openSonsModal(e) {
     document.getElementById('dad_girls').value = 'لا'
     handleCalculatorSubmit()
   }
-}
+       }
