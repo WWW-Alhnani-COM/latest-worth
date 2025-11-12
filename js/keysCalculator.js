@@ -15,6 +15,7 @@ export class InheritanceCalculator {
     this.heirCounts = getHeirCounts(heirs);
     this.results = {};
     this.remainingAmount = this.totalAmount;
+    this.specialCaseHandled = false;
   }
 
   // الدوال الأساسية للحساب
@@ -42,7 +43,7 @@ export class InheritanceCalculator {
     
     this.results[heirType] = {
       ...this.heirs[heirType],
-      amount: shareAmount.toFixed(2),
+      amount: shareAmount.toFixed(3),
       percentage: percentage,
       note: note
     };
@@ -76,7 +77,7 @@ export class InheritanceCalculator {
         
         this.results[heir] = {
           ...this.results[heir],
-          amount: newAmount.toFixed(2),
+          amount: newAmount.toFixed(3),
           percentage: newPercentage,
           note: finalNote
         };
@@ -110,7 +111,7 @@ export class InheritanceCalculator {
       
       this.results[daughter] = {
         ...this.results[daughter],
-        amount: newAmount.toFixed(2),
+        amount: newAmount.toFixed(3),
         percentage: newPercentage,
         note: finalNote
       };
@@ -135,7 +136,7 @@ export class InheritanceCalculator {
       
       this.results[son] = {
         ...this.results[son],
-        amount: newAmount.toFixed(2),
+        amount: newAmount.toFixed(3),
         percentage: newPercentage,
         note: 'والباقي كاملاً للابن'
       };
@@ -162,9 +163,9 @@ export class InheritanceCalculator {
     for (const son of sonHeirs) {
       this.results[son] = {
         ...this.heirs[son],
-        amount: (sharePerUnit * 2).toFixed(2),
+        amount: (sharePerUnit * 2).toFixed(3),
         percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
-        note: 'للذكر مثل حظ الانثيين'
+        note: 'للذكر مثل حظ الأنثيين'
       };
     }
 
@@ -172,9 +173,9 @@ export class InheritanceCalculator {
     for (const daughter of daughterHeirs) {
       this.results[daughter] = {
         ...this.heirs[daughter],
-        amount: sharePerUnit.toFixed(2),
+        amount: sharePerUnit.toFixed(3),
         percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-        note: 'للذكر مثل حظ الانثيين'
+        note: 'للذكر مثل حظ الأنثيين'
       };
     }
 
@@ -182,9 +183,9 @@ export class InheritanceCalculator {
     for (const sister of sisterHeirs) {
       this.results[sister] = {
         ...this.heirs[sister],
-        amount: sharePerUnit.toFixed(2),
+        amount: sharePerUnit.toFixed(3),
         percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-        note: 'للذكر مثل حظ الانثيين'
+        note: 'للذكر مثل حظ الأنثيين'
       };
     }
 
@@ -214,7 +215,7 @@ export class InheritanceCalculator {
       for (const wife of wifeHeirs) {
         this.results[wife] = {
           ...this.heirs[wife],
-          amount: sharePerWife.toFixed(2),
+          amount: sharePerWife.toFixed(3),
           percentage: this.formatPercentage((sharePerWife / this.totalAmount) * 100),
           note: `حصة الزوجة ${wifeCount > 1 ? `(${wifeCount} زوجات)` : ''}`
         };
@@ -238,10 +239,65 @@ export class InheritanceCalculator {
     }
   }
 
+  // ========== التعديل الرئيسي: حالة الأب + الأم + الابنة ==========
+  handleFatherMotherDaughterCase() {
+    const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
+    const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
+    const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
+    const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
+    const hasOtherHeirs = this.hasOtherHeirs();
+
+    // الحالة الأساسية: أب + أم + ابنة واحدة فقط
+    if (hasFather && hasMother && hasDaughter && !hasSon && !hasMultipleDaughters && !hasOtherHeirs) {
+      console.log('APPLYING SPECIAL CASE: Father + Mother + Single Daughter');
+      
+      // الأم: سدس
+      this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
+      
+      // الابنة: نصف
+      const daughterKey = Object.keys(this.heirs).find(key => key.startsWith('daughter_'));
+      this.results[daughterKey] = {
+        ...this.heirs[daughterKey],
+        amount: this.calculateShare(SHARES.half).toFixed(3),
+        percentage: this.formatPercentage(50),
+        note: 'النصف فرض'
+      };
+      this.remainingAmount -= this.calculateShare(SHARES.half);
+      
+      // الأب: الباقي (ثلث)
+      const fatherShare = this.remainingAmount;
+      const fatherPercentage = this.formatPercentage((fatherShare / this.totalAmount) * 100);
+      
+      this.results['father'] = {
+        ...this.heirs['father'],
+        amount: fatherShare.toFixed(3),
+        percentage: fatherPercentage,
+        note: 'الباقي تعصيب'
+      };
+      
+      this.remainingAmount = 0;
+      this.specialCaseHandled = true;
+      return true;
+    }
+    
+    return false;
+  }
+
+  // دالة مساعدة للتحقق من وجود ورثة آخرين
+  hasOtherHeirs() {
+    const excludedKeys = ['father', 'mother', 'son', 'daughter'];
+    return Object.keys(this.heirs).some(key => {
+      return !excludedKeys.some(excluded => key.startsWith(excluded) || key === excluded);
+    });
+  }
+
   // ========== المفاتيح الستة الرئيسية ==========
 
   // المفتاح الأول: الابن + متوفي أب
   applyKey1() {
+    if (this.handleFatherMotherDaughterCase()) return;
+    
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
     const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
@@ -285,7 +341,7 @@ export class InheritanceCalculator {
       for (const wife of wifeHeirs) {
         this.results[wife] = {
           ...this.heirs[wife],
-          amount: sharePerWife.toFixed(2),
+          amount: sharePerWife.toFixed(3),
           percentage: this.formatPercentage((sharePerWife / this.totalAmount) * 100),
           note: `حصة الزوجة ${wifeCount > 1 ? `(${wifeCount} زوجات)` : ''}`
         };
@@ -298,6 +354,8 @@ export class InheritanceCalculator {
 
   // المفتاح الثاني: الابنة + متوفي أب
   applyKey2() {
+    if (this.handleFatherMotherDaughterCase()) return;
+    
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
     const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
@@ -315,36 +373,38 @@ export class InheritanceCalculator {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب والأم حسب سهامهما');
+      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد رحم حسب سهامهما');
     }
     // الابنة مع الأب
     else if (hasFather) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب حسب سهامهما');
+      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد رحم حسب سهامهما');
     }
     // الابنة مع الأم
     else if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأم حسب سهامهما');
+      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد رحم حسب سهامهما');
     }
     // الابنة مع الزوجة
     else if (hasWife) {
       this.assignFixedShare('wife_1', SHARES.eighth, 'الثمن فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
     }
     // الابنة مع الجدة
     else if (hasGrandmother) {
       this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
     }
   }
 
   // المفتاح الثالث: ابنتين فصاعدا + متوفي أب
   applyKey3() {
+    if (this.handleFatherMotherDaughterCase()) return;
+    
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
     const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
@@ -370,7 +430,7 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
@@ -378,7 +438,7 @@ export class InheritanceCalculator {
       }
       
       const eligibleHeirs = ['father', 'mother', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأب والأم حسب سهامهما');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم حسب سهامهما');
     }
     // ابنتين مع الأب
     else if (hasFather) {
@@ -390,7 +450,7 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
@@ -398,7 +458,7 @@ export class InheritanceCalculator {
       }
       
       const eligibleHeirs = ['father', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأب حسب سهامهما');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم حسب سهامهما');
     }
     // ابنتين مع الأم
     else if (hasMother) {
@@ -410,7 +470,7 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
@@ -418,7 +478,7 @@ export class InheritanceCalculator {
       }
       
       const eligibleHeirs = ['mother', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأم حسب سهامهما');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم حسب سهامهما');
     }
     // ابنتين مع الزوجة
     else if (hasWife) {
@@ -430,14 +490,14 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات بالتساوي');
     }
     // ابنتين مع الجدة
     else if (hasGrandmother) {
@@ -449,19 +509,21 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات بالتساوي');
     }
   }
 
   // المفتاح الرابع: الابن + متوفي أم
   applyKey4() {
+    if (this.handleFatherMotherDaughterCase()) return;
+    
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
     const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
@@ -504,6 +566,8 @@ export class InheritanceCalculator {
 
   // المفتاح الخامس: الابنة + متوفي أم
   applyKey5() {
+    if (this.handleFatherMotherDaughterCase()) return;
+    
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
     const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
@@ -521,36 +585,38 @@ export class InheritanceCalculator {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب والأم حسب سهامهما');
+      this.applyRadd(['father', 'mother', 'daughter_1'], 'الباقي يرد رحم حسب سهامهما');
     }
     // الابنة مع الأب
     else if (hasFather) {
       this.assignFixedShare('father', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد رحم على الابنة والأب حسب سهامهما');
+      this.applyRadd(['father', 'daughter_1'], 'الباقي يرد رحم حسب سهامهما');
     }
     // الابنة مع الأم
     else if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد رحم على الابنة والأم حسب سهامهما');
+      this.applyRadd(['mother', 'daughter_1'], 'الباقي يرد رحم حسب سهامهما');
     }
     // الابنة مع الزوج
     else if (hasHusband) {
       this.assignFixedShare('husband', SHARES.quarter, 'الربع فرض');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
     }
     // الابنة مع الجدة
     else if (hasGrandmother) {
       this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
-      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة فقط');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
     }
   }
 
   // المفتاح السادس: ابنتين فصاعدا + متوفي أم
   applyKey6() {
+    if (this.handleFatherMotherDaughterCase()) return;
+    
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
     const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
@@ -575,7 +641,7 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
@@ -583,7 +649,7 @@ export class InheritanceCalculator {
       }
       
       const eligibleHeirs = ['father', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأب حسب سهامهما');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم حسب سهامهما');
     }
     // ابنتين مع الأم
     else if (hasMother) {
@@ -595,7 +661,7 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
@@ -603,7 +669,7 @@ export class InheritanceCalculator {
       }
       
       const eligibleHeirs = ['mother', ...daughterHeirs];
-      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم على البنات والأم حسب سهامهما');
+      this.applyRadd(eligibleHeirs, 'الباقي يرد رحم حسب سهامهما');
     }
     // ابنتين مع الزوج
     else if (hasHusband) {
@@ -615,14 +681,14 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات بالتساوي');
     }
     // ابنتين مع الجدة
     else if (hasGrandmother) {
@@ -634,33 +700,39 @@ export class InheritanceCalculator {
       for (const daughter of daughterHeirs) {
         this.results[daughter] = {
           ...this.heirs[daughter],
-          amount: sharePerDaughter.toFixed(2),
+          amount: sharePerDaughter.toFixed(3),
           percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
           note: 'ثلثين فرض'
         };
         this.remainingAmount -= sharePerDaughter;
       }
       
-      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات فقط بالتساوي');
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات بالتساوي');
     }
   }
 
-  // الدالة الرئيسية لتحديد المفتاح المناسب
   calculate() {
+    console.log('=== CALCULATION DEBUG ===');
+    console.log('Deceased Type:', this.deceasedType);
+    console.log('All Heirs:', Object.keys(this.heirs));
+    
+    // حالة خاصة: أب + أم + ابنة واحدة
+    if (this.handleFatherMotherDaughterCase()) {
+      console.log('Handled special case: Father + Mother + Single Daughter');
+      return this.results;
+    }
+
     const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
     const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
     const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
 
-    console.log('=== CALCULATION DEBUG ===');
-    console.log('Deceased Type:', this.deceasedType);
     console.log('Has Son:', hasSon);
     console.log('Has Daughter:', hasDaughter);
     console.log('Has Multiple Daughters:', hasMultipleDaughters);
-    console.log('All Heirs:', Object.keys(this.heirs));
 
-    // ========== الإصلاح: عندما يوجد ابن وابنة معاً ==========
+    // حالة الابن والابنة معاً
     if (hasSon && hasDaughter) {
-      console.log('Applying MALE/FEMALE RATIO: للذكر مثل حظ الانثيين');
+      console.log('Applying MALE/FEMALE RATIO: للذكر مثل حظ الأنثيين');
       this.applyMaleFemaleRatio();
       return this.results;
     }
@@ -671,7 +743,7 @@ export class InheritanceCalculator {
         this.applyKey1();
       } else if (hasDaughter) {
         if (hasMultipleDaughters) {
-          console.log('Applying KEY 3: ابنتين فصاعدا + متوفي أب');
+          console.log('Applying KEY 3: ابنتين فصاعداً + متوفي أب');
           this.applyKey3();
         } else {
           console.log('Applying KEY 2: الابنة + متوفي أب');
@@ -684,13 +756,24 @@ export class InheritanceCalculator {
         this.applyKey4();
       } else if (hasDaughter) {
         if (hasMultipleDaughters) {
-          console.log('Applying KEY 6: ابنتين فصاعدا + متوفي أم');
+          console.log('Applying KEY 6: ابنتين فصاعداً + متوفي أم');
           this.applyKey6();
         } else {
           console.log('Applying KEY 5: الابنة + متوفي أم');
           this.applyKey5();
         }
       }
+    }
+
+    // التحقق من باقي المبلغ وإضافته لبيت المال إذا لزم الأمر
+    if (this.remainingAmount > 0.01) {
+      const percentage = this.formatPercentage((this.remainingAmount / this.totalAmount) * 100);
+      this.results['bayt_al_mal'] = {
+        title: 'بيت المال',
+        amount: this.remainingAmount.toFixed(3),
+        percentage: percentage,
+        note: 'الباقي لبيت المال'
+      };
     }
 
     console.log('Final Results:', this.results);
