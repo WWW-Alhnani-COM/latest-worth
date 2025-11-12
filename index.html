@@ -29,7 +29,6 @@
     </style>
   </head>
   <body>
-    <!-- محتوى الصفحة كما هو مع تعديلات طفيفة في التنسيق -->
     <div id="sons_numbers" class="sons-modal">
       <div class="sons-modal-content">
         <h2>كم عدد أبناء و بنات الأب <br />(أخوان و أخوات المتوفي)</h2>
@@ -43,7 +42,7 @@
           </select>
         </div>
         <div class="form-group input-group">
-          <label for="dad_girls">عدد بنات الأب</label>
+          <label for="dad_girls">عدد بنات الأب</label>
           <select id="dad_girls" name="dad_girls" title="عدد بنات الأب">
             <option value="لا">لا</option>
             <option value="1">بنت</option>
@@ -59,8 +58,10 @@
         </div>
       </div>
     </div>
+    
     <div class="app-container">
-      <h1>حاسبة تقسيم الميراث</h>
+      <h1>حاسبة تقسيم الميراث</h1>
+      
       <div class="container">
         <div class="tabs">
           <button
@@ -69,20 +70,24 @@
             disabled
             title="الخطوة الأولى: إدخال البيانات الأساسية"
           >
-            الخطوة الاولى
+            <span class="step-number">1</span>
+            <span class="step-title">البيانات الأساسية</span>
           </button>
           <button class="tab-button religious" data-tab="religious" disabled title="الخطوة الثانية: إدخال بيانات الورثة">
-            الخطوة الثانية
+            <span class="step-number">2</span>
+            <span class="step-title">بيانات الورثة</span>
           </button>
           <button class="tab-button shares" data-tab="shares" disabled title="الخطوة الثالثة: عرض نتائج التوزيع">
-            الخطوة الثالثة
+            <span class="step-number">3</span>
+            <span class="step-title">نتائج التوزيع</span>
           </button>
         </div>
-               <div class="tab-content active" id="calculator">
-          <!-- محتوى التبويب الأول -->
-          <p class="alert">
-            قم بادخال جنس المتوفي واسمه ومبلغ التركه ان كان معروف والامتار المراد تقسيمها ان كانت معروفه وقم بتحديد جميع ورثته ثم اضغط على التالي
-          </p>
+        
+        <div class="tab-content active" id="calculator">
+          <div class="form-container">
+            <p class="alert">
+              قم بادخال جنس المتوفي واسمه ومبلغ التركه ان كان معروف والامتار المراد تقسيمها ان كانت معروفه وقم بتحديد جميع ورثته ثم اضغط على التالي
+            </p>
             <form id="inheritanceForm">
               <div class="form-group-inline">
                 <div class="flex-container">
@@ -147,7 +152,7 @@
                   <input
                     type="number"
                     id="amount"
-                    placeholder="أدخل المبلغ إذا كان معروف"
+                    placeholder="أدخل المبلغ إذا كان معروفاً"
                     title="مبلغ التركة بالريال"
                   />
                   <span class="unit">ريال</span>
@@ -189,12 +194,13 @@
             </form>
           </div>
         </div>
-               <div class="tab-content" id="religious">
-          <!-- محتوى التبويب الثاني -->
-          <p class="alert">
-            اكتب اسماء الورثه واختر ديانة كل وريث ثم اضغط على التالي
-          </p>
-            <table>
+        
+        <div class="tab-content" id="religious">
+          <div class="form-container">
+            <p class="alert">
+              اكتب اسماء الورثه واختر ديانة كل وريث ثم اضغط على التالي
+            </p>
+            <table class="deceased">
               <thead>
                 <tr>
                   <th>نوع المتوفى</th>
@@ -222,7 +228,7 @@
           </div>
         </div>
 
-         <div class="tab-content" id="shares">
+        <div class="tab-content" id="shares">
           <p class="alert alert-deceased">
             تمت القسمة ويمكنك طباعة نتيجة القسمة او اضغط على السابق للتعديل
           </p>
@@ -247,7 +253,7 @@
                   <th>صلة القرابة</th>
                   <th>اسم الوارث</th>
                   <th>مقدار الورث من المال</th>
-                  <th>مقدار الورث من الامتار</th>
+                  <th>مقدار الورث من الأمتار</th>
                   <th>مقدار الورث بالنسبة</th>
                   <th>توضيح</th>
                 </tr>
@@ -267,6 +273,10 @@
         </button>
         <div class="footer-right-buttons">
           <button id="footer-print-btn" class="button btn-print hidden" title="طباعة نتيجة التوزيع">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+              <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+            </svg>
             طباعة
           </button>
           <button id="footer-next-btn" class="button btn-next" title="الانتقال إلى الخطوة التالية">
@@ -279,6 +289,9 @@
     <script id="field-template" type="text/x-handlebars-template">
       {{#each groups}}
         <div class="form-group-container">
+          <div class="group-header">
+            <h3>الفئة {{groupTitle}}</h3>
+          </div>
           {{#each fields}}
             <div class="form-group">
               <label for="{{id}}">{{title}}</label>
@@ -304,4 +317,3 @@
     <script type="module" src="js/new_script.js"></script>
   </body>
 </html>
-
