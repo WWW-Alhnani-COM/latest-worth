@@ -52,69 +52,6 @@ export class InheritanceCalculator {
     return shareAmount;
   }
 
-  // معالجة خاصة للجدات
-  handleGrandmothers() {
-    const hasFRGrandmother = checkHeirs(this.heirs, CONDITIONS.hasFRGrandmother);
-    const hasMRGrandmother = checkHeirs(this.heirs, CONDITIONS.hasMRGrandmother);
-    const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
-    const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
-    const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
-
-    // إذا وجدت الأم، تُحجب جميع الجدات
-    if (hasMother) {
-      return;
-    }
-
-    // حالة وجود جدة لاب فقط
-    if (hasFRGrandmother && !hasMRGrandmother) {
-      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
-      return;
-    }
-
-    // حالة وجود جدة لأم فقط
-    if (hasMRGrandmother && !hasFRGrandmother) {
-      // إذا وجد ابن أو ابنة، جدة لأم تُحجب
-      if (hasSon || hasDaughter) {
-        return;
-      }
-      this.assignFixedShare('MR_grandmother', SHARES.sixth, 'السدس سنة');
-      return;
-    }
-
-    // حالة وجود جدتان معاً (بدون أم)
-    if (hasFRGrandmother && hasMRGrandmother) {
-      // إذا وجد ابن أو ابنة، جدة لأم تُحجب
-      if (hasSon || hasDaughter) {
-        this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة (جدة لاب)');
-        return;
-      }
-
-      // إذا لم يوجد أبناء، توزيع السدس بين الجدتين
-      const totalShare = this.calculateShare(SHARES.sixth); // 1/6
-      const sharePerGrandmother = totalShare / 2; // 1/12 لكل جدة
-      
-      const percentagePerGrandmother = this.formatPercentage((sharePerGrandmother / this.totalAmount) * 100);
-      
-      // جدة لاب
-      this.results['FR_grandmother'] = {
-        ...this.heirs['FR_grandmother'],
-        amount: sharePerGrandmother.toFixed(3),
-        percentage: percentagePerGrandmother,
-        note: 'السدس سنة (نصف السدس)'
-      };
-      this.remainingAmount -= sharePerGrandmother;
-      
-      // جدة لأم
-      this.results['MR_grandmother'] = {
-        ...this.heirs['MR_grandmother'],
-        amount: sharePerGrandmother.toFixed(3),
-        percentage: percentagePerGrandmother,
-        note: 'السدس سنة (نصف السدس)'
-      };
-      this.remainingAmount -= sharePerGrandmother;
-    }
-  }
-
   // تطبيق الرد (الباقي) على مجموعة من الورثة
   applyRadd(eligibleHeirs, note = '') {
     if (this.remainingAmount <= 0) return;
@@ -259,6 +196,7 @@ export class InheritanceCalculator {
   calculateFixedSharesBeforeRatio() {
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
     const hasHusband = checkHeirs(this.heirs, CONDITIONS.hasHusband);
     const hasWife = checkHeirs(this.heirs, CONDITIONS.hasWife);
 
@@ -293,6 +231,11 @@ export class InheritanceCalculator {
     // الأم
     if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
+    }
+
+    // الجدة
+    if (hasGrandmother) {
+      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
     }
   }
 
@@ -350,15 +293,14 @@ export class InheritanceCalculator {
   }
 
   // ========== المفاتيح الستة الرئيسية ==========
+
   // المفتاح الأول: الابن + متوفي أب
   applyKey1() {
     if (this.handleFatherMotherDaughterCase()) return;
     
-    // معالجة الجدات أولاً
-    this.handleGrandmothers();
-
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
     const hasWife = checkHeirs(this.heirs, CONDITIONS.hasWife);
     const hasSister = checkHeirs(this.heirs, CONDITIONS.hasSister);
 
@@ -382,6 +324,11 @@ export class InheritanceCalculator {
     // الابن مع الأم
     else if (hasMother) {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
+      this.giveRemainingToSonOnly('والباقي كاملاً للابن');
+    }
+    // الابن مع الجدة
+    else if (hasGrandmother) {
+      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
       this.giveRemainingToSonOnly('والباقي كاملاً للابن');
     }
     // الابن مع الزوجة
@@ -409,11 +356,9 @@ export class InheritanceCalculator {
   applyKey2() {
     if (this.handleFatherMotherDaughterCase()) return;
     
-    // معالجة الجدات أولاً
-    this.handleGrandmothers();
-
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
     const hasWife = checkHeirs(this.heirs, CONDITIONS.hasWife);
     const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
 
@@ -448,17 +393,21 @@ export class InheritanceCalculator {
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
       this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
     }
+    // الابنة مع الجدة
+    else if (hasGrandmother) {
+      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
+      this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
+    }
   }
 
   // المفتاح الثالث: ابنتين فصاعدا + متوفي أب
   applyKey3() {
     if (this.handleFatherMotherDaughterCase()) return;
     
-    // معالجة الجدات أولاً
-    this.handleGrandmothers();
-
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
     const hasWife = checkHeirs(this.heirs, CONDITIONS.hasWife);
     const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
 
@@ -550,17 +499,34 @@ export class InheritanceCalculator {
       
       this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات بالتساوي');
     }
+    // ابنتين مع الجدة
+    else if (hasGrandmother) {
+      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
+      
+      const totalDaughtersShare = this.calculateShare(SHARES.twoThirds);
+      const sharePerDaughter = totalDaughtersShare / daughterHeirs.length;
+      
+      for (const daughter of daughterHeirs) {
+        this.results[daughter] = {
+          ...this.heirs[daughter],
+          amount: sharePerDaughter.toFixed(3),
+          percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
+          note: 'ثلثين فرض'
+        };
+        this.remainingAmount -= sharePerDaughter;
+      }
+      
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات بالتساوي');
+    }
   }
 
   // المفتاح الرابع: الابن + متوفي أم
   applyKey4() {
     if (this.handleFatherMotherDaughterCase()) return;
     
-    // معالجة الجدات أولاً
-    this.handleGrandmothers();
-
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
     const hasHusband = checkHeirs(this.heirs, CONDITIONS.hasHusband);
     const hasSister = checkHeirs(this.heirs, CONDITIONS.hasSister);
 
@@ -586,6 +552,11 @@ export class InheritanceCalculator {
       this.assignFixedShare('mother', SHARES.sixth, 'السدس فرض');
       this.giveRemainingToSonOnly('والباقي كاملاً للابن');
     }
+    // الابن مع الجدة
+    else if (hasGrandmother) {
+      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
+      this.giveRemainingToSonOnly('والباقي كاملاً للابن');
+    }
     // الابن مع الزوج
     else if (hasHusband) {
       this.assignFixedShare('husband', SHARES.quarter, 'الربع فرض');
@@ -597,11 +568,9 @@ export class InheritanceCalculator {
   applyKey5() {
     if (this.handleFatherMotherDaughterCase()) return;
     
-    // معالجة الجدات أولاً
-    this.handleGrandmothers();
-
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
     const hasHusband = checkHeirs(this.heirs, CONDITIONS.hasHusband);
     const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
 
@@ -636,17 +605,21 @@ export class InheritanceCalculator {
       this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
       this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
     }
+    // الابنة مع الجدة
+    else if (hasGrandmother) {
+      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
+      this.assignFixedShare('daughter_1', SHARES.half, 'النصف فرض');
+      this.applyRadd(['daughter_1'], 'الباقي يرد رحم للابنة');
+    }
   }
 
   // المفتاح السادس: ابنتين فصاعدا + متوفي أم
   applyKey6() {
     if (this.handleFatherMotherDaughterCase()) return;
     
-    // معالجة الجدات أولاً
-    this.handleGrandmothers();
-
     const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
     const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
     const hasHusband = checkHeirs(this.heirs, CONDITIONS.hasHusband);
     const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
 
@@ -701,6 +674,25 @@ export class InheritanceCalculator {
     // ابنتين مع الزوج
     else if (hasHusband) {
       this.assignFixedShare('husband', SHARES.quarter, 'الربع فرض');
+      
+      const totalDaughtersShare = this.calculateShare(SHARES.twoThirds);
+      const sharePerDaughter = totalDaughtersShare / daughterHeirs.length;
+      
+      for (const daughter of daughterHeirs) {
+        this.results[daughter] = {
+          ...this.heirs[daughter],
+          amount: sharePerDaughter.toFixed(3),
+          percentage: this.formatPercentage((sharePerDaughter / this.totalAmount) * 100),
+          note: 'ثلثين فرض'
+        };
+        this.remainingAmount -= sharePerDaughter;
+      }
+      
+      this.applyRaddToDaughtersOnly('الباقي يرد رحم على البنات بالتساوي');
+    }
+    // ابنتين مع الجدة
+    else if (hasGrandmother) {
+      this.assignFixedShare('FR_grandmother', SHARES.sixth, 'السدس سنة');
       
       const totalDaughtersShare = this.calculateShare(SHARES.twoThirds);
       const sharePerDaughter = totalDaughtersShare / daughterHeirs.length;
