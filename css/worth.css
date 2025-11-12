@@ -666,12 +666,31 @@ td.counter {
   }
 }
 
-/* طباعة الصفحة */
+/* تحسينات الطباعة */
 @media print {
+  /* إخفاء جميع العناصر غير الضرورية */
   .tabs,
   .fixed-footer,
   .button,
-  .hidden {
+  .hidden,
+  .btn-group,
+  .modal-overlay,
+  .sons-modal,
+  .worth-count,
+  .form-group-inline,
+  .deceased_religion,
+  #dynamic-fields,
+  #inheritanceForm,
+  #resultForm,
+  .tabs,
+  .footer-buttons,
+  #closeSonsPopup,
+  #sonsNextBtn,
+  #closeModal,
+  .alert:not(.print-only),
+  h1,
+  .step-number,
+  .step-title {
     display: none !important;
   }
   
@@ -679,12 +698,14 @@ td.counter {
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
+    font-family: 'Tajawal', 'Amiri', sans-serif !important;
+    color: #000 !important;
   }
   
   .app-container {
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 10px !important;
   }
   
   .tab-content {
@@ -692,31 +713,79 @@ td.counter {
     box-shadow: none !important;
     border-radius: 0 !important;
     padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+  
+  /* إظهار تبويب النتائج فقط أثناء الطباعة */
+  #calculator,
+  #religious {
+    display: none !important;
+  }
+  
+  #shares {
+    display: block !important;
   }
   
   table {
     width: 100% !important;
     border-collapse: collapse !important;
     margin: 10px 0 !important;
+    page-break-inside: avoid;
   }
   
   th, td {
     border: 1px solid #000 !important;
-    padding: 8px !important;
+    padding: 8px 10px !important;
     font-size: 12px !important;
+    text-align: center !important;
   }
   
   th {
     background-color: #f2f2f2 !important;
     color: #000 !important;
+    font-weight: bold !important;
   }
   
-  .shares {
-    page-break-before: always;
+  tr:nth-child(even) {
+    background-color: #f9f9f9 !important;
+  }
+  
+  .counter {
+    width: 10px !important;
   }
   
   .header {
     font-size: 18px !important;
     margin: 10px 0 !important;
+    text-align: center !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    page-break-after: avoid;
+  }
+  
+  .print-only-title {
+    display: block !important;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin: 20px 0 10px;
+    color: #000;
+    page-break-after: avoid;
+  }
+  
+  .deceased-info {
+    margin: 15px 0;
+    page-break-after: avoid;
+  }
+  
+  /* ضمان أن الجدول لا ينكسر عبر الصفحات */
+  table, table tr, table td, table th {
+    page-break-inside: avoid;
+  }
+  
+  /* إضافة هوامش للطباعة */
+  @page {
+    margin: 1cm;
   }
 }
