@@ -15,7 +15,7 @@ export class InheritanceCalculator {
     this.heirCounts = getHeirCounts(heirs);
     this.results = {};
     this.remainingAmount = this.totalAmount;
-  }
+  }amount: shareAmount.toFixed(3),
 
   // الدوال الأساسية للحساب
   calculateShare(shareType) {
@@ -110,7 +110,7 @@ export class InheritanceCalculator {
       
       this.results[daughter] = {
         ...this.results[daughter],
-        amount: newAmount.toFixed(2),
+        amount: newAmount.toFixed(3),
         percentage: newPercentage,
         note: finalNote
       };
@@ -162,7 +162,7 @@ export class InheritanceCalculator {
     for (const son of sonHeirs) {
       this.results[son] = {
         ...this.heirs[son],
-        amount: (sharePerUnit * 2).toFixed(2),
+        amount: (sharePerUnit * 2).toFixed(3),
         percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
         note: 'للذكر مثل حظ الانثيين'
       };
@@ -172,7 +172,7 @@ export class InheritanceCalculator {
     for (const daughter of daughterHeirs) {
       this.results[daughter] = {
         ...this.heirs[daughter],
-        amount: sharePerUnit.toFixed(2),
+        amount: sharePerUnit.toFixed(3),
         percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
         note: 'للذكر مثل حظ الانثيين'
       };
