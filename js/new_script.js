@@ -446,7 +446,7 @@ function calculateMaterialsDistribution(moneyResults, materialsAmount) {
     
     materialsDistribution[key] = {
       ...heirData,
-      materialsAmount: materialsShare.toFixed(2),
+      materialsAmount: materialsShare.toFixed(3),
       materialsPercentage: heirData.percentage // نفس النسبة المئوية
     };
   }
@@ -535,15 +535,18 @@ function updateSharesTab(data) {
     
     // الحصول على كمية المواد لهذا الوريث
     const materialsData = data.materialsDistribution?.[key];
-    const materialsAmount = materialsData?.materialsAmount || '0.00';
-    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
+    const materialsAmount = materialsData?.materialsAmount || '0.000';
+    const materialsDisplay = data.materials ? `${Number(materialsAmount).toFixed(3)} متر` : '-';
+    
+    const moneyAmount = data.heirs[key].amount ? Number(data.heirs[key].amount).toFixed(3) : '-';
+    const moneyDisplay = showAmounts ? moneyAmount : '-';
     
     sharesHTML += `
         <tr>
             <td class="counter">${i}</td>
             <td>${relationship}</td>
             <td>${data.heirs[key].name || '-'}</td>
-            <td>${showAmounts ? (data.heirs[key].amount || '-') : '-'}</td>
+            <td>${moneyDisplay}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs[key].percentage + '%' || '-'}</td>
             <td>${note}</td>
@@ -555,8 +558,11 @@ function updateSharesTab(data) {
   if (data.heirs.bayt_al_mal) {
     i++;
     const materialsData = data.materialsDistribution?.bayt_al_mal;
-    const materialsAmount = materialsData?.materialsAmount || '0.00';
-    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
+    const materialsAmount = materialsData?.materialsAmount || '0.000';
+    const materialsDisplay = data.materials ? `${Number(materialsAmount).toFixed(3)} متر` : '-';
+    
+    const baytMoneyAmount = data.heirs.bayt_al_mal.amount ? Number(data.heirs.bayt_al_mal.amount).toFixed(3) : '-';
+    const baytMoneyDisplay = showAmounts ? baytMoneyAmount : '-';
     
     // تنظيف ملاحظة بيت المال أيضاً
     let baytNote = data.heirs.bayt_al_mal.note || '';
@@ -569,7 +575,7 @@ function updateSharesTab(data) {
             <td class="counter">${i}</td>
             <td>${data.heirs.bayt_al_mal.title}</td>
             <td>${data.heirs.bayt_al_mal.name || '-'}</td>
-            <td>${showAmounts ? (data.heirs.bayt_al_mal.amount || '-') : '-'}</td>
+            <td>${baytMoneyDisplay}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
             <td>${baytNote}</td>
