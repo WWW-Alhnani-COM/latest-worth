@@ -29,8 +29,7 @@ export const CONDITIONS = {
   hasMultipleDaughters: 'HAS_MULTIPLE_DAUGHTERS',
   hasFather: 'HAS_FATHER',
   hasMother: 'HAS_MOTHER',
-  hasFRGrandmother: 'HAS_FR_GRANDMOTHER', // جدة لاب
-  hasMRGrandmother: 'HAS_MR_GRANDMOTHER', // جدة لأم
+  hasGrandmother: 'HAS_GRANDMOTHER',
   hasHusband: 'HAS_HUSBAND',
   hasWife: 'HAS_WIFE',
   hasSister: 'HAS_SISTER'
@@ -49,10 +48,9 @@ export function checkHeirs(heirs, condition) {
       return heirs.father && heirs.father.title !== undefined;
     case CONDITIONS.hasMother:
       return heirs.mother && heirs.mother.title !== undefined;
-    case CONDITIONS.hasFRGrandmother:
-      return heirs.FR_grandmother && heirs.FR_grandmother.title !== undefined;
-    case CONDITIONS.hasMRGrandmother:
-      return heirs.MR_grandmother && heirs.MR_grandmother.title !== undefined;
+    case CONDITIONS.hasGrandmother:
+      return (heirs.FR_grandmother && heirs.FR_grandmother.title !== undefined) || 
+             (heirs.MR_grandmother && heirs.MR_grandmother.title !== undefined);
     case CONDITIONS.hasHusband:
       return heirs.husband && heirs.husband.title !== undefined;
     case CONDITIONS.hasWife:
