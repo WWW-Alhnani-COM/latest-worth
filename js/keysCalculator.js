@@ -42,7 +42,7 @@ export class InheritanceCalculator {
     
     this.results[heirType] = {
       ...this.heirs[heirType],
-      amount: shareAmount.toFixed(2),
+      amount: shareAmount.toFixed(3),
       percentage: percentage,
       note: note
     };
