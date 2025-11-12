@@ -336,8 +336,7 @@ function collectFormData() {
 
     if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
-        // إصلاح: إزالة الأقواس من تنسيق العنوان
-        formData.heirs[`${id}_${i}`] = { title: `${title} ${numberToArabicWord(i, gender)}`, name: "" };
+        formData.heirs[`${id}_${i}`] = { title: `${title} (${numberToArabicWord(i, gender)})`, name: "" };
       }
     }
   });
@@ -492,16 +491,16 @@ function updateSharesTab(data) {
     if (!relationship || relationship === 'undefined' || relationship.includes('undefined')) {
       if (key.startsWith('son_')) {
         const sonNumber = key.split('_')[1] || '';
-        relationship = sonNumber ? `ابن ${numberToArabicWord(parseInt(sonNumber), 'male')}` : 'ابن';
+        relationship = sonNumber ? `ابن (${numberToArabicWord(parseInt(sonNumber), 'male')})` : 'ابن';
       } else if (key.startsWith('daughter_')) {
         const daughterNumber = key.split('_')[1] || '';
-        relationship = daughterNumber ? `ابنة ${numberToArabicWord(parseInt(daughterNumber), 'female')}` : 'ابنة';
+        relationship = daughterNumber ? `ابنة (${numberToArabicWord(parseInt(daughterNumber), 'female')})` : 'ابنة';
       } else if (key.startsWith('wife_')) {
         const wifeNumber = key.split('_')[1] || '';
-        relationship = wifeNumber ? `الزوجة ${numberToArabicWord(parseInt(wifeNumber), 'female')}` : 'الزوجة';
+        relationship = wifeNumber ? `زوجة (${numberToArabicWord(parseInt(wifeNumber), 'female')})` : 'زوجة';
       } else if (key.startsWith('sister_')) {
         const sisterNumber = key.split('_')[1] || '';
-        relationship = sisterNumber ? `أخت ${numberToArabicWord(parseInt(sisterNumber), 'female')}` : 'أخت';
+        relationship = sisterNumber ? `أخت (${numberToArabicWord(parseInt(sisterNumber), 'female')})` : 'أخت';
       } else if (key === 'father') {
         relationship = 'أب';
       } else if (key === 'mother') {
