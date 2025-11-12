@@ -336,7 +336,7 @@ function collectFormData() {
 
     if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `${title} (${numberToArabicWord(i, gender)})`, name: "" };
+        formData.heirs[`${id}_${i}`] = { title: `${title} ${numberToArabicWord(i, gender)}`, name: "" };
       }
     }
   });
