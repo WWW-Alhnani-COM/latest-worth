@@ -45,13 +45,14 @@ export function checkHeirs(heirs, condition) {
       const daughterCount = Object.keys(heirs).filter(key => key.startsWith('daughter_')).length;
       return daughterCount >= 2;
     case CONDITIONS.hasFather:
-      return heirs.father;
+      return heirs.father && heirs.father.title !== undefined;
     case CONDITIONS.hasMother:
-      return heirs.mother;
+      return heirs.mother && heirs.mother.title !== undefined;
     case CONDITIONS.hasGrandmother:
-      return heirs.FR_grandmother || heirs.MR_grandmother;
+      return (heirs.FR_grandmother && heirs.FR_grandmother.title !== undefined) || 
+             (heirs.MR_grandmother && heirs.MR_grandmother.title !== undefined);
     case CONDITIONS.hasHusband:
-      return heirs.husband;
+      return heirs.husband && heirs.husband.title !== undefined;
     case CONDITIONS.hasWife:
       return Object.keys(heirs).some(key => key.startsWith('wife_'));
     case CONDITIONS.hasSister:
@@ -63,7 +64,12 @@ export function checkHeirs(heirs, condition) {
 
 export function getDeceasedType() {
   const maleRadio = document.getElementById('male');
-  return maleRadio?.checked ? DECEASED_TYPE.FATHER : DECEASED_TYPE.MOTHER;
+  const femaleRadio = document.getElementById('female');
+  
+  if (maleRadio?.checked) return DECEASED_TYPE.FATHER;
+  if (femaleRadio?.checked) return DECEASED_TYPE.MOTHER;
+  
+  return DECEASED_TYPE.FATHER; // قيمة افتراضية
 }
 
 // دالة مساعدة للحصول على عدد كل نوع من الورثة
