@@ -29,7 +29,8 @@ export const CONDITIONS = {
   hasMultipleDaughters: 'HAS_MULTIPLE_DAUGHTERS',
   hasFather: 'HAS_FATHER',
   hasMother: 'HAS_MOTHER',
-  hasGrandmother: 'HAS_GRANDMOTHER',
+  hasFRGrandmother: 'HAS_FR_GRANDMOTHER', // جدة لاب
+  hasMRGrandmother: 'HAS_MR_GRANDMOTHER', // جدة لأم
   hasHusband: 'HAS_HUSBAND',
   hasWife: 'HAS_WIFE',
   hasSister: 'HAS_SISTER'
@@ -48,9 +49,10 @@ export function checkHeirs(heirs, condition) {
       return heirs.father && heirs.father.title !== undefined;
     case CONDITIONS.hasMother:
       return heirs.mother && heirs.mother.title !== undefined;
-    case CONDITIONS.hasGrandmother:
-      return (heirs.FR_grandmother && heirs.FR_grandmother.title !== undefined) || 
-             (heirs.MR_grandmother && heirs.MR_grandmother.title !== undefined);
+    case CONDITIONS.hasFRGrandmother:
+      return heirs.FR_grandmother && heirs.FR_grandmother.title !== undefined;
+    case CONDITIONS.hasMRGrandmother:
+      return heirs.MR_grandmother && heirs.MR_grandmother.title !== undefined;
     case CONDITIONS.hasHusband:
       return heirs.husband && heirs.husband.title !== undefined;
     case CONDITIONS.hasWife:
@@ -75,9 +77,18 @@ export function getDeceasedType() {
 // دالة مساعدة للحصول على عدد كل نوع من الورثة
 export function getHeirCounts(heirs) {
   const counts = {};
-  for (const [type, value] of Object.entries(heirs)) {
-    let heirType = type?.replace(/_[^_]+$/, '');
-    counts[heirType] = (counts[heirType] || 0) + 1;
+  for (const key of Object.keys(heirs)) {
+    if (key.startsWith('son_')) {
+      counts[HEIR_TYPES.SON] = (counts[HEIR_TYPES.SON] || 0) + 1;
+    } else if (key.startsWith('daughter_')) {
+      counts[HEIR_TYPES.DAUGHTER] = (counts[HEIR_TYPES.DAUGHTER] || 0) + 1;
+    } else if (key.startsWith('wife_')) {
+      counts[HEIR_TYPES.WIFE] = (counts[HEIR_TYPES.WIFE] || 0) + 1;
+    } else if (key.startsWith('sister_')) {
+      counts[HEIR_TYPES.SISTER] = (counts[HEIR_TYPES.SISTER] || 0) + 1;
+    } else if (Object.values(HEIR_TYPES).includes(key)) {
+      counts[key] = 1;
+    }
   }
   return counts;
 }
