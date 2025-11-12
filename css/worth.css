@@ -203,7 +203,7 @@ h1::after {
 .button {
   background: var(--primary-color);
   color: white;
-  padding: 0.9rem 1.5rem;
+  padding: 0.9rem 1.5rem;      
   border: none;
   border-radius: var(--border-radius-md);
   font-size: 1.05rem;
@@ -224,7 +224,7 @@ h1::after {
   position: absolute;
   top: 0;
   left: -100%;
-  width: 100%;
+
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: var(--transition);
@@ -790,4 +790,59 @@ td.counter {
   }
 }
 
+/* تعديلات خاصة بخطوة بيانات الورثة */
+.deceased-input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
 
+.religion-display, .name-display {
+  font-weight: bold;
+  padding: 5px 0;
+}
+
+/* تنسيق خاص للطباعة */
+@media print {
+  /* إضافة عمود الديانة في جدول النتائج للطباعة */
+  .shares th:nth-child(4),
+  .shares td:nth-child(4) {
+    display: table-cell !important;
+    width: 10% !important;
+  }
+  
+  .shares th:nth-child(3),
+  .shares td:nth-child(3) {
+    width: 15% !important;
+  }
+  
+  .print-only-title {
+    display: block !important;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin: 20px 0 10px;
+    color: #000;
+    page-break-after: avoid;
+  }
+  
+  /* ضمان ظهور الديانة في الطباعة */
+  .religion-display,
+  .name-display {
+    display: inline !important;
+  }
+  
+  /* إخفاء حقول الإدخال في الطباعة */
+  .shares-input {
+    display: none !important;
+  }
+  
+  /* عرض الديانة بشكل واضح في الطباعة */
+  .religion-display,
+  .name-display {
+    display: inline-block !important;
+    font-weight: bold !important;
+    color: #000 !important;
+  }
+}
