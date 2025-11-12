@@ -200,7 +200,13 @@ function initFooterButtons() {
   // زر الطباعة
   if (printBtn) {
     printBtn.addEventListener('click', () => {
-      window.print();
+      // التأكد من أن تبويب النتائج هو النشط
+      switchTab('shares');
+      
+      // انتظار حتى يتم التحديث
+      setTimeout(() => {
+        window.print();
+      }, 300);
     });
   }
 }
