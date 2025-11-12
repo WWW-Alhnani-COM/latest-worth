@@ -1,7 +1,7 @@
 :root {
   /* ألوان أساسية جديدة (أزرق احترافي) */
-  --primary-color: #2563eb; /* أزرق غامق */
-  --primary-light: #3b82f6; /* أزرق فاتح */
+  --primary-color: #10b981; /* أزرق غامق */
+  --primary-light: #10b591; /* أزرق فاتح */
   --primary-dark: #1d4ed8; /* أزرق داكن */
   --secondary-color: #0ea5e9; /* أزرق سماوي */
   --accent-color: #8b5cf6; /* أرجواني */
@@ -789,3 +789,4 @@ td.counter {
     margin: 1cm;
   }
 }
+
