@@ -446,7 +446,7 @@ function calculateMaterialsDistribution(moneyResults, materialsAmount) {
     
     materialsDistribution[key] = {
       ...heirData,
-      materialsAmount: materialsShare.toFixed(3),
+      materialsAmount: materialsShare.toFixed(2),
       materialsPercentage: heirData.percentage // نفس النسبة المئوية
     };
   }
@@ -536,14 +536,14 @@ function updateSharesTab(data) {
     // الحصول على كمية المواد لهذا الوريث
     const materialsData = data.materialsDistribution?.[key];
     const materialsAmount = materialsData?.materialsAmount || '0.00';
-    const materialsDisplay = data.materials ? `${Number(materialsAmount).toFixed(3)} متر` : '-';
+    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
     
     sharesHTML += `
         <tr>
             <td class="counter">${i}</td>
             <td>${relationship}</td>
             <td>${data.heirs[key].name || '-'}</td>
-<td>${showAmounts ? (Number(data.heirs[key].amount).toFixed(3) || '-') : '-'}</td>
+            <td>${showAmounts ? (data.heirs[key].amount || '-') : '-'}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs[key].percentage + '%' || '-'}</td>
             <td>${note}</td>
@@ -556,7 +556,7 @@ function updateSharesTab(data) {
     i++;
     const materialsData = data.materialsDistribution?.bayt_al_mal;
     const materialsAmount = materialsData?.materialsAmount || '0.00';
-    const materialsDisplay = data.materials ? `${Number(materialsAmount).toFixed(3)} متر` : '-';
+    const materialsDisplay = data.materials ? `${materialsAmount} متر` : '-';
     
     // تنظيف ملاحظة بيت المال أيضاً
     let baytNote = data.heirs.bayt_al_mal.note || '';
@@ -569,7 +569,7 @@ function updateSharesTab(data) {
             <td class="counter">${i}</td>
             <td>${data.heirs.bayt_al_mal.title}</td>
             <td>${data.heirs.bayt_al_mal.name || '-'}</td>
-            <td>${showAmounts ? (Number(data.heirs.bayt_al_mal.amount).toFixed(3) || '-') : '-'}</td>
+            <td>${showAmounts ? (data.heirs.bayt_al_mal.amount || '-') : '-'}</td>
             <td>${materialsDisplay}</td>
             <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
             <td>${baytNote}</td>
