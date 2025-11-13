@@ -106,7 +106,20 @@ export const translations = {
     wife: "زوجة",
     brother: "أخ",
     sister: "أخت",
-    
+    // في قسم translations.ar (العربية)
+arabicLanguage: "العربية",
+englishLanguage: "الإنجليزية", 
+urduLanguage: "الأردية",
+
+// في قسم translations.en (الإنجليزية)
+arabicLanguage: "Arabic",
+englishLanguage: "English",
+urduLanguage: "Urdu",
+
+// في قسم translations.ur (الأردية)
+arabicLanguage: "عربی",
+englishLanguage: "انگریزی",
+urduLanguage: "اردو",
     // Extended family
     FR_grandfather: "جد لأب",
     MR_grandfather: "جد لأم",
