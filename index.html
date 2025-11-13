@@ -187,16 +187,20 @@
       color: var(--text-primary);
       padding: 0.75rem 1rem;
       font-weight: 500;
+      direction: rtl;
     }
 
     .language-switcher option[value="ar"] {
       background: white;
       color: var(--text-primary);
+      font-family: 'Tajawal', 'Amiri', sans-serif;
     }
 
     .language-switcher option[value="en"] {
       background: white;
       color: var(--text-primary);
+      font-family: 'Roboto', sans-serif;
+      direction: ltr;
     }
 
     .language-switcher option[value="ur"] {
@@ -501,7 +505,7 @@
       padding-left: 4rem;
     }
 
-    /* أزرار الراديو المحسنة */
+    /* أزرار الراديو المحسنة مع تمييز باللون الأخضر عند التحديد */
     .radio-group {
       display: flex;
       gap: 1.5rem;
@@ -516,10 +520,17 @@
       padding: 0.75rem 1rem;
       border-radius: var(--radius-md);
       transition: var(--transition);
+      border: 2px solid transparent;
     }
 
     .radio-item:hover {
       background: var(--bg-secondary);
+    }
+
+    .radio-item.selected {
+      background: rgba(52, 168, 83, 0.1);
+      border-color: var(--success-color);
+      box-shadow: 0 0 0 1px var(--success-color);
     }
 
     .radio-input {
@@ -539,22 +550,22 @@
       background: white;
     }
 
+    .radio-item.selected .radio-custom {
+      border-color: var(--success-color);
+      background: var(--success-color);
+    }
+
     .radio-custom::after {
       content: '';
       width: 10px;
       height: 10px;
       border-radius: var(--radius-full);
-      background: var(--primary-color);
+      background: white;
       opacity: 0;
       transition: var(--transition);
     }
 
-    .radio-input:checked + .radio-custom {
-      border-color: var(--primary-color);
-      background: var(--primary-light);
-    }
-
-    .radio-input:checked + .radio-custom::after {
+    .radio-item.selected .radio-custom::after {
       opacity: 1;
     }
 
@@ -564,7 +575,52 @@
       font-size: 1rem;
     }
 
-    /* تحسين الجداول */
+    .radio-item.selected .radio-label {
+      color: var(--success-color);
+    }
+
+    /* تحسين خاص للديانات مع تمييز باللون الأخضر */
+    .religion-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .religion-item {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+      border: 2px solid var(--border-light);
+      background: var(--bg-primary);
+    }
+
+    .religion-item:hover {
+      border-color: var(--border-medium);
+      transform: translateY(-2px);
+    }
+
+    .religion-item.selected {
+      background: rgba(52, 168, 83, 0.1);
+      border-color: var(--success-color);
+      box-shadow: 0 0 0 2px var(--success-color);
+    }
+
+    .religion-item.selected .religion-label {
+      color: var(--success-color);
+      font-weight: 700;
+    }
+
+    .religion-label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    /* تحسين الجداول في الخطوة الثانية */
     .table-container {
       background: var(--bg-primary);
       border-radius: var(--radius-lg);
@@ -608,6 +664,85 @@
     .counter {
       width: 50px;
       text-align: center;
+    }
+
+    /* تحسين الفئات مع فواصل زرقاء */
+    .form-group-container {
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .group-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid var(--primary-color);
+      position: relative;
+    }
+
+    .group-header h3 {
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .group-header h3::before {
+      content: "▸";
+      color: var(--primary-color);
+      font-size: 1.5rem;
+    }
+
+    .form-group-container:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      bottom: -1.25rem;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%);
+    }
+
+    /* تحسين عناصر select في الفئات مع تمييز باللون الأخضر */
+    .category-select {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: var(--transition);
+      font-family: inherit;
+      box-shadow: var(--shadow-sm);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 1rem center;
+      padding-left: 3rem;
+    }
+
+    .category-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+    }
+
+    .category-select.selected {
+      border-color: var(--success-color);
+      background: rgba(52, 168, 83, 0.05);
+      box-shadow: 0 0 0 1px var(--success-color);
+    }
+
+    .category-option {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+    }
+
+    .category-option:checked {
+      background: var(--success-color);
+      color: white;
     }
 
     /* المودال المحسن */
@@ -821,6 +956,11 @@
       .language-switcher select {
         min-width: 120px;
       }
+
+      .radio-group,
+      .religion-group {
+        flex-direction: column;
+      }
     }
 
     /* تأثيرات إضافية */
@@ -881,7 +1021,7 @@
       <p data-i18n="fatherChildrenSubtitle">(إخوة وأخوات المتوفى)</p>
       <div class="input-group">
         <label for="dad_sons" data-i18n="fatherSons">عدد أولاد الأب</label>
-        <select id="dad_sons" name="dad_sons" data-i18n-title="fatherSons">
+        <select id="dad_sons" name="dad_sons" class="category-select" data-i18n-title="fatherSons">
           <option value="0" data-i18n="no">لا</option>
           <option value="1" data-i18n="oneSon">ولد</option>
           <option value="2" data-i18n="twoSons">ولدين</option>
@@ -890,7 +1030,7 @@
       </div>
       <div class="input-group">
         <label for="dad_girls" data-i18n="fatherDaughters">عدد بنات الأب</label>
-        <select id="dad_girls" name="dad_girls" data-i18n-title="fatherDaughters">
+        <select id="dad_girls" name="dad_girls" class="category-select" data-i18n-title="fatherDaughters">
           <option value="0" data-i18n="no">لا</option>
           <option value="1" data-i18n="oneDaughter">بنت</option>
           <option value="2" data-i18n="twoDaughters">بنتين</option>
@@ -937,12 +1077,12 @@
               <div class="flex-container">
                 <label data-i18n="deceasedType">نوع المتوفى</label>
                 <div class="radio-group">
-                  <div class="radio-item">
+                  <div class="radio-item" id="maleItem">
                     <input type="radio" id="male" name="deceased_gender" value="male" data-i18n-title="male" class="radio-input">
                     <span class="radio-custom"></span>
                     <label for="male" class="radio-label" data-i18n="male">ذكر</label>
                   </div>
-                  <div class="radio-item">
+                  <div class="radio-item" id="femaleItem">
                     <input type="radio" id="female" name="deceased_gender" value="female" data-i18n-title="female" class="radio-input">
                     <span class="radio-custom"></span>
                     <label for="female" class="radio-label" data-i18n="female">أنثى</label>
@@ -950,12 +1090,14 @@
                 </div>
               </div>
               <div class="deceased_religion">
-                <div class="input-group">
-                  <label for="deceased_religion" data-i18n="religion">الديانة</label>
-                  <select id="deceased_religion" name="deceased_religion" data-i18n-title="religion">
-                    <option value="مسلم" data-i18n="muslim">مسلم</option>
-                    <option value="غير مسلم" data-i18n="nonMuslim">غير مسلم</option>
-                  </select>
+                <label data-i18n="religion">الديانة</label>
+                <div class="religion-group">
+                  <div class="religion-item" id="muslimItem">
+                    <span class="religion-label" data-i18n="muslim">مسلم</span>
+                  </div>
+                  <div class="religion-item" id="nonMuslimItem">
+                    <span class="religion-label" data-i18n="nonMuslim">غير مسلم</span>
+                  </div>
                 </div>
                 <div class="worth-count">
                   <span id="worthCount">0</span>
@@ -983,7 +1125,7 @@
 
             <div class="input-group hidden" id="spouse_female">
               <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
-              <select id="wife" name="wife" data-i18n-title="numberOfWives">
+              <select id="wife" name="wife" class="category-select" data-i18n-title="numberOfWives">
                 <option value="0" data-i18n="no">لا</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -994,7 +1136,7 @@
 
             <div class="input-group hidden" id="spouse_male">
               <label for="husband" data-i18n="hasHusband">هل يوجد زوج؟</label>
-              <select id="husband" name="husband" data-i18n-title="hasHusband">
+              <select id="husband" name="husband" class="category-select" data-i18n-title="hasHusband">
                 <option value="no" data-i18n="no">لا</option>
                 <option value="yes" data-i18n="yes">نعم</option>
               </select>
@@ -1112,20 +1254,19 @@
     {{#each groups}}
       <div class="form-group-container">
         <div class="group-header">
-          <h3 data-i18n="category{{@index}}">الفئة {{groupTitle}}</h3>
+          <h3 data-i18n="category{{@index}}">{{groupTitle}}</h3>
         </div>
         {{#each fields}}
           <div class="input-group">
             <label for="{{id}}" data-i18n="{{id}}">{{title}}</label>
-            <select id="{{id}}" name="{{id}}" data-i18n-title="{{id}}">
+            <select id="{{id}}" name="{{id}}" class="category-select" data-i18n-title="{{id}}">
               {{#each options}}
-                <option value="{{this}}" data-i18n="{{this}}">{{this}}</option>
+                <option value="{{this}}" data-i18n="{{this}}" class="category-option">{{this}}</option>
               {{/each}}
             </select>
           </div>
         {{/each}}
       </div>
-      <hr />
     {{/each}}
   </script>
 
@@ -1189,6 +1330,49 @@
     // تطبيق الترجمة عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', function() {
       applyTranslations();
+      
+      // إضافة تفاعلية لتمييز العناصر المحددة
+      const maleItem = document.getElementById('maleItem');
+      const femaleItem = document.getElementById('femaleItem');
+      const muslimItem = document.getElementById('muslimItem');
+      const nonMuslimItem = document.getElementById('nonMuslimItem');
+      
+      // تمييز نوع المتوفى
+      maleItem.addEventListener('click', function() {
+        maleItem.classList.add('selected');
+        femaleItem.classList.remove('selected');
+        document.getElementById('male').checked = true;
+      });
+      
+      femaleItem.addEventListener('click', function() {
+        femaleItem.classList.add('selected');
+        maleItem.classList.remove('selected');
+        document.getElementById('female').checked = true;
+      });
+      
+      // تمييز الديانة
+      muslimItem.addEventListener('click', function() {
+        muslimItem.classList.add('selected');
+        nonMuslimItem.classList.remove('selected');
+        document.getElementById('deceased_religion').value = 'مسلم';
+      });
+      
+      nonMuslimItem.addEventListener('click', function() {
+        nonMuslimItem.classList.add('selected');
+        muslimItem.classList.remove('selected');
+        document.getElementById('deceased_religion').value = 'غير مسلم';
+      });
+      
+      // تمييز عناصر select في الفئات
+      document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('category-select')) {
+          if (e.target.value !== '0' && e.target.value !== 'no') {
+            e.target.classList.add('selected');
+          } else {
+            e.target.classList.remove('selected');
+          }
+        }
+      });
     });
   </script>
 
