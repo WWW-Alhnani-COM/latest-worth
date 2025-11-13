@@ -68,14 +68,28 @@
   </head>
   <body>
     <!-- مبدل اللغة -->
-    <div class="language-switcher">
-      <select id="languageSelect" title="اختر اللغة">
-        <option value="ar">العربية</option>
-        <option value="en">English</option>
-        <option value="ur">اردو</option>
-      </select>
-    </div>
-
+<header class="header">
+  <div class="header-container">
+    <a href="#" class="logo">
+      <div class="logo-icon">M</div>
+      <span>حاسبة الميراث</span>
+    </a>
+    
+    <nav class="nav-links">
+      <a href="#" class="nav-link active">الرئيسية</a>
+      <a href="#" class="nav-link">عن التطبيق</a>
+      <a href="#" class="nav-link">المساعدة</a>
+      
+      <div class="language-switcher">
+        <select id="languageSelect">
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+          <option value="ur">اردو</option>
+        </select>
+      </div>
+    </nav>
+  </div>
+</header>
     <div id="sons_numbers" class="sons-modal hidden">
       <div class="sons-modal-content">
         <h2 data-i18n="fatherChildrenTitle">كم عدد أبناء وبنات الأب</h2>
