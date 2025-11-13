@@ -1,4 +1,5 @@
 import { calculateInheritance } from "./functions.js";
+import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
 const all = {};
 const booleanOptions = ["لا", "نعم"];
@@ -125,37 +126,106 @@ const fieldsData = [
   }
 ];
 
-function numberToArabicWord(number, gender) {
-  const masculineWords = [
-    "الأول", "الثاني", "الثالث", "الرابع", "الخامس",
-    "السادس", "السابع", "الثامن", "التاسع", "العاشر",
-    "الحادي عشر", "الثاني عشر", "الثالث عشر", "الرابع عشر", "الخامس عشر",
-    "السادس عشر", "السابع عشر", "الثامن عشر", "التاسع عشر", "العشرون",
-    "الحادي والعشرون", "الثاني والعشرون", "الثالث والعشرون", "الرابع والعشرون", "الخامس والعشرون",
-    "السادس والعشرون", "السابع والعشرون", "الثامن والعشرون", "التاسع والعشرون", "الثلاثون",
-    "الحادي والثلاثون", "الثاني والثلاثون", "الثالث والثلاثون", "الرابع والثلاثون", "الخامس والثلاثون",
-    "السادس والثلاثون", "السابع والثلاثون", "الثامن والثلاثون", "التاسع والثلاثون", "الأربعون",
-    "الحادي والأربعون", "الثاني والأربعون", "الثالث والأربعون", "الرابع والأربعون", "الخامس والأربعون",
-    "السادس والأربعون", "السابع والأربعون", "الثامن والأربعون", "التاسع والأربعون", "الخمسون"
-  ];
+// تطبيق الترجمة على الصفحة
+function applyTranslations() {
+  const lang = getCurrentLanguage();
+  
+  // تحديث اتجاه الصفحة
+  document.documentElement.dir = isRTL(lang) ? 'rtl' : 'ltr';
+  document.documentElement.lang = lang;
+  document.body.className = isRTL(lang) ? '' : 'ltr';
+  if (lang === 'ur') document.body.classList.add('lang-ur');
+  
+  // تحديث مبدل اللغة
+  const languageSelect = document.getElementById('languageSelect');
+  if (languageSelect) {
+    languageSelect.value = lang;
+    
+    // تحديث خيارات اللغة
+    const options = languageSelect.querySelectorAll('option');
+    options[0].textContent = t('language') === 'language' ? 'العربية' : t('language');
+    options[1].textContent = 'English';
+    options[2].textContent = 'اردو';
+  }
+  
+  // ترجمة النصوص
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    const key = element.getAttribute('data-i18n');
+    const translation = t(key);
+    if (translation && translation !== key) {
+      element.textContent = translation;
+    }
+  });
+  
+  // ترجمة العنواين
+  document.querySelectorAll('[data-i18n-title]').forEach(element => {
+    const key = element.getAttribute('data-i18n-title');
+    const translation = t(key);
+    if (translation && translation !== key) {
+      element.title = translation;
+    }
+  });
+  
+  // ترجمة النصوص التوضيحية
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+    const key = element.getAttribute('data-i18n-placeholder');
+    const translation = t(key);
+    if (translation && translation !== key) {
+      element.placeholder = translation;
+    }
+  });
+  
+  // تحديث تسميات الأزرار
+  updateButtonTexts();
+  
+  // تحديث تنسيق الأرقام في المدخلات
+  updateNumberInputs();
+}
 
-  const feminineWords = [
-    "الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة",
-    "السادسة", "السابعة", "الثامنة", "التاسعة", "العاشرة",
-    "الحادية عشرة", "الثانية عشرة", "الثالثة عشرة", "الرابعة عشرة", "الخامسة عشرة",
-    "السادسة عشرة", "السابعة عشرة", "الثامنة عشرة", "التاسعة عشرة", "العشرون",
-    "الحادية والعشرون", "الثانية والعشرون", "الثالثة والعشرون", "الرابعة والعشرون", "الخامسة والعشرون",
-    "السادسة والعشرون", "السابعة والعشرون", "الثامنة والعشرون", "التاسعة والعشرون", "الثلاثون",
-    "الحادية والثلاثون", "الثانية والثلاثون", "الثالثة والثلاثون", "الرابعة والثلاثون", "الخامسة والثلاثون",
-    "السادسة والثلاثون", "السابعة والثلاثون", "الثامنة والثلاثون", "التاسعة والثلاثون", "الأربعون",
-    "الحادية والأربعون", "الثانية والأربعون", "الثالثة والأربعون", "الرابعة والأربعون", "الخامسة والأربعون",
-    "السادسة والأربعون", "السابعة والأربعون", "الثامنة والأربعون", "التاسعة والأربعون", "الخمسون"
-  ];
+// تحديث تسميات الأزرار
+function updateButtonTexts() {
+  const nextBtn = document.getElementById('footer-next-btn');
+  const prevBtn = document.getElementById('footer-prev-btn');
+  const printBtn = document.getElementById('footer-print-btn');
+  const closeSonsBtn = document.getElementById('closeSonsPopup');
+  const sonsNextBtn = document.getElementById('sonsNextBtn');
+  const closeModalBtn = document.getElementById('closeModal');
+  
+  if (nextBtn) nextBtn.innerHTML = `<span data-i18n="next">${t('next')}</span>`;
+  if (prevBtn) prevBtn.innerHTML = `<span data-i18n="previous">${t('previous')}</span>`;
+  if (printBtn) printBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
+        <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+      </svg><span data-i18n="print">${t('print')}</span>`;
+  if (closeSonsBtn) closeSonsBtn.textContent = t('close');
+  if (sonsNextBtn) sonsNextBtn.textContent = t('next');
+  if (closeModalBtn) closeModalBtn.textContent = t('ok');
+}
 
-  return gender === "male" ? masculineWords[number - 1] : feminineWords[number - 1];
+// تحديث تنسيق الأرقام في المدخلات
+function updateNumberInputs() {
+  const amountInput = document.getElementById('amount');
+  const materialsInput = document.getElementById('materials');
+  
+  if (amountInput && amountInput.value) {
+    const currentValue = parseNumber(amountInput.value);
+    amountInput.value = formatNumber(currentValue);
+  }
+  
+  if (materialsInput && materialsInput.value) {
+    const currentValue = parseNumber(materialsInput.value);
+    materialsInput.value = formatNumber(currentValue);
+  }
+}
+
+// تحويل الأرقام إلى كلمات حسب اللغة
+function numberToLocalizedWord(number, gender) {
+  return getOrdinalNumber(number, gender) || number.toString();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // تهيئة نظام الترجمة
+  initTranslationSystem();
   initTabs();
   initCalculatorForm();
   initFooterButtons();
@@ -163,11 +233,60 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('closeSonsPopup').addEventListener('click', () => {
     document.getElementById('sons_numbers').classList.remove('show')
   })
+  
   document.getElementById('sonsNextBtn').addEventListener('click', () => {
     document.getElementById('sons_numbers').classList.remove('show')
     handleCalculatorSubmit();
   })
 });
+
+// تهيئة نظام الترجمة
+function initTranslationSystem() {
+  // تطبيق الترجمة عند التحميل
+  applyTranslations();
+  
+  // إضافة مستمع لتغيير اللغة
+  const languageSelect = document.getElementById('languageSelect');
+  if (languageSelect) {
+    languageSelect.addEventListener('change', function(e) {
+      const lang = e.target.value;
+      setLanguage(lang);
+      applyTranslations();
+      // إعادة تحميل البيانات إذا كانت موجودة
+      reloadFormData();
+    });
+  }
+}
+
+// إعادة تحميل بيانات النموذج بعد تغيير اللغة
+function reloadFormData() {
+  const storedData = localStorage.getItem("inheritanceData");
+  if (storedData) {
+    const data = JSON.parse(storedData);
+    updateReligiousTab(data);
+    
+    // تحديث تبويب النتائج إذا كان نشطاً
+    const activeTab = document.querySelector('.tab-content.active').id;
+    if (activeTab === 'shares') {
+      const totalAmount = processTotalAmount(data.amount);
+      const materialsAmount = parseNumber(data.materials) || 0;
+      
+      const moneyResults = calculateInheritance(totalAmount, data?.heirs);
+      
+      let materialsResults = null;
+      if (materialsAmount > 0) {
+        materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+      }
+
+      updateSharesTab({ 
+        ...data, 
+        heirs: moneyResults,
+        materialsDistribution: materialsResults,
+        hasAmount: !!data.amount && parseNumber(data.amount) > 0
+      });
+    }
+  }
+}
 
 // دالة جديدة للتحكم في أزرار الفوتر
 function initFooterButtons() {
@@ -218,8 +337,28 @@ function switchTab(tabId) {
   document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
   document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
 
+  // تحديث حالة الأزرار
+  updateTabButtonsState(tabId);
+  
   // التحكم في إظهار/إخفاء أزرار الفوتر حسب التبويب النشط
   updateFooterButtons(tabId);
+}
+
+// تحديث حالة أزرار التبويب
+function updateTabButtonsState(activeTab) {
+  const tabs = document.querySelectorAll('.tab-button');
+  
+  tabs.forEach(tab => {
+    const tabName = tab.getAttribute('data-tab');
+    
+    if (tabName === activeTab) {
+      tab.disabled = false;
+    } else if (tabName === 'religious' && activeTab === 'calculator') {
+      tab.disabled = true;
+    } else if (tabName === 'shares' && (activeTab === 'calculator' || activeTab === 'religious')) {
+      tab.disabled = true;
+    }
+  });
 }
 
 // إصلاح دالة updateFooterButtons لتشمل زر الطباعة
@@ -236,12 +375,12 @@ function updateFooterButtons(activeTab) {
   switch(activeTab) {
     case 'calculator':
       nextBtn.classList.remove('hidden');
-      nextBtn.textContent = 'التالي';
+      nextBtn.innerHTML = `<span data-i18n="next">${t('next')}</span>`;
       break;
     case 'religious':
       prevBtn.classList.remove('hidden');
       nextBtn.classList.remove('hidden');
-      nextBtn.textContent = 'النتيجة';
+      nextBtn.innerHTML = `<span data-i18n="result">${t('result')}</span>`;
       break;
     case 'shares':
       prevBtn.classList.remove('hidden');
@@ -264,14 +403,41 @@ function initTabs() {
 
 function initCalculatorForm() {
   const form = document.getElementById('inheritanceForm');
-  const template = Handlebars.compile(document.getElementById('field-template').innerHTML);
+  const templateSource = document.getElementById('field-template').innerHTML;
+  const template = Handlebars.compile(templateSource);
   document.getElementById('dynamic-fields').innerHTML = template({ groups: fieldsData });
+
+  // تحديث العناوين بعد الترجمة
+  setTimeout(() => {
+    document.querySelectorAll('.group-header h3').forEach((header, index) => {
+      header.setAttribute('data-i18n', `category${index + 1}`);
+      header.textContent = t(`category${index + 1}`);
+    });
+  }, 100);
 
   document.querySelectorAll('input[name="deceased_gender"]').forEach(input => {
     input.addEventListener('change', toggleSpouseField);
   });
 
   form.addEventListener('submit', openSonsModal);
+  
+  // تحديث تسميات الحقول بعد الترجمة
+  updateFieldLabels();
+}
+
+// تحديث تسميات الحقول
+function updateFieldLabels() {
+  setTimeout(() => {
+    document.querySelectorAll('.form-group label').forEach(label => {
+      const fieldId = label.getAttribute('for');
+      if (fieldId) {
+        const translation = t(fieldId);
+        if (translation && translation !== fieldId) {
+          label.textContent = translation;
+        }
+      }
+    });
+  }, 200);
 }
 
 function toggleSpouseField() {
@@ -319,13 +485,16 @@ function collectFormData() {
 
     if (id === "wife" && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `الزوجة ${numberToArabicWord(i, "female")}`, name: "" };
+        formData.heirs[`${id}_${i}`] = { 
+          title: `${t('wife')} ${numberToLocalizedWord(i, "female")}`, 
+          name: "" 
+        };
       }
       return;
     }
 
     if (id === "husband" && value === "yes" && formData.deceased_gender === "female") {
-      formData.heirs[id] = { title: "الزوج", name: "" };
+      formData.heirs[id] = { title: t('husband'), name: "" };
       return;
     }
 
@@ -336,7 +505,10 @@ function collectFormData() {
 
     if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
       for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { title: `${title} ${numberToArabicWord(i, gender)}`, name: "" };
+        formData.heirs[`${id}_${i}`] = { 
+          title: `${title} ${numberToLocalizedWord(i, gender)}`, 
+          name: "" 
+        };
       }
     }
   });
@@ -349,11 +521,11 @@ function updateReligiousTab(data) {
   if (data.deceased_gender) {
     deceasedInfoHTML = `
             <tr>
-                <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
+                <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
                 <td>${data.deceased_religion}</td>
                 <td>${data.deceased_name}</td>
-                <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
-                <td>${data.materials || 'لا توجد'}</td>
+                <td>${data.amount || t('noAmount')}</td>
+                <td>${data.materials || t('noMaterials')}</td>
             </tr>
         `;
   }
@@ -368,7 +540,7 @@ function updateReligiousTab(data) {
     i++
     heirsHTML += `
             <tr>
-                <td class="counter">${i}</td>
+                <td class="counter">${formatNumber(i)}</td>
                 <td>${data.heirs[key].title}</td>
                 <td>
                   <input 
@@ -376,14 +548,14 @@ function updateReligiousTab(data) {
                     class="heir-name" 
                     data-heir-id="${key}" 
                     value="${data.heirs[key].name || ''}" 
-                    placeholder="أدخل اسم الوريث"
-                    title="اسم الوريث ${data.heirs[key].title}"
+                    placeholder="${t('enterHeirName')}"
+                    title="${t('enterHeirName')}"
                   >
                 </td>
                 <td>
-                    <select class="heir-religion" data-heir-id="${key}" title="ديانة الوريث ${data.heirs[key].title}">
-                        <option value="مسلم">مسلم</option>
-                        <option value="غير مسلم">غير مسلم</option>
+                    <select class="heir-religion" data-heir-id="${key}" title="${t('religiousStatus')}">
+                        <option value="مسلم">${t('muslim')}</option>
+                        <option value="غير مسلم">${t('nonMuslim')}</option>
                     </select>
                 </td>
             </tr>
@@ -411,7 +583,7 @@ function handleReligiousSubmit(event) {
 
   // ========== استخدام النظام الجديد للمفاتيح الستة ==========
   const totalAmount = processTotalAmount(data.amount);
-  const materialsAmount = parseFloat(data.materials) || 0;
+  const materialsAmount = parseNumber(data.materials) || 0;
   
   // حساب توزيع المال باستخدام النظام الجديد
   const moneyResults = calculateInheritance(totalAmount, data?.heirs);
@@ -426,13 +598,13 @@ function handleReligiousSubmit(event) {
     ...data, 
     heirs: moneyResults,
     materialsDistribution: materialsResults,
-    hasAmount: !!data.amount && parseFloat(data.amount) > 0
+    hasAmount: !!data.amount && parseNumber(data.amount) > 0
   });
 }
 
 // ========== دالة معالجة المبلغ فقط (بدون مواد) ==========
 function processTotalAmount(amount) {
-  let total = parseFloat(amount) || 0;
+  let total = parseNumber(amount) || 0;
   
   // إذا لم يتم إدخال أي مبلغ، نستخدم قيمة افتراضية للحسابات النسبية
   if (total === 0) {
@@ -465,11 +637,11 @@ function updateSharesTab(data) {
   if (data.deceased_gender) {
     deceasedInfoHTML = `
         <tr>
-            <td>${data.deceased_gender === 'male' ? 'ذكر' : 'أنثى'}</td>
+            <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
             <td>${data.deceased_religion}</td>
             <td>${data.deceased_name}</td>
-            <td>${data.amount || 'لم يتم تحديد مبلغ'}</td>
-            <td>${data.materials || 'لا توجد'}</td>
+            <td>${data.amount || t('noAmount')}</td>
+            <td>${data.materials || t('noMaterials')}</td>
         </tr>
     `;
   }
@@ -479,82 +651,85 @@ function updateSharesTab(data) {
   let i = 0;
   
   // ========== التحكم في عرض المبالغ بناء على وجود مبلغ تركة ==========
-  const showAmounts = data.hasAmount; // عرض المبالغ فقط إذا كان هناك مبلغ تركة
+  const showAmounts = data.hasAmount;
   
   for (let key in data.heirs) {
     i++;
     
-    // ========== الإصلاح 1: معالجة صلة القرابة لمنع undefined ==========
+    // ========== معالجة صلة القرابة ==========
     let relationship = data.heirs[key].title;
     
     // إذا كان العنوان غير محدد، نستخدم معرف الوارث لاستنتاج الصلة
     if (!relationship || relationship === 'undefined' || relationship.includes('undefined')) {
       if (key.startsWith('son_')) {
         const sonNumber = key.split('_')[1] || '';
-        relationship = sonNumber ? `ابن (${numberToArabicWord(parseInt(sonNumber), 'male')})` : 'ابن';
+        relationship = sonNumber ? `${t('son')} (${numberToLocalizedWord(parseInt(sonNumber), 'male')})` : t('son');
       } else if (key.startsWith('daughter_')) {
         const daughterNumber = key.split('_')[1] || '';
-        relationship = daughterNumber ? `ابنة (${numberToArabicWord(parseInt(daughterNumber), 'female')})` : 'ابنة';
+        relationship = daughterNumber ? `${t('daughter')} (${numberToLocalizedWord(parseInt(daughterNumber), 'female')})` : t('daughter');
       } else if (key.startsWith('wife_')) {
         const wifeNumber = key.split('_')[1] || '';
-        relationship = wifeNumber ? `زوجة (${numberToArabicWord(parseInt(wifeNumber), 'female')})` : 'زوجة';
+        relationship = wifeNumber ? `${t('wife')} (${numberToLocalizedWord(parseInt(wifeNumber), 'female')})` : t('wife');
       } else if (key.startsWith('sister_')) {
         const sisterNumber = key.split('_')[1] || '';
-        relationship = sisterNumber ? `أخت (${numberToArabicWord(parseInt(sisterNumber), 'female')})` : 'أخت';
+        relationship = sisterNumber ? `${t('sister')} (${numberToLocalizedWord(parseInt(sisterNumber), 'female')})` : t('sister');
       } else if (key === 'father') {
-        relationship = 'أب';
+        relationship = t('father');
       } else if (key === 'mother') {
-        relationship = 'أم';
+        relationship = t('mother');
       } else if (key === 'husband') {
-        relationship = 'زوج';
+        relationship = t('husband');
       } else if (key === 'FR_grandmother') {
-        relationship = 'جدة لاب';
+        relationship = t('FR_grandmother');
       } else if (key === 'MR_grandmother') {
-        relationship = 'جدة لأم';
+        relationship = t('MR_grandmother');
       } else {
-        relationship = key; // استخدام المعرف كبديل
+        relationship = key;
       }
     }
     
-    // ========== الإصلاح 2: تنظيف رسائل التوضيح ==========
+    // ========== معالجة رسائل التوضيح ==========
     let note = data.heirs[key].note || '';
     
-    // استبدال العبارات في الملاحظات
+    // تنظيف الملاحظات
     if (note.includes('الباقي يرد')) {
-      note = note.replace('الباقي يرد', 'الباقي يرد ');
+      note = note.replace('الباقي يرد', t('raddNote').split('حسب')[0]);
     }
     if (note.includes('حسب سهامهم')) {
-      note = note.replace('حسب سهامهم', 'حسب سهامهما');
-    }
-    if (note.includes('حسب سهامها')) {
-      note = note.replace('حسب سهامها',  'حسب سهامهما');
+      note = note.replace('حسب سهامهم', t('raddNote').split('حسب')[1]);
     }
     if (note.includes('يرد على الابنة')) {
-      note = note.replace('يرد على الابنة', 'يرد رحم على الابنة');
-    }
-    if (note.includes('يرد للابنة')) {
-      note = note.replace('يرد للابنة', 'يرد رحم للابنة');
+      note = t('remainderToDaughterNote');
     }
     if (note.includes('يرد على البنات')) {
-      note = note.replace('يرد على البنات', 'يرد رحم على البنات');
+      note = t('raddToDaughtersNote');
+    }
+    if (note.includes('للذكر مثل حظ الأنثيين')) {
+      note = t('maleFemaleRatioNote');
+    }
+    if (note.includes('والباقي كاملاً للابن')) {
+      note = t('remainderToSonNote');
+    }
+    if (note.includes('الباقي تعصيب')) {
+      note = t('remainderNote');
     }
     
     // الحصول على كمية المواد لهذا الوريث
     const materialsData = data.materialsDistribution?.[key];
     const materialsAmount = materialsData?.materialsAmount || '0.000';
-    const materialsDisplay = data.materials ? `${Number(materialsAmount).toFixed(3)} متر` : '-';
+    const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
     
     const moneyAmount = data.heirs[key].amount ? Number(data.heirs[key].amount).toFixed(3) : '-';
-    const moneyDisplay = showAmounts ? moneyAmount : '-';
+    const moneyDisplay = showAmounts ? formatNumber(moneyAmount) : '-';
     
     sharesHTML += `
         <tr>
-            <td class="counter">${i}</td>
+            <td class="counter">${formatNumber(i)}</td>
             <td>${relationship}</td>
             <td>${data.heirs[key].name || '-'}</td>
             <td>${moneyDisplay}</td>
             <td>${materialsDisplay}</td>
-            <td>${data.heirs[key].percentage + '%' || '-'}</td>
+            <td>${formatNumber(data.heirs[key].percentage) + '%' || '-'}</td>
             <td>${note}</td>
         </tr>
     `;
@@ -565,25 +740,24 @@ function updateSharesTab(data) {
     i++;
     const materialsData = data.materialsDistribution?.bayt_al_mal;
     const materialsAmount = materialsData?.materialsAmount || '0.000';
-    const materialsDisplay = data.materials ? `${Number(materialsAmount).toFixed(3)} متر` : '-';
+    const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
     
     const baytMoneyAmount = data.heirs.bayt_al_mal.amount ? Number(data.heirs.bayt_al_mal.amount).toFixed(3) : '-';
-    const baytMoneyDisplay = showAmounts ? baytMoneyAmount : '-';
+    const baytMoneyDisplay = showAmounts ? formatNumber(baytMoneyAmount) : '-';
     
-    // تنظيف ملاحظة بيت المال أيضاً
     let baytNote = data.heirs.bayt_al_mal.note || '';
     if (baytNote.includes('الباقي يرد')) {
-      baytNote = baytNote.replace('الباقي يرد', 'الباقي يرد رحم');
+      baytNote = t('baytAlMalNote');
     }
     
     sharesHTML += `
         <tr>
-            <td class="counter">${i}</td>
-            <td>${data.heirs.bayt_al_mal.title}</td>
-            <td>${data.heirs.bayt_al_mal.name || '-'}</td>
+            <td class="counter">${formatNumber(i)}</td>
+            <td>${t('baytAlMal')}</td>
+            <td>-</td>
             <td>${baytMoneyDisplay}</td>
             <td>${materialsDisplay}</td>
-            <td>${data.heirs.bayt_al_mal.percentage + '%' || '-'}</td>
+            <td>${formatNumber(data.heirs.bayt_al_mal.percentage) + '%' || '-'}</td>
             <td>${baytNote}</td>
         </tr>
     `;
@@ -631,8 +805,6 @@ function calulcateWarth(all) {
   let hiddenHasband = document.getElementById('spouse_male').classList.contains('hidden')
   for (const [key, item] of Object.entries(all)) {
     if (key === 'dad_sons' || key === 'dad_girls') {
-      console.log('called here');
-      
       continue
     }
     if (key === 'wift' && hiddenWift) {
@@ -648,10 +820,10 @@ function calulcateWarth(all) {
       continue
     }
     else {
-      count += +item
+      count += parseNumber(item)
     }
   }
-  document.getElementById('worthCount').textContent = count
+  document.getElementById('worthCount').textContent = formatNumber(count)
 }
 
 function openSonsModal(e) {
@@ -673,4 +845,4 @@ function openSonsModal(e) {
     document.getElementById('dad_girls').value = 'لا'
     handleCalculatorSubmit()
   }
-       }
+}
