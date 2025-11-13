@@ -8,15 +8,21 @@
       http-equiv="Content-Security-Policy"
       content="upgrade-insecure-requests"
     />
-    <title>الفتح السليماني الطيبي - حاسبة الميراث</title>
+    <title data-i18n="pageTitle">الفتح السليماني الطيبي - حاسبة الميراث</title>
     <link rel="stylesheet" href="css/worth.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <style>
       body {
         font-family: 'Tajawal', 'Amiri', sans-serif;
+      }
+      body[dir="ltr"] {
+        font-family: 'Roboto', 'Segoe UI', sans-serif;
+      }
+      body.lang-ur {
+        font-family: 'Noto Nastaliq Urdu', 'Tajawal', 'Amiri', sans-serif;
       }
       .header {
         text-align: center;
@@ -25,6 +31,35 @@
         font-size: 1.8rem;
         font-weight: 700;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      }
+      .language-switcher {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1001;
+      }
+      body[dir="ltr"] .language-switcher {
+        right: auto;
+        left: 1rem;
+      }
+      .language-switcher select {
+        padding: 0.5rem 1rem;
+        border: 2px solid var(--primary-color);
+        border-radius: var(--border-radius-md);
+        background: white;
+        color: var(--primary-dark);
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: var(--transition);
+      }
+      .language-switcher select:hover {
+        background: var(--primary-light);
+        color: white;
+      }
+      .language-switcher select:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
       }
     </style>
   </head>
@@ -35,7 +70,7 @@
         <div class="form-group input-group">
           <label for="dad_sons">عدد اولاد الأب</label>
           <select id="dad_sons" name="dad_sons" title="عدد أولاد الأب">
-            <option value="لا">لا</option>
+            <option value="0">لا</option>
             <option value="1">ولد</option>
             <option value="2">ولدين</option>
             <option value="3">أكثر من ولدين</option>
@@ -44,7 +79,7 @@
         <div class="form-group input-group">
           <label for="dad_girls">عدد بنات الأب</label>
           <select id="dad_girls" name="dad_girls" title="عدد بنات الأب">
-            <option value="لا">لا</option>
+            <option value="0">لا</option>
             <option value="1">بنت</option>
             <option value="2">بنتين</option>
             <option value="3">ثلاث بنات</option>
@@ -53,7 +88,7 @@
           </select>
         </div>
         <div class="btn-group">
-          <button class="btn-next" id="closeSonsPopup" title="إغلاق النافذة">أغلاق</button>
+          <button class="btn-next" id="closeSonsPopup" title="إغلاق النافذة">إغلاق</button>
           <button class="btn-next" id="sonsNextBtn" title="المتابعة إلى الخطوة التالية">التالي</button>
         </div>
       </div>
@@ -86,7 +121,7 @@
         <div class="tab-content active" id="calculator">
           <div class="form-container">
             <p class="alert">
-              قم بادخال جنس المتوفي واسمه ومبلغ التركه ان كان معروف والامتار المراد تقسيمها ان كانت معروفه وقم بتحديد جميع ورثته ثم اضغط على التالي
+              قم بإدخال جنس المتوفي واسمه ومبلغ التركة إن كان معروفاً والأمتار المراد تقسيمها إن كانت معروفة وقم بتحديد جميع ورثته ثم اضغط على التالي
             </p>
             <form id="inheritanceForm">
               <div class="form-group-inline">
@@ -173,7 +208,7 @@
               <div class="form-group hidden" id="spouse_female">
                 <label for="wife">عدد الزوجات</label>
                 <select id="wife" name="wife" title="عدد زوجات المتوفى">
-                  <option value="no">لا</option>
+                  <option value="0">لا</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -198,7 +233,7 @@
         <div class="tab-content" id="religious">
           <div class="form-container">
             <p class="alert">
-              اكتب اسماء الورثه واختر ديانة كل وريث ثم اضغط على التالي
+              اكتب أسماء الورثة واختر ديانة كل وارث ثم اضغط على التالي
             </p>
             <table class="deceased">
               <thead>
@@ -231,7 +266,7 @@
         <div class="tab-content" id="shares">
           <!-- إخفاء التنبيه من الطباعة -->
           <p class="alert alert-deceased print-hide">
-            تمت القسمة ويمكنك طباعة نتيجة القسمة او اضغط على السابق للتعديل
+            تمت القسمة ويمكنك طباعة نتيجة القسمة أو اضغط على السابق للتعديل
           </p>
           
           <!-- إضافة عنوان للطباعة فقط -->
@@ -318,7 +353,7 @@
 
     <div class="modal-overlay" id="modalOverlay">
       <div class="modal" id="validationModal">
-        <div class="modal-content">يجب اختيار وريث واحد على الأقل للمتابعة</div>
+        <div class="modal-content">يجب اختيار وارث واحد على الأقل للمتابعة</div>
         <button class="modal-button" id="closeModal" title="موافق">حسناً</button>
       </div>
     </div>
