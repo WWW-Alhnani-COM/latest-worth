@@ -6,18 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
   <title data-i18n="pageTitle">الفتح السليماني الطيبي - حاسبة الميراث</title>
-  
-  <!-- ربط ملفات CSS -->
-  <link rel="stylesheet" href="css/worth.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  
-  <!-- ربط الخطوط -->
+  <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- ربط مكتبات JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
 </head>
 <body>
@@ -307,65 +300,200 @@
     </div>
   </div>
 
-  <!-- ربط ملفات JavaScript -->
-  <script src="js/navigation.js"></script>
-  <script src="js/interactions.js"></script>
-  
-  <!-- نظام الترجمة -->
-  <script type="module">
-    import { translations, getCurrentLanguage, setLanguage, t, isRTL } from './js/translations.js';
-    
-    // تطبيق الترجمة على الصفحة
-    function applyTranslations() {
-      const lang = getCurrentLanguage();
-      
-      // تحديث اتجاه الصفحة
-      document.documentElement.dir = isRTL(lang) ? 'rtl' : 'ltr';
-      document.documentElement.lang = lang;
-      document.body.className = isRTL(lang) ? '' : 'ltr';
-      if (lang === 'ur') document.body.classList.add('lang-ur');
-      
-      // تحديث مبدل اللغة
-      document.getElementById('languageSelect').value = lang;
-      
-      // ترجمة النصوص
-      document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-          element.textContent = translations[lang][key];
-        }
-      });
-      
-      // ترجمة العنواين
-      document.querySelectorAll('[data-i18n-title]').forEach(element => {
-        const key = element.getAttribute('data-i18n-title');
-        if (translations[lang] && translations[lang][key]) {
-          element.title = translations[lang][key];
-        }
-      });
-      
-      // ترجمة النصوص التوضيحية
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-        const key = element.getAttribute('data-i18n-placeholder');
-        if (translations[lang] && translations[lang][key]) {
-          element.placeholder = translations[lang][key];
-        }
-      });
-    }
-    
-    // تغيير اللغة
-    document.getElementById('languageSelect').addEventListener('change', function(e) {
-      const lang = e.target.value;
-      setLanguage(lang);
-      applyTranslations();
-    });
-    
-    // تطبيق الترجمة عند تحميل الصفحة
+  <!-- JavaScript للتحكم في التنقل بين التبويبات -->
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
-      applyTranslations();
+      // عناصر التبويب
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const nextButton = document.getElementById('footer-next-btn');
+      const prevButton = document.getElementById('footer-prev-btn');
+      const printButton = document.getElementById('footer-print-btn');
+      
+      let currentTab = 0;
+      
+      // تهيئة التبويبات
+      function initializeTabs() {
+        // إظهار التبويب الأول فقط
+        tabContents.forEach((content, index) => {
+          if (index === 0) {
+            content.classList.add('active');
+          } else {
+            content.classList.remove('active');
+          }
+        });
+        
+        // تحديث حالة أزرار التبويب
+        tabButtons.forEach((button, index) => {
+          if (index === 0) {
+            button.classList.add('active');
+          } else {
+            button.classList.remove('active');
+          }
+        });
+        
+        // تحديث حالة أزرار التنقل
+        updateNavigationButtons();
+      }
+      
+      // تحديث أزرار التنقل
+      function updateNavigationButtons() {
+        // زر السابق
+        if (currentTab === 0) {
+          prevButton.classList.add('hidden');
+        } else {
+          prevButton.classList.remove('hidden');
+        }
+        
+        // زر التالي وطباعة
+        if (currentTab === tabContents.length - 1) {
+          nextButton.classList.add('hidden');
+          printButton.classList.remove('hidden');
+        } else {
+          nextButton.classList.remove('hidden');
+          printButton.classList.add('hidden');
+        }
+      }
+      
+      // الانتقال إلى تبويب معين
+      function goToTab(tabIndex) {
+        // التأكد من أن الفهرس ضمن النطاق
+        if (tabIndex < 0 || tabIndex >= tabContents.length) return;
+        
+        // تحديث التبويب الحالي
+        currentTab = tabIndex;
+        
+        // تحديث عرض التبويبات
+        tabContents.forEach((content, index) => {
+          if (index === tabIndex) {
+            content.classList.add('active');
+          } else {
+            content.classList.remove('active');
+          }
+        });
+        
+        // تحديث أزرار التبويب
+        tabButtons.forEach((button, index) => {
+          if (index === tabIndex) {
+            button.classList.add('active');
+          } else {
+            button.classList.remove('active');
+          }
+        });
+        
+        // تحديث أزرار التنقل
+        updateNavigationButtons();
+      }
+      
+      // إضافة مستمعي الأحداث
+      nextButton.addEventListener('click', function() {
+        // التحقق من صحة البيانات قبل الانتقال
+        if (validateCurrentTab()) {
+          goToTab(currentTab + 1);
+        }
+      });
+      
+      prevButton.addEventListener('click', function() {
+        goToTab(currentTab - 1);
+      });
+      
+      // النقر على أزرار التبويب
+      tabButtons.forEach((button, index) => {
+        button.addEventListener('click', function() {
+          // السماح بالانتقال فقط للتبويبات السابقة
+          if (index <= currentTab) {
+            goToTab(index);
+          }
+        });
+      });
+      
+      // التحقق من صحة البيانات في التبويب الحالي
+      function validateCurrentTab() {
+        if (currentTab === 0) {
+          // التحقق من البيانات الأساسية
+          const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked');
+          const deceasedName = document.getElementById('deceased_name').value;
+          
+          if (!deceasedGender) {
+            alert('يرجى اختيار نوع المتوفى');
+            return false;
+          }
+          
+          if (!deceasedName.trim()) {
+            alert('يرجى إدخال اسم المتوفى');
+            return false;
+          }
+          
+          // هنا يمكن إضافة المزيد من التحقق
+        }
+        
+        return true;
+      }
+      
+      // تفعيل التبويبات عند تحميل الصفحة
+      initializeTabs();
+      
+      // إضافة تفاعلية لتمييز العناصر المحددة
+      const maleItem = document.getElementById('maleItem');
+      const femaleItem = document.getElementById('femaleItem');
+      const muslimItem = document.getElementById('muslimItem');
+      const nonMuslimItem = document.getElementById('nonMuslimItem');
+      
+      // تمييز نوع المتوفى
+      maleItem.addEventListener('click', function() {
+        maleItem.classList.add('selected');
+        femaleItem.classList.remove('selected');
+        document.getElementById('male').checked = true;
+      });
+      
+      femaleItem.addEventListener('click', function() {
+        femaleItem.classList.add('selected');
+        maleItem.classList.remove('selected');
+        document.getElementById('female').checked = true;
+      });
+      
+      // تمييز الديانة
+      muslimItem.addEventListener('click', function() {
+        muslimItem.classList.add('selected');
+        nonMuslimItem.classList.remove('selected');
+      });
+      
+      nonMuslimItem.addEventListener('click', function() {
+        nonMuslimItem.classList.add('selected');
+        muslimItem.classList.remove('selected');
+      });
+      
+      // تمييز عناصر select في الفئات
+      document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('category-select')) {
+          if (e.target.value !== '0' && e.target.value !== 'no') {
+            e.target.classList.add('selected');
+          } else {
+            e.target.classList.remove('selected');
+          }
+        }
+      });
+      
+      // إظهار/إخفاء حقول الزوج/الزوجة بناءً على نوع المتوفى
+      const maleRadio = document.getElementById('male');
+      const femaleRadio = document.getElementById('female');
+      const spouseFemale = document.getElementById('spouse_female');
+      const spouseMale = document.getElementById('spouse_male');
+      
+      maleRadio.addEventListener('change', function() {
+        if (this.checked) {
+          spouseFemale.classList.add('hidden');
+          spouseMale.classList.remove('hidden');
+        }
+      });
+      
+      femaleRadio.addEventListener('change', function() {
+        if (this.checked) {
+          spouseMale.classList.add('hidden');
+          spouseFemale.classList.remove('hidden');
+        }
+      });
     });
   </script>
-
-  <script type="module" src="js/new_script.js"></script>
 </body>
 </html>
