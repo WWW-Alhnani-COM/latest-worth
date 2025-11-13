@@ -974,3 +974,60 @@ hr {
     position: relative;
   }
 }
+/* أنماط تفاعلية إضافية */
+.focused-field {
+  position: relative;
+}
+
+.focused-field::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary-color);
+  border-radius: 2px;
+}
+
+.selected-group {
+  border-left: 3px solid var(--success-color);
+  padding-left: 10px;
+}
+
+.selected-radio {
+  background: rgba(52, 168, 83, 0.1) !important;
+  border-radius: var(--radius-md);
+}
+
+.selected-row {
+  background: rgba(52, 168, 83, 0.1) !important;
+  border-left: 3px solid var(--success-color);
+}
+
+.editing-row {
+  box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.3);
+  border-radius: var(--radius-sm);
+}
+
+/* تأثيرات على خطوات التبويب */
+.tab-button.completed {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--success-color);
+}
+
+.tab-button.completed .step-number {
+  background: var(--success-color);
+  color: white;
+}
+
+/* تأثيرات على العداد */
+.worth-count.has-heirs {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--success-color);
+  border: 1px solid var(--success-color);
+}
+
+.worth-count.has-heirs span {
+  background: var(--success-color);
+}
