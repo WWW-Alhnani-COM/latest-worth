@@ -136,7 +136,76 @@
       position: relative;
       z-index: 1001;
     }
+/* تأثيرات تفاعلية للعناصر */
+.input-group select:valid,
+.input-group input:valid {
+  border-color: var(--success-color) !important;
+  background-color: rgba(52, 168, 83, 0.05) !important;
+}
 
+.input-group select:focus:valid,
+.input-group input:focus:valid {
+  box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+}
+
+/* تأثيرات على الأزرار عند التمرير */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* تأثيرات على التبويبات */
+.tab-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+.tab-button.active {
+  background: var(--bg-primary);
+  color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+/* تأثيرات على الحقول المملوءة */
+.filled-field {
+  border-color: var(--success-color) !important;
+  background-color: rgba(52, 168, 83, 0.05) !important;
+}
+
+/* تأثيرات على الجداول */
+tr:hover {
+  background: var(--bg-secondary);
+  transition: var(--transition);
+}
+
+/* تأثيرات على العناصر المحددة */
+.selected-item {
+  background: var(--success-color) !important;
+  color: white !important;
+}
+
+/* تأثيرات على أزرار الراديو */
+.radio-item:hover .radio-custom {
+  border-color: var(--success-color);
+}
+
+.radio-input:checked + .radio-custom {
+  border-color: var(--success-color);
+  background: rgba(52, 168, 83, 0.1);
+}
+
+/* تأثيرات على المودال */
+.sons-modal-content {
+  transform: scale(0.9);
+  opacity: 0;
+  transition: var(--transition-slow);
+}
+
+.sons-modal.active .sons-modal-content {
+  transform: scale(1);
+  opacity: 1;
+}
     .language-switcher-container {
       position: relative;
       display: inline-block;
