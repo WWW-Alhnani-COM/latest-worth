@@ -410,16 +410,13 @@ function initCalculatorForm() {
 
   // تحديث العناوين بعد الترجمة
   setTimeout(() => {
-    document.querySelectorAll('.group-header h3').forEach((header, index) => {
-      header.setAttribute('data-i18n', `category${index + 1}`);
-      header.textContent = t(`category${index + 1}`);
-    });
+    initInteractivity();
+    updateFieldLabels();
   }, 100);
 
   document.querySelectorAll('input[name="deceased_gender"]').forEach(input => {
     input.addEventListener('change', toggleSpouseField);
   });
-
   form.addEventListener('submit', openSonsModal);
   
   // تحديث تسميات الحقول بعد الترجمة
@@ -689,6 +686,9 @@ function updateReligiousTab(data) {
             </tr>
         `;
   }
+   setTimeout(() => {
+    initHeirsInteractivity();
+  }, 100);
   document.getElementById('deceasedInfoBody').innerHTML = deceasedInfoHTML;
 
   let heirsHTML = "";
@@ -1006,5 +1006,6 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
 
