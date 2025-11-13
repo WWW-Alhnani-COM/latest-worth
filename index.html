@@ -61,41 +61,54 @@
         outline: none;
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
       }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
-    <div id="sons_numbers" class="sons-modal">
+    <!-- مبدل اللغة -->
+    <div class="language-switcher">
+      <select id="languageSelect" title="اختر اللغة">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+        <option value="ur">اردو</option>
+      </select>
+    </div>
+
+    <div id="sons_numbers" class="sons-modal hidden">
       <div class="sons-modal-content">
-        <h2>كم عدد أبناء وبنات الأب <br />(إخوة وأخوات المتوفى)</h2>
+        <h2 data-i18n="fatherChildrenTitle">كم عدد أبناء وبنات الأب</h2>
+        <p data-i18n="fatherChildrenSubtitle">(إخوة وأخوات المتوفى)</p>
         <div class="form-group input-group">
-          <label for="dad_sons">عدد أولاد الأب</label>
-          <select id="dad_sons" name="dad_sons" title="عدد أولاد الأب">
-            <option value="0">لا</option>
-            <option value="1">ولد</option>
-            <option value="2">ولدين</option>
-            <option value="3">أكثر من ولدين</option>
+          <label for="dad_sons" data-i18n="fatherSons">عدد أولاد الأب</label>
+          <select id="dad_sons" name="dad_sons" data-i18n-title="fatherSons">
+            <option value="0" data-i18n="no">لا</option>
+            <option value="1" data-i18n="oneSon">ولد</option>
+            <option value="2" data-i18n="twoSons">ولدين</option>
+            <option value="3" data-i18n="moreThanTwoSons">أكثر من ولدين</option>
           </select>
         </div>
         <div class="form-group input-group">
-          <label for="dad_girls">عدد بنات الأب</label>
-          <select id="dad_girls" name="dad_girls" title="عدد بنات الأب">
-            <option value="0">لا</option>
-            <option value="1">بنت</option>
-            <option value="2">بنتين</option>
-            <option value="3">ثلاث بنات</option>
-            <option value="4">أربع بنات</option>
-            <option value="5">أكثر من أربع بنات</option>
+          <label for="dad_girls" data-i18n="fatherDaughters">عدد بنات الأب</label>
+          <select id="dad_girls" name="dad_girls" data-i18n-title="fatherDaughters">
+            <option value="0" data-i18n="no">لا</option>
+            <option value="1" data-i18n="oneDaughter">بنت</option>
+            <option value="2" data-i18n="twoDaughters">بنتين</option>
+            <option value="3" data-i18n="threeDaughters">ثلاث بنات</option>
+            <option value="4" data-i18n="fourDaughters">أربع بنات</option>
+            <option value="5" data-i18n="moreThanFourDaughters">أكثر من أربع بنات</option>
           </select>
         </div>
         <div class="btn-group">
-          <button class="btn-next" id="closeSonsPopup" title="إغلاق النافذة">إغلاق</button>
-          <button class="btn-next" id="sonsNextBtn" title="المتابعة إلى الخطوة التالية">التالي</button>
+          <button class="btn-next" id="closeSonsPopup" data-i18n="close" data-i18n-title="close">إغلاق</button>
+          <button class="btn-next" id="sonsNextBtn" data-i18n="next" data-i18n-title="next">التالي</button>
         </div>
       </div>
     </div>
     
     <div class="app-container">
-      <h1>حاسبة تقسيم الميراث</h1>
+      <h1 data-i18n="mainTitle">حاسبة تقسيم الميراث</h1>
       
       <div class="container">
         <div class="tabs">
@@ -103,30 +116,30 @@
             class="tab-button active calculator"
             data-tab="calculator"
             disabled
-            title="الخطوة الأولى: إدخال البيانات الأساسية"
+            data-i18n-title="tab1Title"
           >
             <span class="step-number">1</span>
-            <span class="step-title">البيانات الأساسية</span>
+            <span class="step-title" data-i18n="tab1Title">البيانات الأساسية</span>
           </button>
-          <button class="tab-button religious" data-tab="religious" disabled title="الخطوة الثانية: إدخال بيانات الورثة">
+          <button class="tab-button religious" data-tab="religious" disabled data-i18n-title="tab2Title">
             <span class="step-number">2</span>
-            <span class="step-title">بيانات الورثة</span>
+            <span class="step-title" data-i18n="tab2Title">بيانات الورثة</span>
           </button>
-          <button class="tab-button shares" data-tab="shares" disabled title="الخطوة الثالثة: عرض نتائج التوزيع">
+          <button class="tab-button shares" data-tab="shares" disabled data-i18n-title="tab3Title">
             <span class="step-number">3</span>
-            <span class="step-title">نتائج التوزيع</span>
+            <span class="step-title" data-i18n="tab3Title">نتائج التوزيع</span>
           </button>
         </div>
         
         <div class="tab-content active" id="calculator">
           <div class="form-container">
-            <p class="alert">
+            <p class="alert" data-i18n="alert1">
               قم بإدخال جنس المتوفى واسمه ومبلغ التركة إن كان معروفاً والأمتار المراد تقسيمها إن كانت معروفة وقم بتحديد جميع ورثته ثم اضغط على التالي
             </p>
             <form id="inheritanceForm">
               <div class="form-group-inline">
                 <div class="flex-container">
-                  <label>نوع المتوفى</label>
+                  <label data-i18n="deceasedType">نوع المتوفى</label>
                   <div class="">
                     <input
                       style="display: none"
@@ -140,9 +153,9 @@
                       id="male"
                       name="deceased_gender"
                       value="male"
-                      title="المتوفى ذكر"
+                      data-i18n-title="male"
                     />
-                    <label for="male">ذكر</label>
+                    <label for="male" data-i18n="male">ذكر</label>
                   </div>
                   <div class="">
                     <input
@@ -150,63 +163,63 @@
                       id="female"
                       name="deceased_gender"
                       value="female"
-                      title="المتوفى أنثى"
+                      data-i18n-title="female"
                     />
-                    <label for="female">أنثى</label>
+                    <label for="female" data-i18n="female">أنثى</label>
                   </div>
                 </div>
                 <div class="deceased_religion">
-                  <label for="deceased_religion" class="inline-label">الديانة</label>
-                  <select id="deceased_religion" name="deceased_religion" title="ديانة المتوفى">
-                    <option value="مسلم">مسلم</option>
-                    <option value="غير مسلم">غير مسلم</option>
+                  <label for="deceased_religion" class="inline-label" data-i18n="religion">الديانة</label>
+                  <select id="deceased_religion" name="deceased_religion" data-i18n-title="religion">
+                    <option value="مسلم" data-i18n="muslim">مسلم</option>
+                    <option value="غير مسلم" data-i18n="nonMuslim">غير مسلم</option>
                   </select>
                   <div class="worth-count">
                     <span id="worthCount">0</span>
-                    <p>وريث</p>
+                    <p data-i18n="heir">وريث</p>
                   </div>
                 </div>
               </div>
 
               <div class="container">
                 <div class="input-group">
-                  <label for="deceased_name">اسم المتوفى</label>
+                  <label for="deceased_name" data-i18n="deceasedName">اسم المتوفى</label>
                   <input
                     type="text"
                     id="deceased_name"
                     name="deceased_name"
-                    placeholder="أدخل اسم المتوفى"
-                    title="اسم المتوفى"
+                    data-i18n-placeholder="enterDeceasedName"
+                    data-i18n-title="deceasedName"
                   />
                 </div>
 
                 <div class="input-group">
-                  <label for="amount">مبلغ التركة</label>
+                  <label for="amount" data-i18n="estateAmount">مبلغ التركة</label>
                   <input
                     type="number"
                     id="amount"
-                    placeholder="أدخل المبلغ إذا كان معروفاً"
-                    title="مبلغ التركة بالريال"
+                    data-i18n-placeholder="enterAmount"
+                    data-i18n-title="estateAmount"
                   />
-                  <span class="unit">ريال</span>
+                  <span class="unit" data-i18n="riyal">ريال</span>
                 </div>
 
                 <div class="input-group">
-                  <label for="materials">الأمتار المراد توزيعها</label>
+                  <label for="materials" data-i18n="materials">الأمتار المراد توزيعها</label>
                   <input
                     type="number"
                     id="materials"
-                    placeholder="أدخل الأمتار المراد توزيعها إذا كانت معروفة"
-                    title="الأمتار المراد توزيعها"
+                    data-i18n-placeholder="enterMaterials"
+                    data-i18n-title="materials"
                   />
-                  <span class="unit">متر</span>
+                  <span class="unit" data-i18n="meter">متر</span>
                 </div>
               </div>
 
               <div class="form-group hidden" id="spouse_female">
-                <label for="wife">عدد الزوجات</label>
-                <select id="wife" name="wife" title="عدد زوجات المتوفى">
-                  <option value="0">لا</option>
+                <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
+                <select id="wife" name="wife" data-i18n-title="numberOfWives">
+                  <option value="0" data-i18n="no">لا</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -215,10 +228,10 @@
               </div>
 
               <div class="form-group hidden" id="spouse_male">
-                <label for="husband">هل يوجد زوج؟</label>
-                <select id="husband" name="husband" title="وجود زوج للمتوفى">
-                  <option value="no">لا</option>
-                  <option value="yes">نعم</option>
+                <label for="husband" data-i18n="hasHusband">هل يوجد زوج؟</label>
+                <select id="husband" name="husband" data-i18n-title="hasHusband">
+                  <option value="no" data-i18n="no">لا</option>
+                  <option value="yes" data-i18n="yes">نعم</option>
                 </select>
               </div>
 
@@ -230,17 +243,17 @@
         
         <div class="tab-content" id="religious">
           <div class="form-container">
-            <p class="alert">
+            <p class="alert" data-i18n="alert2">
               اكتب أسماء الورثة واختر ديانة كل وارث ثم اضغط على التالي
             </p>
             <table class="deceased">
               <thead>
                 <tr>
-                  <th>نوع المتوفى</th>
-                  <th>الديانة</th>
-                  <th>الاسم</th>
-                  <th>مبلغ التركة</th>
-                  <th>الأمتار المراد توزيعها</th>
+                  <th data-i18n="deceasedType">نوع المتوفى</th>
+                  <th data-i18n="religion">الديانة</th>
+                  <th data-i18n="name">الاسم</th>
+                  <th data-i18n="estateAmount">مبلغ التركة</th>
+                  <th data-i18n="materials">الأمتار المراد توزيعها</th>
                 </tr>
               </thead>
               <tbody id="deceasedInfoBody"></tbody>
@@ -250,9 +263,9 @@
                 <thead>
                   <tr>
                     <th class="counter">#</th>
-                    <th>الفئة</th>
-                    <th>الاسم</th>
-                    <th>الحالة الدينية</th>
+                    <th data-i18n="category">الفئة</th>
+                    <th data-i18n="name">الاسم</th>
+                    <th data-i18n="religiousStatus">الحالة الدينية</th>
                   </tr>
                 </thead>
                 <tbody id="resultTableBody"></tbody>
@@ -262,26 +275,24 @@
         </div>
 
         <div class="tab-content" id="shares">
-          <!-- إخفاء التنبيه من الطباعة -->
-          <p class="alert alert-deceased print-hide">
+          <p class="alert alert-deceased print-hide" data-i18n="alert3">
             تمت القسمة ويمكنك طباعة نتيجة القسمة أو اضغط على السابق للتعديل
           </p>
           
-          <!-- إضافة عنوان للطباعة فقط -->
-          <div class="print-only-title">
+          <div class="print-only-title" data-i18n="printTitle">
             نتيجة تقسيم الميراث
           </div>
           
-          <h3 class="header print-hide">حسب مذهب آل البيت عليهم الصلاة والسلام</h3>
+          <h3 class="header print-hide" data-i18n="madhhabTitle">حسب مذهب آل البيت عليهم الصلاة والسلام</h3>
           <div class="table-container deceased-info">
             <table class="deceased">
               <thead>
                 <tr>
-                  <th>نوع المتوفى</th>
-                  <th>الديانة</th>
-                  <th>الاسم</th>
-                  <th>مبلغ التركة</th>
-                  <th>الأمتار المراد توزيعها</th>
+                  <th data-i18n="deceasedType">نوع المتوفى</th>
+                  <th data-i18n="religion">الديانة</th>
+                  <th data-i18n="name">الاسم</th>
+                  <th data-i18n="estateAmount">مبلغ التركة</th>
+                  <th data-i18n="materials">الأمتار المراد توزيعها</th>
                 </tr>
               </thead>
               <tbody id="sharesDeceasedInfoBody"></tbody>
@@ -292,12 +303,12 @@
               <thead>
                 <tr>
                   <th class="counter">#</th>
-                  <th>صلة القرابة</th>
-                  <th>اسم الوارث</th>
-                  <th>مقدار الورث من المال</th>
-                  <th>مقدار الورث من الأمتار</th>
-                  <th>مقدار الورث بالنسبة</th>
-                  <th>توضيح</th>
+                  <th data-i18n="relationship">صلة القرابة</th>
+                  <th data-i18n="heirName">اسم الوارث</th>
+                  <th data-i18n="moneyShare">مقدار الورث من المال</th>
+                  <th data-i18n="materialsShare">مقدار الورث من الأمتار</th>
+                  <th data-i18n="percentageShare">مقدار الورث بالنسبة</th>
+                  <th data-i18n="explanation">توضيح</th>
                 </tr>
               </thead>
               <tbody id="sharesTableBody"></tbody>
@@ -307,21 +318,21 @@
       </div>
     </div>
 
-    <!-- الفوتر الثابت الجديد -->
+    <!-- الفوتر الثابت -->
     <div class="fixed-footer">
       <div class="footer-buttons">
-        <button id="footer-prev-btn" class="button btn-previous hidden" title="الرجوع إلى الخطوة السابقة">
+        <button id="footer-prev-btn" class="button btn-previous hidden" data-i18n="previous" data-i18n-title="previous">
           السابق
         </button>
         <div class="footer-right-buttons">
-          <button id="footer-print-btn" class="button btn-print hidden" title="طباعة نتيجة التوزيع">
+          <button id="footer-print-btn" class="button btn-print hidden" data-i18n="print" data-i18n-title="print">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
               <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
               <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
             </svg>
-            طباعة
+            <span data-i18n="print">طباعة</span>
           </button>
-          <button id="footer-next-btn" class="button btn-next" title="الانتقال إلى الخطوة التالية">
+          <button id="footer-next-btn" class="button btn-next" data-i18n="next" data-i18n-title="next">
             التالي
           </button>
         </div>
@@ -332,14 +343,14 @@
       {{#each groups}}
         <div class="form-group-container">
           <div class="group-header">
-            <h3>الفئة {{groupTitle}}</h3>
+            <h3 data-i18n="category{{@index}}">الفئة {{groupTitle}}</h3>
           </div>
           {{#each fields}}
             <div class="form-group">
-              <label for="{{id}}">{{title}}</label>
-              <select id="{{id}}" name="{{id}}" title="{{title}}">
+              <label for="{{id}}" data-i18n="{{id}}">{{title}}</label>
+              <select id="{{id}}" name="{{id}}" data-i18n-title="{{id}}">
                 {{#each options}}
-                  <option value="{{this}}">{{this}}</option>
+                  <option value="{{this}}" data-i18n="{{this}}">{{this}}</option>
                 {{/each}}
               </select>
             </div>
@@ -349,12 +360,67 @@
       {{/each}}
     </script>
 
-    <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-overlay hidden" id="modalOverlay">
       <div class="modal" id="validationModal">
-        <div class="modal-content">يجب اختيار وارث واحد على الأقل للمتابعة</div>
-        <button class="modal-button" id="closeModal" title="موافق">حسناً</button>
+        <div class="modal-content" data-i18n="validationError">يجب اختيار وارث واحد على الأقل للمتابعة</div>
+        <button class="modal-button" id="closeModal" data-i18n="ok" data-i18n-title="ok">حسناً</button>
       </div>
     </div>
+
+    <!-- إضافة نظام الترجمة -->
+    <script type="module">
+      import { translations, getCurrentLanguage, setLanguage, t, isRTL } from './js/translations.js';
+      
+      // تطبيق الترجمة على الصفحة
+      function applyTranslations() {
+        const lang = getCurrentLanguage();
+        
+        // تحديث اتجاه الصفحة
+        document.documentElement.dir = isRTL(lang) ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+        document.body.className = isRTL(lang) ? '' : 'ltr';
+        if (lang === 'ur') document.body.classList.add('lang-ur');
+        
+        // تحديث مبدل اللغة
+        document.getElementById('languageSelect').value = lang;
+        
+        // ترجمة النصوص
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+          const key = element.getAttribute('data-i18n');
+          if (translations[lang] && translations[lang][key]) {
+            element.textContent = translations[lang][key];
+          }
+        });
+        
+        // ترجمة العنواين
+        document.querySelectorAll('[data-i18n-title]').forEach(element => {
+          const key = element.getAttribute('data-i18n-title');
+          if (translations[lang] && translations[lang][key]) {
+            element.title = translations[lang][key];
+          }
+        });
+        
+        // ترجمة النصوص التوضيحية
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[lang] && translations[lang][key]) {
+            element.placeholder = translations[lang][key];
+          }
+        });
+      }
+      
+      // تغيير اللغة
+      document.getElementById('languageSelect').addEventListener('change', function(e) {
+        const lang = e.target.value;
+        setLanguage(lang);
+        applyTranslations();
+      });
+      
+      // تطبيق الترجمة عند تحميل الصفحة
+      document.addEventListener('DOMContentLoaded', function() {
+        applyTranslations();
+      });
+    </script>
 
     <script type="module" src="js/new_script.js"></script>
   </body>
