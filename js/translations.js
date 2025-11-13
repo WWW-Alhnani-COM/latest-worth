@@ -107,11 +107,99 @@ export const translations = {
     brother: "أخ",
     sister: "أخت",
     
-    // Extended family (add more as needed)
+    // Extended family
     FR_grandfather: "جد لأب",
     MR_grandfather: "جد لأم",
+    FR_grandmother: "جدة لأب",
+    MR_grandmother: "جدة لأم",
+    SN_grandson: "ابن ابن",
+    SN_granddaughter: "ابنة ابن",
+    DR_grandson: "ابن بنت",
+    DR_granddaughter: "ابنة بنت",
+    MR_brother: "أخ لأم",
+    MR_mother_sister: "أخت لأم",
+    FR_brother: "أخ لأب",
+    FR_sister: "أخت لأب",
+    BR_boys: "ولد أخ",
+    SR_boys: "ولد أخت",
+    MR_BR_boys: "ولد أخ لأم",
+    MR_SR_boys: "ولد أخت لأم",
+    FR_BR_boys: "ولد أخ لأب",
+    FR_SR_boys: "ولد أخت لأب",
+    BR_girls: "بنت أخ",
+    SR_girls: "بنت أخت",
+    MR_BR_girls: "بنت أخ لأم",
+    MR_SR_girls: "بنت أخت لأم",
+    FR_BR_girls: "بنت أخ لأب",
+    FR_SR_girls: "بنت أخت لأب",
+    FR_uncle: "عم",
+    FR_aunt: "عمة",
+    MR_uncle: "خال",
+    MR_aunt: "خالة",
+    MR_uncle_mother: "خال لأم",
+    FR_uncle_father: "خال لأب",
+    MR_aunt_mother: "خالة لأم",
+    FR_aunt_father: "خالة لأب",
+    FR_uncle_father_A: "عم لأب",
+    MR_uncle_mother_A: "عم لأم",
+    FR_aunt_father_K: "عمة لأب",
+    MR_aunt_mother_K: "عمة لأم",
+    uncle_sons_A: "ابن عم",
+    uncle_daughters_A: "بنت عم",
+    aunt_sons_A: "ابن عمة",
+    aunt_daughters_A: "بنت عمة",
+    FR_uncle_sons_A: "ابن عم لأب",
+    MR_uncle_sons_A: "ابن عم لأم",
+    FR_uncle_daughter_A: "بنت عم لأب",
+    MR_uncle_daughter_A: "بنت عم لأم",
+    FR_aunt_sons_A: "ابن عمة لأب",
+    MR_aunt_sons_A: "ابن عمة لأم",
+    FR_aunt_daughter_A: "بنت عمة لأب",
+    MR_aunt_daughter_A: "بنت عمة لأم",
+    uncle_sons_K: "ابن خال",
+    uncle_daughters_K: "بنت خال",
+    aunt_sons_K: "ابن خالة",
+    aunt_daughters_K: "بنت خالة",
+    FR_uncle_sons_K: "ابن خال لأب",
+    MR_uncle_sons_K: "ابن خال لأم",
+    FR_uncle_daughter_K: "بنت خال لأب",
+    MR_uncle_daughter_K: "بنت خال لأم",
+    FR_aunt_sons_K: "ابن خالة لأب",
+    MR_aunt_sons_K: "ابن خالة لأم",
+    FR_aunt_daughter_K: "بنت خالة لأب",
+    MR_aunt_daughter_K: "بنت خالة لأم",
+
+    // Calculation notes
+    quarterNote: "الربع فرض",
+    eighthNote: "الثمن فرض",
+    halfNote: "النصف فرض",
+    sixthNote: "السدس فرض",
+    sixthSunnaNote: "السدس سنة",
+    twoThirdsNote: "ثلثين فرض",
+    remainderNote: "الباقي تعصيب",
+    raddNote: "الباقي يرد رحم حسب سهامهما",
+    raddToDaughtersNote: "الباقي يرد رحم على البنات بالتساوي",
+    maleFemaleRatioNote: "للذكر مثل حظ الأنثيين",
+    remainderToSonNote: "والباقي كاملاً للابن",
+    remainderToDaughterNote: "الباقي يرد رحم للابنة",
+    baytAlMalNote: "الباقي لبيت المال",
+    wifeShareNote: "حصة الزوجة",
+
+    // Numbers
+    numbers: ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"],
+    decimalSeparator: ".",
     
-    // ... (جميع العلاقات العائلية الأخرى)
+    // Ordinal numbers (masculine)
+    ordinalMale: [
+      "الأول", "الثاني", "الثالث", "الرابع", "الخامس",
+      "السادس", "السابع", "الثامن", "التاسع", "العاشر"
+    ],
+    
+    // Ordinal numbers (feminine)
+    ordinalFemale: [
+      "الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة",
+      "السادسة", "السابعة", "الثامنة", "التاسعة", "العاشرة"
+    ]
   },
   
   en: {
@@ -222,8 +310,96 @@ export const translations = {
     // Extended family
     FR_grandfather: "Paternal Grandfather",
     MR_grandfather: "Maternal Grandfather",
+    FR_grandmother: "Paternal Grandmother",
+    MR_grandmother: "Maternal Grandmother",
+    SN_grandson: "Son's Son",
+    SN_granddaughter: "Son's Daughter",
+    DR_grandson: "Daughter's Son",
+    DR_granddaughter: "Daughter's Daughter",
+    MR_brother: "Maternal Brother",
+    MR_mother_sister: "Maternal Sister",
+    FR_brother: "Paternal Brother",
+    FR_sister: "Paternal Sister",
+    BR_boys: "Brother's Son",
+    SR_boys: "Sister's Son",
+    MR_BR_boys: "Maternal Brother's Son",
+    MR_SR_boys: "Maternal Sister's Son",
+    FR_BR_boys: "Paternal Brother's Son",
+    FR_SR_boys: "Paternal Sister's Son",
+    BR_girls: "Brother's Daughter",
+    SR_girls: "Sister's Daughter",
+    MR_BR_girls: "Maternal Brother's Daughter",
+    MR_SR_girls: "Maternal Sister's Daughter",
+    FR_BR_girls: "Paternal Brother's Daughter",
+    FR_SR_girls: "Paternal Sister's Daughter",
+    FR_uncle: "Paternal Uncle",
+    FR_aunt: "Paternal Aunt",
+    MR_uncle: "Maternal Uncle",
+    MR_aunt: "Maternal Aunt",
+    MR_uncle_mother: "Maternal Uncle (Mother's side)",
+    FR_uncle_father: "Maternal Uncle (Father's side)",
+    MR_aunt_mother: "Maternal Aunt (Mother's side)",
+    FR_aunt_father: "Maternal Aunt (Father's side)",
+    FR_uncle_father_A: "Paternal Uncle (Father's side)",
+    MR_uncle_mother_A: "Paternal Uncle (Mother's side)",
+    FR_aunt_father_K: "Paternal Aunt (Father's side)",
+    MR_aunt_mother_K: "Paternal Aunt (Mother's side)",
+    uncle_sons_A: "Paternal Uncle's Son",
+    uncle_daughters_A: "Paternal Uncle's Daughter",
+    aunt_sons_A: "Paternal Aunt's Son",
+    aunt_daughters_A: "Paternal Aunt's Daughter",
+    FR_uncle_sons_A: "Paternal Uncle's Son (Father's side)",
+    MR_uncle_sons_A: "Paternal Uncle's Son (Mother's side)",
+    FR_uncle_daughter_A: "Paternal Uncle's Daughter (Father's side)",
+    MR_uncle_daughter_A: "Paternal Uncle's Daughter (Mother's side)",
+    FR_aunt_sons_A: "Paternal Aunt's Son (Father's side)",
+    MR_aunt_sons_A: "Paternal Aunt's Son (Mother's side)",
+    FR_aunt_daughter_A: "Paternal Aunt's Daughter (Father's side)",
+    MR_aunt_daughter_A: "Paternal Aunt's Daughter (Mother's side)",
+    uncle_sons_K: "Maternal Uncle's Son",
+    uncle_daughters_K: "Maternal Uncle's Daughter",
+    aunt_sons_K: "Maternal Aunt's Son",
+    aunt_daughters_K: "Maternal Aunt's Daughter",
+    FR_uncle_sons_K: "Maternal Uncle's Son (Father's side)",
+    MR_uncle_sons_K: "Maternal Uncle's Son (Mother's side)",
+    FR_uncle_daughter_K: "Maternal Uncle's Daughter (Father's side)",
+    MR_uncle_daughter_K: "Maternal Uncle's Daughter (Mother's side)",
+    FR_aunt_sons_K: "Maternal Aunt's Son (Father's side)",
+    MR_aunt_sons_K: "Maternal Aunt's Son (Mother's side)",
+    FR_aunt_daughter_K: "Maternal Aunt's Daughter (Father's side)",
+    MR_aunt_daughter_K: "Maternal Aunt's Daughter (Mother's side)",
+
+    // Calculation notes
+    quarterNote: "Quarter share",
+    eighthNote: "Eighth share",
+    halfNote: "Half share",
+    sixthNote: "Sixth share",
+    sixthSunnaNote: "Sixth share (Sunna)",
+    twoThirdsNote: "Two thirds share",
+    remainderNote: "Remainder by agnation",
+    raddNote: "Remainder returns to heirs according to their shares",
+    raddToDaughtersNote: "Remainder returns to daughters equally",
+    maleFemaleRatioNote: "Male gets twice the share of female",
+    remainderToSonNote: "Remainder goes entirely to son",
+    remainderToDaughterNote: "Remainder returns to daughter",
+    baytAlMalNote: "Remainder to public treasury",
+    wifeShareNote: "Wife's share",
+
+    // Numbers
+    numbers: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    decimalSeparator: ".",
     
-    // ... (جميع العلاقات العائلية الأخرى)
+    // Ordinal numbers (masculine)
+    ordinalMale: [
+      "First", "Second", "Third", "Fourth", "Fifth",
+      "Sixth", "Seventh", "Eighth", "Ninth", "Tenth"
+    ],
+    
+    // Ordinal numbers (feminine)
+    ordinalFemale: [
+      "First", "Second", "Third", "Fourth", "Fifth",
+      "Sixth", "Seventh", "Eighth", "Ninth", "Tenth"
+    ]
   },
   
   ur: {
@@ -334,8 +510,96 @@ export const translations = {
     // Extended family
     FR_grandfather: "دادا",
     MR_grandfather: "نانا",
+    FR_grandmother: "دادی",
+    MR_grandmother: "نانی",
+    SN_grandson: "پوتا",
+    SN_granddaughter: "پوتی",
+    DR_grandson: "نواسا",
+    DR_granddaughter: "نواسی",
+    MR_brother: "ماں شریک بھائی",
+    MR_mother_sister: "ماں شریک بہن",
+    FR_brother: "باپ شریک بھائی",
+    FR_sister: "باپ شریک بہن",
+    BR_boys: "بھتیجا",
+    SR_boys: "بہن کا بیٹا",
+    MR_BR_boys: "ماں شریک بھائی کا بیٹا",
+    MR_SR_boys: "ماں شریک بہن کا بیٹا",
+    FR_BR_boys: "باپ شریک بھائی کا بیٹا",
+    FR_SR_boys: "باپ شریک بہن کا بیٹا",
+    BR_girls: "بھتیجی",
+    SR_girls: "بہن کی بیٹی",
+    MR_BR_girls: "ماں شریک بھائی کی بیٹی",
+    MR_SR_girls: "ماں شریک بہن کی بیٹی",
+    FR_BR_girls: "باپ شریک بھائی کی بیٹی",
+    FR_SR_girls: "باپ شریک بہن کی بیٹی",
+    FR_uncle: "چچا",
+    FR_aunt: "پھوپھی",
+    MR_uncle: "ماموں",
+    MR_aunt: "خالہ",
+    MR_uncle_mother: "ماموں (ماں کی طرف)",
+    FR_uncle_father: "ماموں (باپ کی طرف)",
+    MR_aunt_mother: "خالہ (ماں کی طرف)",
+    FR_aunt_father: "خالہ (باپ کی طرف)",
+    FR_uncle_father_A: "چچا (باپ کی طرف)",
+    MR_uncle_mother_A: "چچا (ماں کی طرف)",
+    FR_aunt_father_K: "پھوپھی (باپ کی طرف)",
+    MR_aunt_mother_K: "پھوپھی (ماں کی طرف)",
+    uncle_sons_A: "چچا زاد بھائی",
+    uncle_daughters_A: "چچا زاد بہن",
+    aunt_sons_A: "پھوپھی زاد بھائی",
+    aunt_daughters_A: "پھوپھی زاد بہن",
+    FR_uncle_sons_A: "چچا زاد بھائی (باپ کی طرف)",
+    MR_uncle_sons_A: "چچا زاد بھائی (ماں کی طرف)",
+    FR_uncle_daughter_A: "چچا زاد بہن (باپ کی طرف)",
+    MR_uncle_daughter_A: "چچا زاد بہن (ماں کی طرف)",
+    FR_aunt_sons_A: "پھوپھی زاد بھائی (باپ کی طرف)",
+    MR_aunt_sons_A: "پھوپھی زاد بھائی (ماں کی طرف)",
+    FR_aunt_daughter_A: "پھوپھی زاد بہن (باپ کی طرف)",
+    MR_aunt_daughter_A: "پھوپھی زاد بہن (ماں کی طرف)",
+    uncle_sons_K: "ماموں زاد بھائی",
+    uncle_daughters_K: "ماموں زاد بہن",
+    aunt_sons_K: "خالہ زاد بھائی",
+    aunt_daughters_K: "خالہ زاد بہن",
+    FR_uncle_sons_K: "ماموں زاد بھائی (باپ کی طرف)",
+    MR_uncle_sons_K: "ماموں زاد بھائی (ماں کی طرف)",
+    FR_uncle_daughter_K: "ماموں زاد بہن (باپ کی طرف)",
+    MR_uncle_daughter_K: "ماموں زاد بہن (ماں کی طرف)",
+    FR_aunt_sons_K: "خالہ زاد بھائی (باپ کی طرف)",
+    MR_aunt_sons_K: "خالہ زاد بھائی (ماں کی طرف)",
+    FR_aunt_daughter_K: "خالہ زاد بہن (باپ کی طرف)",
+    MR_aunt_daughter_K: "خالہ زاد بہن (ماں کی طرف)",
+
+    // Calculation notes
+    quarterNote: "ربع فرض",
+    eighthNote: "ثمن فرض",
+    halfNote: "نصف فرض",
+    sixthNote: "سدس فرض",
+    sixthSunnaNote: "سدس سنت",
+    twoThirdsNote: "ثلثين فرض",
+    remainderNote: "باقي تعصيب",
+    raddNote: "باقي يرد رحم حسب سهامهما",
+    raddToDaughtersNote: "باقي يرد رحم على البنات بالتساوي",
+    maleFemaleRatioNote: "للذكر مثل حظ الأنثيين",
+    remainderToSonNote: "والباقي كاملاً للابن",
+    remainderToDaughterNote: "الباقي يرد رحم للابنة",
+    baytAlMalNote: "الباقي لبيت المال",
+    wifeShareNote: "حصه الزوجه",
+
+    // Numbers
+    numbers: ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"],
+    decimalSeparator: ".",
     
-    // ... (جميع العلاقات العائلية الأخرى)
+    // Ordinal numbers (masculine)
+    ordinalMale: [
+      "پہلا", "دوسرا", "تیسرا", "چوتھا", "پانچواں",
+      "چھٹا", "ساتواں", "آٹھواں", "نواں", "دسواں"
+    ],
+    
+    // Ordinal numbers (feminine)
+    ordinalFemale: [
+      "پہلی", "دوسری", "تیسری", "چوتھی", "پانچویں",
+      "چھٹی", "ساتویں", "آٹھویں", "نویں", "دسویں"
+    ]
   }
 };
 
@@ -375,4 +639,67 @@ export function getOrdinalNumber(number, gender) {
   } else {
     return translations[lang].ordinalFemale?.[index] || number.toString();
   }
+}
+
+// Format number according to language
+export function formatNumber(number, lang = null) {
+  const currentLang = lang || getCurrentLanguage();
+  const numStr = number.toString();
+  const translation = translations[currentLang];
+  
+  if (!translation.numbers) return numStr;
+  
+  // Handle decimal numbers
+  const parts = numStr.split('.');
+  const integerPart = parts[0];
+  const decimalPart = parts[1] || '';
+  
+  let formattedInteger = '';
+  for (let i = 0; i < integerPart.length; i++) {
+    const digit = integerPart[i];
+    if (translation.numbers[digit]) {
+      formattedInteger += translation.numbers[digit];
+    } else {
+      formattedInteger += digit;
+    }
+  }
+  
+  if (decimalPart) {
+    let formattedDecimal = '';
+    for (let i = 0; i < decimalPart.length; i++) {
+      const digit = decimalPart[i];
+      if (translation.numbers[digit]) {
+        formattedDecimal += translation.numbers[digit];
+      } else {
+        formattedDecimal += digit;
+      }
+    }
+    return formattedInteger + translation.decimalSeparator + formattedDecimal;
+  }
+  
+  return formattedInteger;
+}
+
+// Convert Arabic/Urdu numbers to English for calculations
+export function parseNumber(numberStr) {
+  if (!numberStr) return 0;
+  
+  const str = numberStr.toString();
+  let result = '';
+  
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    const arabicIndex = translations.ar.numbers.indexOf(char);
+    const urduIndex = translations.ur.numbers.indexOf(char);
+    
+    if (arabicIndex !== -1) {
+      result += arabicIndex.toString();
+    } else if (urduIndex !== -1) {
+      result += urduIndex.toString();
+    } else {
+      result += char;
+    }
+  }
+  
+  return parseFloat(result) || 0;
 }
