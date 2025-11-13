@@ -516,6 +516,165 @@ function collectFormData() {
 
   return formData;
 }
+// تهيئة التفاعلية
+function initInteractivity() {
+  initFormFieldInteractivity();
+  initButtonInteractivity();
+  initTableInteractivity();
+  initTabInteractivity();
+}
+
+// تفاعلية حقول النموذج
+function initFormFieldInteractivity() {
+  // تفاعلية الحقول النصية
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused-field');
+    });
+    
+    input.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused-field');
+      if (this.value.trim() !== '') {
+        this.classList.add('filled-field');
+      } else {
+        this.classList.remove('filled-field');
+      }
+    });
+    
+    // التحقق من الحقول المملوءة مسبقاً
+    if (input.value.trim() !== '') {
+      input.classList.add('filled-field');
+    }
+  });
+
+  // تفاعلية حقول التحديد
+  document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', function() {
+      if (this.value && this.value !== 'لا' && this.value !== 'no') {
+        this.classList.add('filled-field');
+        this.parentElement.classList.add('selected-group');
+        
+        // تأثير مرئي عند التحديد
+        this.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 200);
+      } else {
+        this.classList.remove('filled-field');
+        this.parentElement.classList.remove('selected-group');
+      }
+      
+      // تحديث العداد
+      calulcateWarth(all);
+    });
+    
+    select.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused-field');
+    });
+    
+    select.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused-field');
+    });
+    
+    // التحقق من الحقول المحددة مسبقاً
+    if (select.value && select.value !== 'لا' && select.value !== 'no') {
+      select.classList.add('filled-field');
+      select.parentElement.classList.add('selected-group');
+    }
+  });
+
+  // تفاعلية أزرار الراديو
+  document.querySelectorAll('.radio-input').forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.radio-item').forEach(item => {
+        item.classList.remove('selected-radio');
+      });
+      this.closest('.radio-item').classList.add('selected-radio');
+    });
+  });
+}
+
+// تفاعلية الأزرار
+function initButtonInteractivity() {
+  document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+    
+    button.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+    
+    button.addEventListener('mousedown', function() {
+      this.style.transform = 'translateY(0)';
+    });
+    
+    button.addEventListener('mouseup', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+  });
+}
+
+// تفاعلية الجداول
+function initTableInteractivity() {
+  document.querySelectorAll('table tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+      this.style.backgroundColor = 'var(--bg-secondary)';
+    });
+    
+    row.addEventListener('mouseleave', function() {
+      this.style.backgroundColor = '';
+    });
+    
+    row.addEventListener('click', function() {
+      document.querySelectorAll('table tr').forEach(r => {
+        r.classList.remove('selected-row');
+      });
+      this.classList.add('selected-row');
+    });
+  });
+}
+
+// تفاعلية التبويبات
+function initTabInteractivity() {
+  document.querySelectorAll('.tab-button').forEach(tab => {
+    tab.addEventListener('mouseenter', function() {
+      if (!this.classList.contains('active') && !this.disabled) {
+        this.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+      }
+    });
+    
+    tab.addEventListener('mouseleave', function() {
+      if (!this.classList.contains('active') && !this.disabled) {
+        this.style.backgroundColor = '';
+      }
+    });
+  });
+}
+
+// تفاعلية خاصة بحقول الورثة
+function initHeirsInteractivity() {
+  document.querySelectorAll('.heir-name, .heir-religion').forEach(field => {
+    field.addEventListener('focus', function() {
+      const row = this.closest('tr');
+      row.style.backgroundColor = 'rgba(52, 168, 83, 0.1)';
+      row.classList.add('editing-row');
+    });
+    
+    field.addEventListener('blur', function() {
+      const row = this.closest('tr');
+      row.style.backgroundColor = '';
+      row.classList.remove('editing-row');
+      
+      // إذا كان الحقل مملوءاً، أضف تأثير
+      if (this.value.trim() !== '') {
+        this.classList.add('filled-field');
+      } else {
+        this.classList.remove('filled-field');
+      }
+    });
+  });
+}
 
 function updateReligiousTab(data) {
   let deceasedInfoHTML = "";
@@ -847,4 +1006,5 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
