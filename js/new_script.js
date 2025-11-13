@@ -136,14 +136,14 @@ function applyTranslations() {
   document.body.className = isRTL(lang) ? '' : 'ltr';
   if (lang === 'ur') document.body.classList.add('lang-ur');
   
-  // تحديث مبدل اللغة
+  // تحديث مبدل اللغة - التصحيح هنا
   const languageSelect = document.getElementById('languageSelect');
   if (languageSelect) {
     languageSelect.value = lang;
     
-    // تحديث خيارات اللغة
+    // استخدام نصوص ثابتة للغات (الحل السريع)
     const options = languageSelect.querySelectorAll('option');
-    options[0].textContent = t('language') === 'language' ? 'العربية' : t('language');
+    options[0].textContent = 'العربية';
     options[1].textContent = 'English';
     options[2].textContent = 'اردو';
   }
@@ -180,6 +180,7 @@ function applyTranslations() {
   
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
+}
 }
 
 // تحديث تسميات الأزرار
@@ -846,3 +847,4 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
