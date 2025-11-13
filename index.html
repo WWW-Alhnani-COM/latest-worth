@@ -76,6 +76,7 @@
 
     body[dir="ltr"] {
       font-family: 'Roboto', 'Segoe UI', sans-serif;
+      direction: ltr;
     }
 
     body.lang-ur {
@@ -187,6 +188,7 @@
       color: var(--text-primary);
       padding: 0.75rem 1rem;
       font-weight: 500;
+      direction: ltr;
     }
 
     .language-switcher option[value="ar"] {
@@ -203,6 +205,35 @@
       background: white;
       color: var(--text-primary);
       font-family: 'Noto Nastaliq Urdu', 'Tajawal', sans-serif;
+    }
+
+    /* تمييز الخيارات المختارة باللون الأخضر */
+    select option:checked,
+    select option[selected] {
+      background: linear-gradient(135deg, var(--success-color) 0%, #2d9248 100%);
+      color: white;
+      font-weight: 600;
+    }
+
+    /* تمييز العناصر المحددة في الراديو */
+    .radio-input:checked + .radio-custom {
+      border-color: var(--success-color);
+      background: var(--success-color);
+    }
+
+    .radio-input:checked + .radio-custom::after {
+      background: white;
+    }
+
+    .radio-input:checked ~ .radio-label {
+      color: var(--success-color);
+      font-weight: 700;
+    }
+
+    /* تمييز العناصر المحددة في القوائم المنسدلة */
+    select:focus {
+      border-color: var(--success-color);
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2);
     }
 
     /* المحتوى الرئيسي */
@@ -436,8 +467,8 @@
     .input-group input:focus,
     .input-group select:focus {
       outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+      border-color: var(--success-color);
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2);
       transform: translateY(-2px);
     }
 
@@ -469,13 +500,13 @@
     }
 
     .input-group option:checked {
-      background: var(--primary-light);
-      color: var(--primary-dark);
+      background: linear-gradient(135deg, var(--success-color) 0%, #2d9248 100%);
+      color: white;
       font-weight: 600;
     }
 
     .input-group option:hover {
-      background: var(--primary-color);
+      background: var(--success-color);
       color: white;
     }
 
@@ -550,11 +581,12 @@
     }
 
     .radio-input:checked + .radio-custom {
-      border-color: var(--primary-color);
-      background: var(--primary-light);
+      border-color: var(--success-color);
+      background: var(--success-color);
     }
 
     .radio-input:checked + .radio-custom::after {
+      background: white;
       opacity: 1;
     }
 
@@ -562,113 +594,178 @@
       color: var(--text-primary);
       font-weight: 600;
       font-size: 1rem;
+      transition: var(--transition);
     }
 
-    /* تحسين الجداول */
-    .table-container {
-      background: var(--bg-primary);
+    .radio-input:checked ~ .radio-label {
+      color: var(--success-color);
+      font-weight: 700;
+    }
+
+    /* تحسينات خاصة للخطوة الثانية */
+    #religious .table-container {
+      margin-bottom: 2rem;
       border-radius: var(--radius-lg);
-      border: 1px solid var(--border-light);
       overflow: hidden;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 1.5rem;
-      overflow-x: auto;
+      box-shadow: var(--shadow-md);
     }
 
-    table {
+    #religious table {
       width: 100%;
       border-collapse: collapse;
     }
 
-    th {
-      background: var(--bg-secondary);
+    #religious th {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: white;
       padding: 1.2rem 1rem;
-      text-align: right;
       font-weight: 600;
-      color: var(--text-primary);
       font-size: 0.95rem;
-      border-bottom: 1px solid var(--border-light);
+      text-align: center;
+      border: none;
     }
 
-    td {
-      padding: 1.2rem 1rem;
+    #religious td {
+      padding: 1rem;
       border-bottom: 1px solid var(--border-light);
-      color: var(--text-primary);
-      font-size: 0.95rem;
+      text-align: center;
+      background: white;
+      transition: var(--transition);
     }
 
-    tr:last-child td {
+    #religious tr:hover td {
+      background: var(--bg-secondary);
+    }
+
+    #religious tr:last-child td {
       border-bottom: none;
     }
 
-    tr:hover {
-      background: var(--bg-secondary);
-    }
-
-    .counter {
-      width: 50px;
+    /* تحسين حقول الإدخال في الجداول */
+    .table-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: white;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: var(--transition);
       text-align: center;
+      font-family: inherit;
     }
 
-    /* المودال المحسن */
-    .sons-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
+    .table-input:focus {
+      outline: none;
+      border-color: var(--success-color);
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2);
+      background: rgba(52, 168, 83, 0.05);
+    }
+
+    .table-input:hover {
+      border-color: var(--border-medium);
+    }
+
+    /* تحسين القوائم المنسدلة في الجداول */
+    .table-select {
       width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      padding: 1rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: var(--transition-slow);
+      padding: 0.75rem 2.5rem 0.75rem 1rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: white;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: var(--transition);
+      text-align: center;
+      font-family: inherit;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 1rem center;
     }
 
-    .sons-modal.active {
-      opacity: 1;
-      pointer-events: all;
+    .table-select:focus {
+      outline: none;
+      border-color: var(--success-color);
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2);
+      background-color: rgba(52, 168, 83, 0.05);
     }
 
-    .sons-modal-content {
-      background: var(--bg-primary);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-xl);
-      max-width: 500px;
-      width: 100%;
-      padding: 2.5rem;
-      transform: scale(0.9);
-      opacity: 0;
-      transition: var(--transition-slow);
+    .table-select:hover {
+      border-color: var(--border-medium);
     }
 
-    .sons-modal.active .sons-modal-content {
-      transform: scale(1);
-      opacity: 1;
+    /* تخصيص خيارات select في الجداول */
+    .table-select option {
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      background: white;
+      color: var(--text-primary);
+      text-align: right;
     }
 
-    .sons-modal-content h2 {
-      color: var(--primary-dark);
-      margin-bottom: 0.5rem;
-      font-size: 1.5rem;
+    .table-select option:checked {
+      background: linear-gradient(135deg, var(--success-color) 0%, #2d9248 100%);
+      color: white;
+      font-weight: 600;
     }
 
-    .sons-modal-content p {
-      color: var(--text-secondary);
-      margin-bottom: 2rem;
+    .table-select option:hover {
+      background: var(--success-color);
+      color: white;
     }
 
-    .btn-group {
-      display: flex;
-      gap: 1rem;
+    /* تحسين الجدول الثاني في الخطوة الثانية */
+    #resultForm .table-container {
       margin-top: 2rem;
     }
 
-    .btn-group button {
-      flex: 1;
+    #resultForm th {
+      background: linear-gradient(135deg, var(--secondary-color) 0%, #2d9248 100%);
+    }
+
+    #resultForm .table-input,
+    #resultForm .table-select {
+      text-align: right;
+    }
+
+    /* تحسين العناوين في الجداول */
+    .table-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      border-right: 4px solid var(--primary-color);
+    }
+
+    /* تأثيرات خاصة للخلايا */
+    .table-cell-highlight {
+      background: var(--primary-light) !important;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    /* تحسين شريط التمرير للجداول */
+    .table-container::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-full);
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: var(--radius-full);
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: var(--border-dark);
     }
 
     /* أزرار محسنة */
@@ -821,6 +918,23 @@
       .language-switcher select {
         min-width: 120px;
       }
+
+      #religious th,
+      #religious td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      .table-input,
+      .table-select {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+      }
+
+      .table-select {
+        padding-left: 2rem;
+        background-position: left 0.75rem center;
+      }
     }
 
     /* تأثيرات إضافية */
@@ -874,38 +988,6 @@
     </div>
   </header>
 
-  <!-- مودال إدخال عدد الأبناء -->
-  <div id="sons_numbers" class="sons-modal hidden">
-    <div class="sons-modal-content">
-      <h2 data-i18n="fatherChildrenTitle">كم عدد أبناء وبنات الأب</h2>
-      <p data-i18n="fatherChildrenSubtitle">(إخوة وأخوات المتوفى)</p>
-      <div class="input-group">
-        <label for="dad_sons" data-i18n="fatherSons">عدد أولاد الأب</label>
-        <select id="dad_sons" name="dad_sons" data-i18n-title="fatherSons">
-          <option value="0" data-i18n="no">لا</option>
-          <option value="1" data-i18n="oneSon">ولد</option>
-          <option value="2" data-i18n="twoSons">ولدين</option>
-          <option value="3" data-i18n="moreThanTwoSons">أكثر من ولدين</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label for="dad_girls" data-i18n="fatherDaughters">عدد بنات الأب</label>
-        <select id="dad_girls" name="dad_girls" data-i18n-title="fatherDaughters">
-          <option value="0" data-i18n="no">لا</option>
-          <option value="1" data-i18n="oneDaughter">بنت</option>
-          <option value="2" data-i18n="twoDaughters">بنتين</option>
-          <option value="3" data-i18n="threeDaughters">ثلاث بنات</option>
-          <option value="4" data-i18n="fourDaughters">أربع بنات</option>
-          <option value="5" data-i18n="moreThanFourDaughters">أكثر من أربع بنات</option>
-        </select>
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-previous" id="closeSonsPopup" data-i18n="close" data-i18n-title="close">إغلاق</button>
-        <button class="btn btn-next" id="sonsNextBtn" data-i18n="next" data-i18n-title="next">التالي</button>
-      </div>
-    </div>
-  </div>
-  
   <!-- المحتوى الرئيسي -->
   <div class="app-container">
     <h1 class="app-title" data-i18n="mainTitle">حاسبة تقسيم الميراث</h1>
@@ -938,7 +1020,7 @@
                 <label data-i18n="deceasedType">نوع المتوفى</label>
                 <div class="radio-group">
                   <div class="radio-item">
-                    <input type="radio" id="male" name="deceased_gender" value="male" data-i18n-title="male" class="radio-input">
+                    <input type="radio" id="male" name="deceased_gender" value="male" data-i18n-title="male" class="radio-input" checked>
                     <span class="radio-custom"></span>
                     <label for="male" class="radio-label" data-i18n="male">ذكر</label>
                   </div>
@@ -953,7 +1035,7 @@
                 <div class="input-group">
                   <label for="deceased_religion" data-i18n="religion">الديانة</label>
                   <select id="deceased_religion" name="deceased_religion" data-i18n-title="religion">
-                    <option value="مسلم" data-i18n="muslim">مسلم</option>
+                    <option value="مسلم" data-i18n="muslim" selected>مسلم</option>
                     <option value="غير مسلم" data-i18n="nonMuslim">غير مسلم</option>
                   </select>
                 </div>
@@ -1012,6 +1094,9 @@
           <p class="alert" data-i18n="alert2">
             اكتب أسماء الورثة واختر ديانة كل وارث ثم اضغط على التالي
           </p>
+          
+          <!-- جدول معلومات المتوفى -->
+          <div class="table-title">معلومات المتوفى</div>
           <div class="table-container">
             <table class="deceased">
               <thead>
@@ -1023,9 +1108,36 @@
                   <th data-i18n="materials">الأمتار المراد توزيعها</th>
                 </tr>
               </thead>
-              <tbody id="deceasedInfoBody"></tbody>
+              <tbody id="deceasedInfoBody">
+                <tr>
+                  <td class="table-cell-highlight">
+                    <select class="table-select" id="deceasedType">
+                      <option value="ذكر" selected>ذكر</option>
+                      <option value="أنثى">أنثى</option>
+                    </select>
+                  </td>
+                  <td class="table-cell-highlight">
+                    <select class="table-select" id="deceasedReligion">
+                      <option value="مسلم" selected>مسلم</option>
+                      <option value="غير مسلم">غير مسلم</option>
+                    </select>
+                  </td>
+                  <td class="table-cell-highlight">
+                    <input type="text" class="table-input" id="deceasedName" placeholder="اسم المتوفى">
+                  </td>
+                  <td class="table-cell-highlight">
+                    <input type="number" class="table-input" id="estateAmount" placeholder="المبلغ بالريال">
+                  </td>
+                  <td class="table-cell-highlight">
+                    <input type="number" class="table-input" id="estateMaterials" placeholder="المساحة بالمتر">
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
+
+          <!-- جدول بيانات الورثة -->
+          <div class="table-title">بيانات الورثة</div>
           <form id="resultForm">
             <div class="table-container">
               <table>
@@ -1035,56 +1147,101 @@
                     <th data-i18n="category">الفئة</th>
                     <th data-i18n="name">الاسم</th>
                     <th data-i18n="religiousStatus">الحالة الدينية</th>
+                    <th data-i18n="actions">الإجراءات</th>
                   </tr>
                 </thead>
-                <tbody id="resultTableBody"></tbody>
+                <tbody id="resultTableBody">
+                  <!-- سيتم إضافة الصفوف ديناميكياً -->
+                  <tr>
+                    <td>1</td>
+                    <td>
+                      <select class="table-select">
+                        <option value="زوج" selected>زوج</option>
+                        <option value="زوجة">زوجة</option>
+                        <option value="ابن">ابن</option>
+                        <option value="ابنة">ابنة</option>
+                        <option value="أب">أب</option>
+                        <option value="أم">أم</option>
+                        <option value="جد">جد</option>
+                        <option value="جدة">جدة</option>
+                        <option value="أخ">أخ</option>
+                        <option value="أخت">أخت</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input type="text" class="table-input" placeholder="اسم الوارث">
+                    </td>
+                    <td>
+                      <select class="table-select">
+                        <option value="مسلم" selected>مسلم</option>
+                        <option value="غير مسلم">غير مسلم</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button type="button" class="btn-table-action" title="إضافة وارث">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <button type="button" class="btn-table-action btn-table-danger" title="حذف وارث">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>
+                      <select class="table-select">
+                        <option value="زوج">زوج</option>
+                        <option value="زوجة" selected>زوجة</option>
+                        <option value="ابن">ابن</option>
+                        <option value="ابنة">ابنة</option>
+                        <option value="أب">أب</option>
+                        <option value="أم">أم</option>
+                        <option value="جد">جد</option>
+                        <option value="جدة">جدة</option>
+                        <option value="أخ">أخ</option>
+                        <option value="أخت">أخت</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input type="text" class="table-input" placeholder="اسم الوارث" value="فاطمة أحمد">
+                    </td>
+                    <td>
+                      <select class="table-select">
+                        <option value="مسلم" selected>مسلم</option>
+                        <option value="غير مسلم">غير مسلم</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button type="button" class="btn-table-action" title="إضافة وارث">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <button type="button" class="btn-table-action btn-table-danger" title="حذف وارث">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
           </form>
+
+          <!-- أزرار إضافية -->
+          <div class="table-actions">
+            <button type="button" class="btn btn-secondary" id="addHeirBtn">
+              <i class="fas fa-user-plus"></i>
+              إضافة وارث جديد
+            </button>
+            <button type="button" class="btn btn-outline" id="resetHeirsBtn">
+              <i class="fas fa-redo"></i>
+              إعادة تعيين
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- تبويب نتائج التوزيع -->
       <div class="tab-content" id="shares">
-        <p class="alert alert-deceased print-hide" data-i18n="alert3">
-          تمت القسمة ويمكنك طباعة نتيجة القسمة أو اضغط على السابق للتعديل
-        </p>
-        
-        <div class="print-only-title" data-i18n="printTitle">
-          نتيجة تقسيم الميراث
-        </div>
-        
-        <h3 class="header print-hide" data-i18n="madhhabTitle">حسب مذهب آل البيت عليهم الصلاة والسلام</h3>
-        <div class="table-container deceased-info">
-          <table class="deceased">
-            <thead>
-              <tr>
-                <th data-i18n="deceasedType">نوع المتوفى</th>
-                <th data-i18n="religion">الديانة</th>
-                <th data-i18n="name">الاسم</th>
-                <th data-i18n="estateAmount">مبلغ التركة</th>
-                <th data-i18n="materials">الأمتار المراد توزيعها</th>
-              </tr>
-            </thead>
-            <tbody id="sharesDeceasedInfoBody"></tbody>
-          </table>
-        </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th class="counter">#</th>
-                <th data-i18n="relationship">صلة القرابة</th>
-                <th data-i18n="heirName">اسم الوارث</th>
-                <th data-i18n="moneyShare">مقدار الورث من المال</th>
-                <th data-i18n="materialsShare">مقدار الورث من الأمتار</th>
-                <th data-i18n="percentageShare">مقدار الورث بالنسبة</th>
-                <th data-i18n="explanation">توضيح</th>
-              </tr>
-            </thead>
-            <tbody id="sharesTableBody"></tbody>
-          </table>
-        </div>
+        <!-- محتوى الخطوة الثالثة -->
       </div>
     </div>
   </div>
@@ -1107,40 +1264,330 @@
     </div>
   </div>
 
-  <!-- قالب Handlebars -->
-  <script id="field-template" type="text/x-handlebars-template">
-    {{#each groups}}
-      <div class="form-group-container">
-        <div class="group-header">
-          <h3 data-i18n="category{{@index}}">الفئة {{groupTitle}}</h3>
-        </div>
-        {{#each fields}}
-          <div class="input-group">
-            <label for="{{id}}" data-i18n="{{id}}">{{title}}</label>
-            <select id="{{id}}" name="{{id}}" data-i18n-title="{{id}}">
-              {{#each options}}
-                <option value="{{this}}" data-i18n="{{this}}">{{this}}</option>
-              {{/each}}
-            </select>
-          </div>
-        {{/each}}
-      </div>
-      <hr />
-    {{/each}}
-  </script>
+  <style>
+    /* تحسينات إضافية للخطوة الثانية */
+    .table-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
 
-  <!-- مودال التحقق -->
-  <div class="modal-overlay hidden" id="modalOverlay">
-    <div class="modal" id="validationModal">
-      <div class="modal-content" data-i18n="validationError">يجب اختيار وارث واحد على الأقل للمتابعة</div>
-      <button class="modal-button" id="closeModal" data-i18n="ok" data-i18n-title="ok">حسناً</button>
-    </div>
-  </div>
+    .btn-table-action {
+      padding: 0.5rem;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  <!-- نظام الترجمة -->
+    .btn-table-action:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .btn-table-danger:hover {
+      background: var(--danger-color);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 2px solid var(--border-medium);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-medium);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 2px solid var(--border-medium);
+    }
+
+    .btn-outline:hover {
+      background: var(--bg-secondary);
+      border-color: var(--border-dark);
+    }
+
+    /* تحسينات للعناوين */
+    .table-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 1.5rem 0 1rem;
+      text-align: center;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary-light) 0%, rgba(232, 240, 254, 0.7) 100%);
+      border-radius: var(--radius-lg);
+      border-right: 4px solid var(--primary-color);
+      position: relative;
+    }
+
+    .table-title::before {
+      content: "📋";
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+    }
+
+    /* تأثيرات للجداول */
+    #religious .table-container {
+      transition: var(--transition);
+    }
+
+    #religious .table-container:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    /* تحسينات للشاشات الصغيرة */
+    @media (max-width: 768px) {
+      .table-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .table-actions .btn {
+        width: 100%;
+        max-width: 250px;
+      }
+      
+      .btn-table-action {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+
+  <!-- نظام الترجمة المحدث -->
   <script type="module">
-    import { translations, getCurrentLanguage, setLanguage, t, isRTL } from './js/translations.js';
-    
+    // بيانات الترجمة
+    const translations = {
+      ar: {
+        pageTitle: "الفتح السليماني الطيبي - حاسبة الميراث",
+        mainTitle: "حاسبة تقسيم الميراث",
+        tab1Title: "البيانات الأساسية",
+        tab2Title: "بيانات الورثة",
+        tab3Title: "نتائج التوزيع",
+        alert1: "قم بإدخال جنس المتوفى واسمه ومبلغ التركة إن كان معروفاً والأمتار المراد تقسيمها إن كانت معروفة وقم بتحديد جميع ورثته ثم اضغط على التالي",
+        alert2: "اكتب أسماء الورثة واختر ديانة كل وارث ثم اضغط على التالي",
+        alert3: "تمت القسمة ويمكنك طباعة نتيجة القسمة أو اضغط على السابق للتعديل",
+        deceasedType: "نوع المتوفى",
+        male: "ذكر",
+        female: "أنثى",
+        religion: "الديانة",
+        muslim: "مسلم",
+        nonMuslim: "غير مسلم",
+        deceasedName: "اسم المتوفى",
+        enterDeceasedName: "أدخل اسم المتوفى",
+        estateAmount: "مبلغ التركة",
+        enterAmount: "أدخل المبلغ",
+        riyal: "ريال",
+        materials: "الأمتار المراد توزيعها",
+        enterMaterials: "أدخل المساحة",
+        meter: "متر",
+        numberOfWives: "عدد الزوجات",
+        hasHusband: "هل يوجد زوج؟",
+        no: "لا",
+        yes: "نعم",
+        heir: "وريث",
+        category: "الفئة",
+        name: "الاسم",
+        religiousStatus: "الحالة الدينية",
+        actions: "الإجراءات",
+        previous: "السابق",
+        next: "التالي",
+        print: "طباعة",
+        close: "إغلاق",
+        fatherChildrenTitle: "كم عدد أبناء وبنات الأب",
+        fatherChildrenSubtitle: "(إخوة وأخوات المتوفى)",
+        fatherSons: "عدد أولاد الأب",
+        fatherDaughters: "عدد بنات الأب",
+        oneSon: "ولد",
+        twoSons: "ولدين",
+        moreThanTwoSons: "أكثر من ولدين",
+        oneDaughter: "بنت",
+        twoDaughters: "بنتين",
+        threeDaughters: "ثلاث بنات",
+        fourDaughters: "أربع بنات",
+        moreThanFourDaughters: "أكثر من أربع بنات",
+        validationError: "يجب اختيار وارث واحد على الأقل للمتابعة",
+        ok: "حسناً",
+        printTitle: "نتيجة تقسيم الميراث",
+        madhhabTitle: "حسب مذهب آل البيت عليهم الصلاة والسلام",
+        relationship: "صلة القرابة",
+        heirName: "اسم الوارث",
+        moneyShare: "مقدار الورث من المال",
+        materialsShare: "مقدار الورث من الأمتار",
+        percentageShare: "مقدار الورث بالنسبة",
+        explanation: "توضيح"
+      },
+      en: {
+        pageTitle: "Al-Fath Al-Sulaimani Al-Taybi - Inheritance Calculator",
+        mainTitle: "Inheritance Division Calculator",
+        tab1Title: "Basic Data",
+        tab2Title: "Heirs Data",
+        tab3Title: "Distribution Results",
+        alert1: "Enter the gender of the deceased, their name, the estate amount if known, and the meters to be distributed if known, then specify all their heirs and click Next",
+        alert2: "Write the names of the heirs and choose the religion of each heir then click Next",
+        alert3: "The division has been completed and you can print the division result or click Previous to modify",
+        deceasedType: "Deceased Type",
+        male: "Male",
+        female: "Female",
+        religion: "Religion",
+        muslim: "Muslim",
+        nonMuslim: "Non-Muslim",
+        deceasedName: "Deceased Name",
+        enterDeceasedName: "Enter deceased name",
+        estateAmount: "Estate Amount",
+        enterAmount: "Enter amount",
+        riyal: "Riyal",
+        materials: "Meters to be distributed",
+        enterMaterials: "Enter area",
+        meter: "Meter",
+        numberOfWives: "Number of Wives",
+        hasHusband: "Has Husband?",
+        no: "No",
+        yes: "Yes",
+        heir: "Heir",
+        category: "Category",
+        name: "Name",
+        religiousStatus: "Religious Status",
+        actions: "Actions",
+        previous: "Previous",
+        next: "Next",
+        print: "Print",
+        close: "Close",
+        fatherChildrenTitle: "How many sons and daughters of the father",
+        fatherChildrenSubtitle: "(Siblings of the deceased)",
+        fatherSons: "Number of father's sons",
+        fatherDaughters: "Number of father's daughters",
+        oneSon: "One son",
+        twoSons: "Two sons",
+        moreThanTwoSons: "More than two sons",
+        oneDaughter: "One daughter",
+        twoDaughters: "Two daughters",
+        threeDaughters: "Three daughters",
+        fourDaughters: "Four daughters",
+        moreThanFourDaughters: "More than four daughters",
+        validationError: "You must select at least one heir to continue",
+        ok: "OK",
+        printTitle: "Inheritance Division Result",
+        madhhabTitle: "According to the school of Ahl al-Bayt, prayers and peace be upon them",
+        relationship: "Relationship",
+        heirName: "Heir Name",
+        moneyShare: "Share of Money",
+        materialsShare: "Share of Meters",
+        percentageShare: "Percentage Share",
+        explanation: "Explanation"
+      },
+      ur: {
+        pageTitle: "الفتح السليماني الطیبی - ورث کیلکولیٹر",
+        mainTitle: "ورثہ تقسیم کرنے کا کیلکولیٹر",
+        tab1Title: "بنیادی ڈیٹا",
+        tab2Title: "وارثین کا ڈیٹا",
+        tab3Title: "تقسیم کے نتائج",
+        alert1: "متوفی کی جنس، نام، ترکے کی رقم اگر معلوم ہو اور تقسیم کیے جانے والے میٹر اگر معلوم ہوں درج کریں، پھر تمام وارثین کی نشاندہی کریں اور اگلا پر کلک کریں",
+        alert2: "وارثین کے نام لکھیں اور ہر وارث کا مذہب منتخب کریں پھر اگلا پر کلک کریں",
+        alert3: "تقسیم مکمل ہو گئی ہے اور آپ تقسیم کے نتیجے کو پرنٹ کر سکتے ہیں یا ترمیم کے لیے پچھلے پر کلک کر سکتے ہیں",
+        deceasedType: "متوفی کی قسم",
+        male: "مرد",
+        female: "عورت",
+        religion: "مذہب",
+        muslim: "مسلم",
+        nonMuslim: "غیر مسلم",
+        deceasedName: "متوفی کا نام",
+        enterDeceasedName: "متوفی کا نام درج کریں",
+        estateAmount: "ترکے کی رقم",
+        enterAmount: "رقم درج کریں",
+        riyal: "ریال",
+        materials: "تقسیم کیے جانے والے میٹر",
+        enterMaterials: "رقبہ درج کریں",
+        meter: "میٹر",
+        numberOfWives: "بیویوں کی تعداد",
+        hasHusband: "کیا شوہر ہے؟",
+        no: "نہیں",
+        yes: "ہاں",
+        heir: "وارث",
+        category: "زمرہ",
+        name: "نام",
+        religiousStatus: "مذہبی حیثیت",
+        actions: "اعمال",
+        previous: "پچھلا",
+        next: "اگلا",
+        print: "پرنٹ کریں",
+        close: "بند کریں",
+        fatherChildrenTitle: "باپ کے کتنے بیٹے اور بیٹیاں ہیں",
+        fatherChildrenSubtitle: "(متوفی کے بہن بھائی)",
+        fatherSons: "باپ کے بیٹوں کی تعداد",
+        fatherDaughters: "باپ کے بیٹیوں کی تعداد",
+        oneSon: "ایک بیٹا",
+        twoSons: "دو بیٹے",
+        moreThanTwoSons: "دو سے زیادہ بیٹے",
+        oneDaughter: "ایک بیٹی",
+        twoDaughters: "دو بیٹیاں",
+        threeDaughters: "تین بیٹیاں",
+        fourDaughters: "چار بیٹیاں",
+        moreThanFourDaughters: "چار سے زیادہ بیٹیاں",
+        validationError: "جاری رکھنے کے لیے کم از کم ایک وارث کا انتخاب لازمی ہے",
+        ok: "ٹھیک ہے",
+        printTitle: "ورثہ تقسیم کا نتیجہ",
+        madhhabTitle: "اہل بیت علیہم السلام کے مذہب کے مطابق",
+        relationship: "رشتہ",
+        heirName: "وارث کا نام",
+        moneyShare: "مال میں حصہ",
+        materialsShare: "میٹر میں حصہ",
+        percentageShare: "فیصدی حصہ",
+        explanation: "وضاحت"
+      }
+    };
+
+    // الحصول على اللغة الحالية
+    function getCurrentLanguage() {
+      return localStorage.getItem('selectedLanguage') || 'ar';
+    }
+
+    // حفظ اللغة المختارة
+    function setLanguage(lang) {
+      localStorage.setItem('selectedLanguage', lang);
+    }
+
+    // التحقق من إذا كانت اللغة من اليمين لليسار
+    function isRTL(lang) {
+      return lang === 'ar' || lang === 'ur';
+    }
+
+    // تحديث نص خيارات اللغة
+    function updateLanguageSelect(lang) {
+      const select = document.getElementById('languageSelect');
+      const options = select.options;
+      const languageNames = {
+        ar: { ar: 'العربية', en: 'الإنجليزية', ur: 'الأردو' },
+        en: { ar: 'Arabic', en: 'English', ur: 'Urdu' },
+        ur: { ar: 'عربی', en: 'انگریزی', ur: 'اردو' }
+      };
+      for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        option.textContent = languageNames[lang][option.value];
+      }
+    }
+
     // تطبيق الترجمة على الصفحة
     function applyTranslations() {
       const lang = getCurrentLanguage();
@@ -1149,9 +1596,14 @@
       document.documentElement.dir = isRTL(lang) ? 'rtl' : 'ltr';
       document.documentElement.lang = lang;
       document.body.className = isRTL(lang) ? '' : 'ltr';
-      if (lang === 'ur') document.body.classList.add('lang-ur');
+      if (lang === 'ur') {
+        document.body.classList.add('lang-ur');
+      } else {
+        document.body.classList.remove('lang-ur');
+      }
       
       // تحديث مبدل اللغة
+      updateLanguageSelect(lang);
       document.getElementById('languageSelect').value = lang;
       
       // ترجمة النصوص
@@ -1189,7 +1641,77 @@
     // تطبيق الترجمة عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', function() {
       applyTranslations();
+      
+      // إضافة وظائف للخطوة الثانية
+      document.getElementById('addHeirBtn').addEventListener('click', function() {
+        addNewHeirRow();
+      });
+      
+      // إضافة مستمعين لأزرار الحذف
+      document.querySelectorAll('.btn-table-danger').forEach(button => {
+        button.addEventListener('click', function() {
+          this.closest('tr').remove();
+          updateRowNumbers();
+        });
+      });
     });
+    
+    // وظائف إضافية للخطوة الثانية
+    function addNewHeirRow() {
+      const tbody = document.getElementById('resultTableBody');
+      const newRow = document.createElement('tr');
+      const rowNumber = tbody.children.length + 1;
+      
+      newRow.innerHTML = `
+        <td>${rowNumber}</td>
+        <td>
+          <select class="table-select">
+            <option value="زوج">زوج</option>
+            <option value="زوجة">زوجة</option>
+            <option value="ابن">ابن</option>
+            <option value="ابنة">ابنة</option>
+            <option value="أب">أب</option>
+            <option value="أم">أم</option>
+            <option value="جد">جد</option>
+            <option value="جدة">جدة</option>
+            <option value="أخ">أخ</option>
+            <option value="أخت">أخت</option>
+          </select>
+        </td>
+        <td>
+          <input type="text" class="table-input" placeholder="اسم الوارث">
+        </td>
+        <td>
+          <select class="table-select">
+            <option value="مسلم">مسلم</option>
+            <option value="غير مسلم">غير مسلم</option>
+          </select>
+        </td>
+        <td>
+          <button type="button" class="btn-table-action" title="إضافة وارث">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button type="button" class="btn-table-action btn-table-danger" title="حذف وارث">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      `;
+      
+      tbody.appendChild(newRow);
+      
+      // إضافة مستمع للأزرار الجديدة
+      newRow.querySelector('.btn-table-danger').addEventListener('click', function() {
+        this.closest('tr').remove();
+        updateRowNumbers();
+      });
+    }
+    
+    function updateRowNumbers() {
+      const rows = document.querySelectorAll('#resultTableBody tr');
+      rows.forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+      });
+    }
   </script>
 
   <script type="module" src="js/new_script.js"></script>
