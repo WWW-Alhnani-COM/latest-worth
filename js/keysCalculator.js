@@ -206,38 +206,19 @@ export class InheritanceCalculator {
       this.assignFixedShare('husband', SHARES.quarter, 'quarterNote');
     }
 
-    // الزوجة - تم التعديل هنا
+    // الزوجة
     if (hasWife) {
       const wifeHeirs = Object.keys(this.heirs).filter(key => key.startsWith('wife_'));
       const wifeCount = wifeHeirs.length;
       const totalWifeShare = this.calculateShare(SHARES.eighth);
       const sharePerWife = totalWifeShare / wifeCount;
       
-      // تحديد رسالة التوضيح بناءً على عدد الزوجات
-      let wifeNote = '';
-      switch(wifeCount) {
-        case 1:
-          wifeNote = t('wifeOneShare');
-          break;
-        case 2:
-          wifeNote = t('wifeTwoShare');
-          break;
-        case 3:
-          wifeNote = t('wifeThreeShare');
-          break;
-        case 4:
-          wifeNote = t('wifeFourShare');
-          break;
-        default:
-          wifeNote = t('wifeShareNote') + ` (${wifeCount} ${t('numberOfWives')})`;
-      }
-      
       for (const wife of wifeHeirs) {
         this.results[wife] = {
           ...this.heirs[wife],
           amount: sharePerWife.toFixed(3),
           percentage: this.formatPercentage((sharePerWife / this.totalAmount) * 100),
-          note: wifeNote
+          note: t('wifeShareNote') + (wifeCount > 1 ? ` (${wifeCount} ${t('numberOfWives')})` : '')
         };
         this.remainingAmount -= sharePerWife;
       }
@@ -358,31 +339,12 @@ export class InheritanceCalculator {
       const totalWifeShare = this.calculateShare(SHARES.eighth);
       const sharePerWife = totalWifeShare / wifeCount;
       
-      // تحديد رسالة التوضيح بناءً على عدد الزوجات
-      let wifeNote = '';
-      switch(wifeCount) {
-        case 1:
-          wifeNote = t('wifeOneShare');
-          break;
-        case 2:
-          wifeNote = t('wifeTwoShare');
-          break;
-        case 3:
-          wifeNote = t('wifeThreeShare');
-          break;
-        case 4:
-          wifeNote = t('wifeFourShare');
-          break;
-        default:
-          wifeNote = t('wifeShareNote') + ` (${wifeCount} ${t('numberOfWives')})`;
-      }
-      
       for (const wife of wifeHeirs) {
         this.results[wife] = {
           ...this.heirs[wife],
           amount: sharePerWife.toFixed(3),
           percentage: this.formatPercentage((sharePerWife / this.totalAmount) * 100),
-          note: wifeNote
+          note: t('wifeShareNote') + (wifeCount > 1 ? ` (${wifeCount} ${t('numberOfWives')})` : '')
         };
         this.remainingAmount -= sharePerWife;
       }
@@ -428,40 +390,7 @@ export class InheritanceCalculator {
     }
     // الابنة مع الزوجة
     else if (hasWife) {
-      const wifeHeirs = Object.keys(this.heirs).filter(key => key.startsWith('wife_'));
-      const wifeCount = wifeHeirs.length;
-      const totalWifeShare = this.calculateShare(SHARES.eighth);
-      const sharePerWife = totalWifeShare / wifeCount;
-      
-      // تحديد رسالة التوضيح بناءً على عدد الزوجات
-      let wifeNote = '';
-      switch(wifeCount) {
-        case 1:
-          wifeNote = t('wifeOneShare');
-          break;
-        case 2:
-          wifeNote = t('wifeTwoShare');
-          break;
-        case 3:
-          wifeNote = t('wifeThreeShare');
-          break;
-        case 4:
-          wifeNote = t('wifeFourShare');
-          break;
-        default:
-          wifeNote = t('wifeShareNote') + ` (${wifeCount} ${t('numberOfWives')})`;
-      }
-      
-      for (const wife of wifeHeirs) {
-        this.results[wife] = {
-          ...this.heirs[wife],
-          amount: sharePerWife.toFixed(3),
-          percentage: this.formatPercentage((sharePerWife / this.totalAmount) * 100),
-          note: wifeNote
-        };
-        this.remainingAmount -= sharePerWife;
-      }
-      
+      this.assignFixedShare('wife_1', SHARES.eighth, 'eighthNote');
       this.assignFixedShare('daughter_1', SHARES.half, 'halfNote');
       this.applyRadd(['daughter_1'], 'remainderToDaughterNote');
     }
@@ -554,39 +483,7 @@ export class InheritanceCalculator {
     }
     // ابنتين مع الزوجة
     else if (hasWife) {
-      const wifeHeirs = Object.keys(this.heirs).filter(key => key.startsWith('wife_'));
-      const wifeCount = wifeHeirs.length;
-      const totalWifeShare = this.calculateShare(SHARES.eighth);
-      const sharePerWife = totalWifeShare / wifeCount;
-      
-      // تحديد رسالة التوضيح بناءً على عدد الزوجات
-      let wifeNote = '';
-      switch(wifeCount) {
-        case 1:
-          wifeNote = t('wifeOneShare');
-          break;
-        case 2:
-          wifeNote = t('wifeTwoShare');
-          break;
-        case 3:
-          wifeNote = t('wifeThreeShare');
-          break;
-        case 4:
-          wifeNote = t('wifeFourShare');
-          break;
-        default:
-          wifeNote = t('wifeShareNote') + ` (${wifeCount} ${t('numberOfWives')})`;
-      }
-      
-      for (const wife of wifeHeirs) {
-        this.results[wife] = {
-          ...this.heirs[wife],
-          amount: sharePerWife.toFixed(3),
-          percentage: this.formatPercentage((sharePerWife / this.totalAmount) * 100),
-          note: wifeNote
-        };
-        this.remainingAmount -= sharePerWife;
-      }
+      this.assignFixedShare('wife_1', SHARES.eighth, 'eighthNote');
       
       const totalDaughtersShare = this.calculateShare(SHARES.twoThirds);
       const sharePerDaughter = totalDaughtersShare / daughterHeirs.length;
@@ -624,7 +521,7 @@ export class InheritanceCalculator {
     }
   }
 
-  // المفاتيح 4، 5، 6 (نفس المنطق مع تعديلات الزوجة)
+  // المفتاح الرابع: الابن + متوفي أم
   applyKey4() {
     if (this.handleFatherMotherDaughterCase()) return;
     
@@ -668,6 +565,7 @@ export class InheritanceCalculator {
     }
   }
 
+  // المفتاح الخامس: الابنة + متوفي أم
   applyKey5() {
     if (this.handleFatherMotherDaughterCase()) return;
     
@@ -716,6 +614,7 @@ export class InheritanceCalculator {
     }
   }
 
+  // المفتاح السادس: ابنتين فصاعدا + متوفي أم
   applyKey6() {
     if (this.handleFatherMotherDaughterCase()) return;
     
