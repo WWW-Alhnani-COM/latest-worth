@@ -28,6 +28,10 @@ export const translations = {
     print: "طباعة",
     close: "إغلاق",
     ok: "حسناً",
+
+    noOption: "لا",
+yesOption: "نعم",
+
     
     // Deceased info
     deceasedType: "نوع المتوفى",
@@ -234,7 +238,10 @@ export const translations = {
     print: "Print",
     close: "Close",
     ok: "OK",
-    
+
+    noOption: "No",
+yesOption: "Yes",
+
     // Deceased info
     deceasedType: "Deceased Type",
     male: "Male",
@@ -457,7 +464,9 @@ export const translations = {
     riyal: "ریال",
     meter: "میٹر",
     heir: "وارث",
-    
+
+    noOption: "نہیں",
+yesOption: "جی ہاں",
     // Spouse
     numberOfWives: "بیویوں کی تعداد",
     hasHusband: "کیا شوہر موجود ہے؟",
