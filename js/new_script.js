@@ -683,51 +683,94 @@ function collectFormData() {
 }
 
 function updateReligiousTab(data) {
+  // تحديث معلومات المتوفى مع إمكانية التعديل
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
     deceasedInfoHTML = `
-            <tr>
-                <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
-                <td>${data.deceased_religion}</td>
-                <td>${data.deceased_name}</td>
-                <td>${data.amount || t('noAmount')}</td>
-                <td>${data.materials || t('noMaterials')}</td>
-            </tr>
-        `;
+      <tr>
+        <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
+        <td>
+          <select class="deceased-religion" data-field="religion">
+            <option value="مسلم" ${data.deceased_religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
+            <option value="غير مسلم" ${data.deceased_religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
+          </select>
+        </td>
+        <td>
+          <input 
+            type="text" 
+            class="deceased-name" 
+            data-field="name"
+            value="${data.deceased_name || ''}" 
+            placeholder="${t('enterDeceasedName')}"
+            title="${t('enterDeceasedName')}"
+          >
+        </td>
+        <td>
+          <input 
+            type="text" 
+            class="deceased-amount" 
+            data-field="amount"
+            value="${data.amount || ''}" 
+            placeholder="${t('enterAmount')}"
+          >
+        </td>
+        <td>
+          <input 
+            type="text" 
+            class="deceased-materials" 
+            data-field="materials"
+            value="${data.materials || ''}" 
+            placeholder="${t('enterMaterials')}"
+          >
+        </td>
+      </tr>
+    `;
   }
   document.getElementById('deceasedInfoBody').innerHTML = deceasedInfoHTML;
 
+  // تحديث جدول الورثة مع إمكانية التعديل
   let heirsHTML = "";
   let i = 0;
   for (let key in data.heirs) {
     if (data.deceased_gender === 'female' && key.startsWith("wife")) {
       continue;
     }
-    i++
+    i++;
     heirsHTML += `
-            <tr>
-                <td class="counter">${formatNumber(i)}</td>
-                <td>${data.heirs[key].title}</td>
-                <td>
-                  <input 
-                    type="text" 
-                    class="heir-name" 
-                    data-heir-id="${key}" 
-                    value="${data.heirs[key].name || ''}" 
-                    placeholder="${t('enterHeirName')}"
-                    title="${t('enterHeirName')}"
-                  >
-                </td>
-                <td>
-                    <select class="heir-religion" data-heir-id="${key}" title="${t('religiousStatus')}">
-                        <option value="مسلم">${t('muslim')}</option>
-                        <option value="غير مسلم">${t('nonMuslim')}</option>
-                    </select>
-                </td>
-            </tr>
-        `;
+      <tr>
+        <td class="counter">${formatNumber(i)}</td>
+        <td>${data.heirs[key].title}</td>
+        <td>
+          <input 
+            type="text" 
+            class="heir-name" 
+            data-heir-id="${key}" 
+            value="${data.heirs[key].name || ''}" 
+            placeholder="${t('enterHeirName')}"
+            title="${t('enterHeirName')}"
+          >
+        </td>
+        <td>
+          <select class="heir-religion" data-heir-id="${key}" title="${t('religiousStatus')}">
+            <option value="مسلم" ${data.heirs[key].religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
+            <option value="غير مسلم" ${data.heirs[key].religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-small btn-edit-title" data-heir-id="${key}" title="تعديل صلة القرابة">
+            <i class="fas fa-edit"></i>
+          </button>
+        </td>
+      </tr>
+    `;
   }
   document.getElementById('resultTableBody').innerHTML = heirsHTML;
+
+  // إضافة تفاعلية لحقول المتوفى
+  initDeceasedFieldsInteractivity();
+
+  // إضافة تفاعلية لأزرار تعديل صلة القرابة
+  initHeirTitleEditButtons();
 
   // تهيئة تفاعلية حقول الورثة
   setTimeout(() => {
@@ -1027,3 +1070,4 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
