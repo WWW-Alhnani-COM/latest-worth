@@ -1,9 +1,10 @@
-import { calculateInheritance } from "./functions.js";
+import { calculateInheritance, calculateInheritanceSimple } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
-const all = {};const booleanOptions = [t('noOption'), t('yesOption')];
+const all = {};
+const booleanOptions = [t('noOption'), t('yesOption')];
 const defaultOptions = [t('noOption'), ...Array.from({ length: 49 }, (_, i) => i + 1)];
-const customOptions = ["لا", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
+const customOptions = [t('noOption'), "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
 
 const fieldsData = [
   {
@@ -125,6 +126,190 @@ const fieldsData = [
   }
 ];
 
+// ========== نظام التفاعلية المضافة ==========
+
+// تهيئة التفاعلية
+function initInteractivity() {
+  initFormFieldInteractivity();
+  initButtonInteractivity();
+  initTableInteractivity();
+  initTabInteractivity();
+}
+
+// تفاعلية حقول النموذج
+function initFormFieldInteractivity() {
+  // تفاعلية الحقول النصية
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused-field');
+      this.parentElement.classList.add('active');
+    });
+    
+    input.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused-field');
+      this.parentElement.classList.remove('active');
+      if (this.value.trim() !== '') {
+        this.classList.add('filled-field');
+      } else {
+        this.classList.remove('filled-field');
+      }
+    });
+    
+    // التحقق من الحقول المملوءة مسبقاً
+    if (input.value.trim() !== '') {
+      input.classList.add('filled-field');
+    }
+  });
+
+  // تفاعلية حقول التحديد
+  document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', function() {
+      if (this.value && this.value !== t('noOption') && this.value !== 'no') {
+        this.classList.add('filled-field');
+        this.parentElement.classList.add('selected-group');
+        
+        // تأثير مرئي عند التحديد
+        this.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 200);
+      } else {
+        this.classList.remove('filled-field');
+        this.parentElement.classList.remove('selected-group');
+      }
+      
+      // تحديث العداد
+      calulcateWarth(all);
+    });
+    
+    select.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused-field');
+      this.parentElement.classList.add('active');
+    });
+    
+    select.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused-field');
+      this.parentElement.classList.remove('active');
+    });
+    
+    // التحقق من الحقول المحددة مسبقاً
+    if (select.value && select.value !== t('noOption') && select.value !== 'no') {
+      select.classList.add('filled-field');
+      select.parentElement.classList.add('selected-group');
+    }
+  });
+
+  // تفاعلية أزرار الراديو
+  document.querySelectorAll('.radio-input').forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.radio-item').forEach(item => {
+        item.classList.remove('selected-radio');
+      });
+      this.closest('.radio-item').classList.add('selected-radio');
+    });
+  });
+}
+
+// تفاعلية الأزرار
+function initButtonInteractivity() {
+  document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+    
+    button.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+    
+    button.addEventListener('mousedown', function() {
+      this.style.transform = 'translateY(0)';
+    });
+    
+    button.addEventListener('mouseup', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+  });
+}
+
+// تفاعلية الجداول
+function initTableInteractivity() {
+  document.querySelectorAll('table tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+      this.style.backgroundColor = 'var(--bg-secondary)';
+    });
+    
+    row.addEventListener('mouseleave', function() {
+      this.style.backgroundColor = '';
+    });
+    
+    row.addEventListener('click', function() {
+      document.querySelectorAll('table tr').forEach(r => {
+        r.classList.remove('selected-row');
+      });
+      this.classList.add('selected-row');
+    });
+  });
+}
+
+// تفاعلية التبويبات
+function initTabInteractivity() {
+  document.querySelectorAll('.tab-button').forEach(tab => {
+    tab.addEventListener('mouseenter', function() {
+      if (!this.classList.contains('active') && !this.disabled) {
+        this.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+      }
+    });
+    
+    tab.addEventListener('mouseleave', function() {
+      if (!this.classList.contains('active') && !this.disabled) {
+        this.style.backgroundColor = '';
+      }
+    });
+  });
+}
+
+// تفاعلية خاصة بحقول الورثة
+function initHeirsInteractivity() {
+  document.querySelectorAll('.heir-name, .heir-religion').forEach(field => {
+    field.addEventListener('focus', function() {
+      const row = this.closest('tr');
+      row.style.backgroundColor = 'rgba(52, 168, 83, 0.1)';
+      row.classList.add('editing-row');
+    });
+    
+    field.addEventListener('blur', function() {
+      const row = this.closest('tr');
+      row.style.backgroundColor = '';
+      row.classList.remove('editing-row');
+      
+      // إذا كان الحقل مملوءاً، أضف تأثير
+      if (this.value.trim() !== '') {
+        this.classList.add('filled-field');
+      } else {
+        this.classList.remove('filled-field');
+      }
+    });
+  });
+}
+
+// ========== نهاية نظام التفاعلية ==========
+
+// دالة لتحديث خيارات القوائم المنسدلة عند تغيير اللغة
+function updateSelectOptions() {
+  const noText = t('noOption');
+  const yesText = t('yesOption');
+  
+  document.querySelectorAll('select option').forEach(option => {
+    if (option.textContent === 'لا' || option.textContent === 'No' || option.textContent === 'نہیں') {
+      option.textContent = noText;
+      option.value = noText;
+    } else if (option.textContent === 'نعم' || option.textContent === 'Yes' || option.textContent === 'جی ہاں') {
+      option.textContent = yesText;
+      option.value = yesText;
+    }
+  });
+}
+
 // تطبيق الترجمة على الصفحة
 function applyTranslations() {
   const lang = getCurrentLanguage();
@@ -135,17 +320,16 @@ function applyTranslations() {
   document.body.className = isRTL(lang) ? '' : 'ltr';
   if (lang === 'ur') document.body.classList.add('lang-ur');
   
-  // تحديث مبدل اللغة - التصحيح هنا
+  // تحديث مبدل اللغة
   const languageSelect = document.getElementById('languageSelect');
   if (languageSelect) {
     languageSelect.value = lang;
     
-    // استخدام نصوص ثابتة للغات (الحل السريع)
+    // استخدام نصوص ثابتة للغات
     const options = languageSelect.querySelectorAll('option');
     options[0].textContent = 'العربية';
     options[1].textContent = 'English';
     options[2].textContent = 'اردو';
-    
   }
   
   // ترجمة النصوص
@@ -180,8 +364,10 @@ function applyTranslations() {
   
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
+  
+  // تحديث خيارات القوائم المنسدلة
+  updateSelectOptions();
 }
-
 
 // تحديث تسميات الأزرار
 function updateButtonTexts() {
@@ -194,26 +380,12 @@ function updateButtonTexts() {
   
   if (nextBtn) nextBtn.innerHTML = `<span data-i18n="next">${t('next')}</span>`;
   if (prevBtn) prevBtn.innerHTML = `<span data-i18n="previous">${t('previous')}</span>`;
-  if (printBtn) printBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
-        <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
-      </svg><span data-i18n="print">${t('print')}</span>`;
+  if (printBtn) printBtn.innerHTML = `<i class="fas fa-print"></i><span data-i18n="print">${t('print')}</span>`;
   if (closeSonsBtn) closeSonsBtn.textContent = t('close');
   if (sonsNextBtn) sonsNextBtn.textContent = t('next');
   if (closeModalBtn) closeModalBtn.textContent = t('ok');
 }
-function translateSelectOptions() {
-  const noText = t('noOption');
-  const yesText = t('yesOption');
-  
-  document.querySelectorAll('select option').forEach(option => {
-    if (option.value === 'لا' || option.value === 'No' || option.value === 'نہیں') {
-      option.textContent = noText;
-    } else if (option.value === 'نعم' || option.value === 'Yes' || option.value === 'جی ہاں') {
-      option.textContent = yesText;
-    }
-  });
-}
+
 // تحديث تنسيق الأرقام في المدخلات
 function updateNumberInputs() {
   const amountInput = document.getElementById('amount');
@@ -241,6 +413,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initCalculatorForm();
   initFooterButtons();
+  
+  // إضافة التفاعلية
+  initInteractivity();
 
   document.getElementById('closeSonsPopup').addEventListener('click', () => {
     document.getElementById('sons_numbers').classList.remove('show')
@@ -264,6 +439,7 @@ function initTranslationSystem() {
       const lang = e.target.value;
       setLanguage(lang);
       applyTranslations();
+      
       // إعادة تحميل البيانات إذا كانت موجودة
       reloadFormData();
     });
@@ -419,12 +595,10 @@ function initCalculatorForm() {
   const template = Handlebars.compile(templateSource);
   document.getElementById('dynamic-fields').innerHTML = template({ groups: fieldsData });
 
-  // تحديث العناوين بعد الترجمة
+  // تهيئة التفاعلية بعد إنشاء الحقول
   setTimeout(() => {
-    document.querySelectorAll('.group-header h3').forEach((header, index) => {
-      header.setAttribute('data-i18n', `category${index + 1}`);
-      header.textContent = t(`category${index + 1}`);
-    });
+    initInteractivity();
+    updateFieldLabels();
   }, 100);
 
   document.querySelectorAll('input[name="deceased_gender"]').forEach(input => {
@@ -510,7 +684,7 @@ function collectFormData() {
       return;
     }
 
-    if (value === "نعم") {
+    if (value === t('yesOption')) {
       formData.heirs[id] = { title: title, name: "" };
       return;
     }
@@ -535,7 +709,15 @@ function updateReligiousTab(data) {
             <tr>
                 <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
                 <td>${data.deceased_religion}</td>
-                <td>${data.deceased_name}</td>
+                <td>
+                  <input 
+                    type="text" 
+                    class="deceased-name-edit" 
+                    value="${data.deceased_name || ''}" 
+                    placeholder="${t('enterDeceasedName')}"
+                    title="${t('enterDeceasedName')}"
+                  >
+                </td>
                 <td>${data.amount || t('noAmount')}</td>
                 <td>${data.materials || t('noMaterials')}</td>
             </tr>
@@ -566,8 +748,8 @@ function updateReligiousTab(data) {
                 </td>
                 <td>
                     <select class="heir-religion" data-heir-id="${key}" title="${t('religiousStatus')}">
-                        <option value="مسلم">${t('muslim')}</option>
-                        <option value="غير مسلم">${t('nonMuslim')}</option>
+                        <option value="مسلم" ${data.heirs[key].religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
+                        <option value="غير مسلم" ${data.heirs[key].religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
                     </select>
                 </td>
             </tr>
@@ -575,43 +757,105 @@ function updateReligiousTab(data) {
   }
   document.getElementById('resultTableBody').innerHTML = heirsHTML;
 
+  // إضافة مستمع لتعديل اسم المتوفى
+  const deceasedNameInput = document.querySelector('.deceased-name-edit');
+  if (deceasedNameInput) {
+    deceasedNameInput.addEventListener('change', function() {
+      const storedData = JSON.parse(localStorage.getItem("inheritanceData"));
+      storedData.deceased_name = this.value;
+      localStorage.setItem("inheritanceData", JSON.stringify(storedData));
+    });
+  }
+
+  // تهيئة تفاعلية حقول الورثة
+  setTimeout(() => {
+    initHeirsInteractivity();
+  }, 100);
+
   document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
 }
 
 function handleReligiousSubmit(event) {
   event.preventDefault();
-  const data = JSON.parse(localStorage.getItem("inheritanceData"));
-
-  document.querySelectorAll('.heir-name').forEach(input => {
-    const heirId = input.getAttribute('data-heir-id');
-    data.heirs[heirId].name = input.value;
-    data.heirs[heirId].religion = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`).value;
-  });
-
-  localStorage.setItem("inheritanceData", JSON.stringify(data));
-
-  document.querySelector('.tab-button.shares').disabled = false;
-  switchTab('shares');
-
-  // ========== استخدام النظام الجديد للمفاتيح الستة ==========
-  const totalAmount = processTotalAmount(data.amount);
-  const materialsAmount = parseNumber(data.materials) || 0;
+  console.log('handleReligiousSubmit called');
   
-  // حساب توزيع المال باستخدام النظام الجديد
-  const moneyResults = calculateInheritance(totalAmount, data?.heirs);
-  
-  // حساب توزيع المواد (بنفس النسب) فقط إذا كانت هناك مواد
-  let materialsResults = null;
-  if (materialsAmount > 0) {
-    materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+  try {
+    const data = JSON.parse(localStorage.getItem("inheritanceData"));
+    console.log('Loaded data from localStorage:', data);
+
+    // تحديث اسم المتوفى
+    const deceasedNameInput = document.querySelector('.deceased-name-edit');
+    if (deceasedNameInput) {
+      data.deceased_name = deceasedNameInput.value;
+      console.log('Updated deceased name:', data.deceased_name);
+    }
+
+    // تحديث بيانات الورثة
+    document.querySelectorAll('.heir-name').forEach(input => {
+      const heirId = input.getAttribute('data-heir-id');
+      if (data.heirs[heirId]) {
+        data.heirs[heirId].name = input.value;
+        data.heirs[heirId].religion = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`).value;
+        console.log(`Updated heir ${heirId}:`, data.heirs[heirId]);
+      }
+    });
+
+    localStorage.setItem("inheritanceData", JSON.stringify(data));
+    console.log('Data saved to localStorage');
+
+    // تمكين التبويب الثالث
+    document.querySelector('.tab-button.shares').disabled = false;
+    console.log('Shares tab enabled');
+
+    // ========== استخدام النظام الجديد للمفاتيح الستة ==========
+    const totalAmount = processTotalAmount(data.amount);
+    const materialsAmount = parseNumber(data.materials) || 0;
+    
+    console.log('Starting calculation with:', {
+      totalAmount,
+      materialsAmount,
+      heirsCount: Object.keys(data.heirs).length
+    });
+    
+    let moneyResults = {};
+    
+    try {
+      // محاولة استخدام النظام الرئيسي
+      moneyResults = calculateInheritance(totalAmount, data?.heirs);
+      console.log('Main calculation results:', moneyResults);
+    } catch (calcError) {
+      console.error('Main calculation failed, using fallback:', calcError);
+      // استخدام النظام الاحتياطي
+      moneyResults = calculateInheritanceSimple(totalAmount, data?.heirs);
+      console.log('Fallback calculation results:', moneyResults);
+    }
+    
+    // حساب توزيع المواد (بنفس النسب) فقط إذا كانت هناك مواد
+    let materialsResults = null;
+    if (materialsAmount > 0) {
+      materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+      console.log('Materials distribution:', materialsResults);
+    }
+
+    // تحديث تبويب النتائج
+    updateSharesTab({ 
+      ...data, 
+      heirs: moneyResults,
+      materialsDistribution: materialsResults,
+      hasAmount: !!data.amount && parseNumber(data.amount) > 0
+    });
+    
+    console.log('Shares tab updated, switching tab...');
+    
+    // الانتقال إلى التبويب الثالث
+    switchTab('shares');
+    
+    console.log('Successfully switched to shares tab');
+    
+  } catch (error) {
+    console.error('Error in handleReligiousSubmit:', error);
+    alert('حدث خطأ في حساب التوزيع. يرجى التحقق من البيانات والمحاولة مرة أخرى.');
   }
-
-  updateSharesTab({ 
-    ...data, 
-    heirs: moneyResults,
-    materialsDistribution: materialsResults,
-    hasAmount: !!data.amount && parseNumber(data.amount) > 0
-  });
 }
 
 // ========== دالة معالجة المبلغ فقط (بدون مواد) ==========
@@ -651,7 +895,7 @@ function updateSharesTab(data) {
         <tr>
             <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
             <td>${data.deceased_religion}</td>
-            <td>${data.deceased_name}</td>
+            <td>${data.deceased_name || '-'}</td>
             <td>${data.amount || t('noAmount')}</td>
             <td>${data.materials || t('noMaterials')}</td>
         </tr>
@@ -779,7 +1023,7 @@ function updateSharesTab(data) {
 }
 
 function hasSelectedHeirs() {
-  const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => select.value !== 'لا');
+  const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => select.value !== t('noOption'));
   const maleChecked = document.getElementById('male').checked;
   const femaleChecked = document.getElementById('female').checked;
   const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
@@ -811,39 +1055,49 @@ window.addEventListener('DOMContentLoaded', (e) => {
   document.getElementById('closeModal').addEventListener('click', closeModal)
 })
 
+// ========== دالة calulcateWarth المحسنة ==========
 function calulcateWarth(all) {
-  let count = 0
+  let count = 0;
   let hiddenWift = document.getElementById('spouse_female').classList.contains('hidden');
-  let hiddenHasband = document.getElementById('spouse_male').classList.contains('hidden')
+  let hiddenHasband = document.getElementById('spouse_male').classList.contains('hidden');
+  
   for (const [key, item] of Object.entries(all)) {
-    if (key === 'dad_sons' || key === 'dad_girls') {
-      continue
-    }
-    if (key === 'wift' && hiddenWift) {
-      continue
-    }
-    if (key === 'husband' && hiddenHasband) {
-      continue
-    }
+    if (key === 'dad_sons' || key === 'dad_girls') continue;
+    if (key === 'wift' && hiddenWift) continue;
+    if (key === 'husband' && hiddenHasband) continue;
 
-    if (item === 'نعم' || item === 'yes') {
-      count += 1
-    } else if (item === 'لا' || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
-      continue
-    }
-    else {
-      count += parseNumber(item)
+    if (item === t('yesOption') || item === 'yes') {
+      count += 1;
+    } else if (item === t('noOption') || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
+      continue;
+    } else {
+      count += parseNumber(item);
     }
   }
-  document.getElementById('worthCount').textContent = formatNumber(count)
+  
+  const worthElement = document.getElementById('worthCount');
+  const worthContainer = worthElement.closest('.worth-count');
+  
+  worthElement.textContent = formatNumber(count);
+  
+  // تأثير تفاعلي للعداد
+  if (count > 0) {
+    worthContainer.classList.add('has-heirs');
+    worthElement.style.transform = 'scale(1.2)';
+    setTimeout(() => {
+      worthElement.style.transform = 'scale(1)';
+    }, 300);
+  } else {
+    worthContainer.classList.remove('has-heirs');
+  }
 }
 
 function openSonsModal(e) {
   e.preventDefault()
-  let daughter = document.getElementById('daughter').value === 'لا'
-  let mother = document.getElementById('mother').value === 'نعم'
-  let father = document.getElementById('father').value === 'نعم'
-  let son = document.getElementById('son').value === 'لا'
+  let daughter = document.getElementById('daughter').value === t('noOption')
+  let mother = document.getElementById('mother').value === t('yesOption')
+  let father = document.getElementById('father').value === t('yesOption')
+  let son = document.getElementById('son').value === t('noOption')
 
   if (!hasSelectedHeirs()) {
     showModal();
@@ -853,10 +1107,8 @@ function openSonsModal(e) {
   if (mother && father && daughter && son) {
     document.getElementById('sons_numbers').classList.add('show')
   } else {
-    document.getElementById('dad_sons').value = 'لا'
-    document.getElementById('dad_girls').value = 'لا'
+    document.getElementById('dad_sons').value = t('noOption')
+    document.getElementById('dad_girls').value = t('noOption')
     handleCalculatorSubmit()
   }
 }
-
-
