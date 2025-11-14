@@ -1,3 +1,6 @@
+// Multi-language translations for Islamic Inheritance Calculator
+// Supported languages: Arabic (ar), English (en), Urdu (ur)
+
 export const translations = {
   ar: {
     // Page title and headers
@@ -388,6 +391,12 @@ export const translations = {
     baytAlMalNote: "Remainder to public treasury",
     wifeShareNote: "Wife's share",
 
+    // Wife share notes
+    wifeOneShare: "Eighth share for wife due to presence of children",
+    wifeTwoShare: "Half of eighth share for two wives due to presence of children",
+    wifeThreeShare: "Third of eighth share for three wives due to presence of children",
+    wifeFourShare: "Quarter of eighth share for four wives due to presence of children",
+
     // Numbers
     numbers: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
     decimalSeparator: ".",
@@ -580,13 +589,19 @@ export const translations = {
     sixthSunnaNote: "سدس سنت",
     twoThirdsNote: "ثلثين فرض",
     remainderNote: "باقي تعصيب",
-    raddNote: "باقي يرد رحم حسب سهامهما",
+    raddNote: "باقي يرد رحم حسب سهامهم",
     raddToDaughtersNote: "باقي يرد رحم على البنات بالتساوي",
     maleFemaleRatioNote: "للذكر مثل حظ الأنثيين",
     remainderToSonNote: "والباقي كاملاً للابن",
     remainderToDaughterNote: "الباقي يرد رحم للابنة",
     baytAlMalNote: "الباقي لبيت المال",
     wifeShareNote: "حصه الزوجه",
+
+    // Wife share notes
+    wifeOneShare: "بیوی کا آٹھواں حصہ اولاد کی موجودگی میں",
+    wifeTwoShare: "دو بیویوں کا آدھا آٹھواں حصہ اولاد کی موجودگی میں",
+    wifeThreeShare: "تین بیویوں کا تیسرا آٹھواں حصہ اولاد کی موجودگی میں", 
+    wifeFourShare: "چار بیویوں کا چوتھا آٹھواں حصہ اولاد کی موجودگی میں",
 
     // Numbers
     numbers: ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"],
