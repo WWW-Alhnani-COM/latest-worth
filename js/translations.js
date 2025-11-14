@@ -1,6 +1,3 @@
-// Multi-language translations for Islamic Inheritance Calculator
-// Supported languages: Arabic (ar), English (en), Urdu (ur)
-
 export const translations = {
   ar: {
     // Page title and headers
@@ -106,20 +103,7 @@ export const translations = {
     wife: "زوجة",
     brother: "أخ",
     sister: "أخت",
-    // في قسم translations.ar (العربية)
-arabicLanguage: "العربية",
-englishLanguage: "الإنجليزية", 
-urduLanguage: "الأردية",
-
-// في قسم translations.en (الإنجليزية)
-arabicLanguage: "Arabic",
-englishLanguage: "English",
-urduLanguage: "Urdu",
-
-// في قسم translations.ur (الأردية)
-arabicLanguage: "عربی",
-englishLanguage: "انگریزی",
-urduLanguage: "اردو",
+    
     // Extended family
     FR_grandfather: "جد لأب",
     MR_grandfather: "جد لأم",
@@ -182,7 +166,7 @@ urduLanguage: "اردو",
     FR_aunt_daughter_K: "بنت خالة لأب",
     MR_aunt_daughter_K: "بنت خالة لأم",
 
-    // Calculation notes
+    // Calculation notes - تم التعديل هنا
     quarterNote: "الربع فرض",
     eighthNote: "الثمن فرض",
     halfNote: "النصف فرض",
@@ -190,13 +174,19 @@ urduLanguage: "اردو",
     sixthSunnaNote: "السدس سنة",
     twoThirdsNote: "ثلثين فرض",
     remainderNote: "الباقي تعصيب",
-    raddNote: "الباقي يرد رحم حسب سهامهما",
-    raddToDaughtersNote: "الباقي يرد بالرحم على البنات بالتساوي",
+    raddNote: "الباقي يرد بالرحم حسب سهامهم", // تم التعديل
+    raddToDaughtersNote: "الباقي يرد بالرحم على البنات بالتساوي", // تم التعديل
     maleFemaleRatioNote: "للذكر مثل حظ الأنثيين",
     remainderToSonNote: "والباقي كاملاً للابن",
-    remainderToDaughterNote: "الباقي يرد عليها بالرحم للابنة",
+    remainderToDaughterNote: "الباقي يرد بالرحم للابنة", // تم التعديل
     baytAlMalNote: "الباقي لبيت المال",
     wifeShareNote: "حصة الزوجة",
+
+    // Wife share notes - جديد
+    wifeOneShare: "الثمن فرض للزوجة لوجود أبناء",
+    wifeTwoShare: "نصف الثمن فرض للزوجتين لوجود أبناء",
+    wifeThreeShare: "ثلث الثمن فرض لثلاث زوجات لوجود أبناء", 
+    wifeFourShare: "ربع الثمن فرض لأربع زوجات لوجود أبناء",
 
     // Numbers
     numbers: ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"],
