@@ -1,9 +1,8 @@
 import { calculateInheritance } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
-const all = {};
-const booleanOptions = ["لا", "نعم"];
-const defaultOptions = ["لا", ...Array.from({ length: 49 }, (_, i) => i + 1)];
+const all = {};const booleanOptions = [t('noOption'), t('yesOption')];
+const defaultOptions = [t('noOption'), ...Array.from({ length: 49 }, (_, i) => i + 1)];
 const customOptions = ["لا", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
 
 const fieldsData = [
@@ -146,6 +145,7 @@ function applyTranslations() {
     options[0].textContent = 'العربية';
     options[1].textContent = 'English';
     options[2].textContent = 'اردو';
+    
   }
   
   // ترجمة النصوص
@@ -202,7 +202,18 @@ function updateButtonTexts() {
   if (sonsNextBtn) sonsNextBtn.textContent = t('next');
   if (closeModalBtn) closeModalBtn.textContent = t('ok');
 }
-
+function translateSelectOptions() {
+  const noText = t('noOption');
+  const yesText = t('yesOption');
+  
+  document.querySelectorAll('select option').forEach(option => {
+    if (option.value === 'لا' || option.value === 'No' || option.value === 'نہیں') {
+      option.textContent = noText;
+    } else if (option.value === 'نعم' || option.value === 'Yes' || option.value === 'جی ہاں') {
+      option.textContent = yesText;
+    }
+  });
+}
 // تحديث تنسيق الأرقام في المدخلات
 function updateNumberInputs() {
   const amountInput = document.getElementById('amount');
@@ -847,4 +858,5 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
