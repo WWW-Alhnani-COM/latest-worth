@@ -126,6 +126,174 @@ const fieldsData = [
   }
 ];
 
+// ========== نظام التفاعلية المضافة ==========
+
+// تهيئة التفاعلية
+function initInteractivity() {
+  initFormFieldInteractivity();
+  initButtonInteractivity();
+  initTableInteractivity();
+  initTabInteractivity();
+}
+
+// تفاعلية حقول النموذج
+function initFormFieldInteractivity() {
+  // تفاعلية الحقول النصية
+  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused-field');
+      this.parentElement.classList.add('active');
+    });
+    
+    input.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused-field');
+      this.parentElement.classList.remove('active');
+      if (this.value.trim() !== '') {
+        this.classList.add('filled-field');
+      } else {
+        this.classList.remove('filled-field');
+      }
+    });
+    
+    // التحقق من الحقول المملوءة مسبقاً
+    if (input.value.trim() !== '') {
+      input.classList.add('filled-field');
+    }
+  });
+
+  // تفاعلية حقول التحديد
+  document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', function() {
+      if (this.value && this.value !== 'لا' && this.value !== 'no') {
+        this.classList.add('filled-field');
+        this.parentElement.classList.add('selected-group');
+        
+        // تأثير مرئي عند التحديد
+        this.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+          this.style.transform = 'scale(1)';
+        }, 200);
+      } else {
+        this.classList.remove('filled-field');
+        this.parentElement.classList.remove('selected-group');
+      }
+      
+      // تحديث العداد
+      calulcateWarth(all);
+    });
+    
+    select.addEventListener('focus', function() {
+      this.parentElement.classList.add('focused-field');
+      this.parentElement.classList.add('active');
+    });
+    
+    select.addEventListener('blur', function() {
+      this.parentElement.classList.remove('focused-field');
+      this.parentElement.classList.remove('active');
+    });
+    
+    // التحقق من الحقول المحددة مسبقاً
+    if (select.value && select.value !== 'لا' && select.value !== 'no') {
+      select.classList.add('filled-field');
+      select.parentElement.classList.add('selected-group');
+    }
+  });
+
+  // تفاعلية أزرار الراديو
+  document.querySelectorAll('.radio-input').forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('.radio-item').forEach(item => {
+        item.classList.remove('selected-radio');
+      });
+      this.closest('.radio-item').classList.add('selected-radio');
+    });
+  });
+}
+
+// تفاعلية الأزرار
+function initButtonInteractivity() {
+  document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+    
+    button.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
+    
+    button.addEventListener('mousedown', function() {
+      this.style.transform = 'translateY(0)';
+    });
+    
+    button.addEventListener('mouseup', function() {
+      this.style.transform = 'translateY(-2px)';
+    });
+  });
+}
+
+// تفاعلية الجداول
+function initTableInteractivity() {
+  document.querySelectorAll('table tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+      this.style.backgroundColor = 'var(--bg-secondary)';
+    });
+    
+    row.addEventListener('mouseleave', function() {
+      this.style.backgroundColor = '';
+    });
+    
+    row.addEventListener('click', function() {
+      document.querySelectorAll('table tr').forEach(r => {
+        r.classList.remove('selected-row');
+      });
+      this.classList.add('selected-row');
+    });
+  });
+}
+
+// تفاعلية التبويبات
+function initTabInteractivity() {
+  document.querySelectorAll('.tab-button').forEach(tab => {
+    tab.addEventListener('mouseenter', function() {
+      if (!this.classList.contains('active') && !this.disabled) {
+        this.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+      }
+    });
+    
+    tab.addEventListener('mouseleave', function() {
+      if (!this.classList.contains('active') && !this.disabled) {
+        this.style.backgroundColor = '';
+      }
+    });
+  });
+}
+
+// تفاعلية خاصة بحقول الورثة
+function initHeirsInteractivity() {
+  document.querySelectorAll('.heir-name, .heir-religion').forEach(field => {
+    field.addEventListener('focus', function() {
+      const row = this.closest('tr');
+      row.style.backgroundColor = 'rgba(52, 168, 83, 0.1)';
+      row.classList.add('editing-row');
+    });
+    
+    field.addEventListener('blur', function() {
+      const row = this.closest('tr');
+      row.style.backgroundColor = '';
+      row.classList.remove('editing-row');
+      
+      // إذا كان الحقل مملوءاً، أضف تأثير
+      if (this.value.trim() !== '') {
+        this.classList.add('filled-field');
+      } else {
+        this.classList.remove('filled-field');
+      }
+    });
+  });
+}
+
+// ========== نهاية نظام التفاعلية ==========
+
 // تطبيق الترجمة على الصفحة
 function applyTranslations() {
   const lang = getCurrentLanguage();
@@ -136,12 +304,12 @@ function applyTranslations() {
   document.body.className = isRTL(lang) ? '' : 'ltr';
   if (lang === 'ur') document.body.classList.add('lang-ur');
   
-  // تحديث مبدل اللغة - التصحيح هنا
+  // تحديث مبدل اللغة
   const languageSelect = document.getElementById('languageSelect');
   if (languageSelect) {
     languageSelect.value = lang;
     
-    // استخدام نصوص ثابتة للغات (الحل السريع)
+    // استخدام نصوص ثابتة للغات
     const options = languageSelect.querySelectorAll('option');
     options[0].textContent = 'العربية';
     options[1].textContent = 'English';
@@ -181,7 +349,6 @@ function applyTranslations() {
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
 }
-}
 
 // تحديث تسميات الأزرار
 function updateButtonTexts() {
@@ -194,10 +361,7 @@ function updateButtonTexts() {
   
   if (nextBtn) nextBtn.innerHTML = `<span data-i18n="next">${t('next')}</span>`;
   if (prevBtn) prevBtn.innerHTML = `<span data-i18n="previous">${t('previous')}</span>`;
-  if (printBtn) printBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
-        <path d="M0 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2H2a2 2 0 0 1-2-2V7zm2.5 1a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
-      </svg><span data-i18n="print">${t('print')}</span>`;
+  if (printBtn) printBtn.innerHTML = `<i class="fas fa-print"></i><span data-i18n="print">${t('print')}</span>`;
   if (closeSonsBtn) closeSonsBtn.textContent = t('close');
   if (sonsNextBtn) sonsNextBtn.textContent = t('next');
   if (closeModalBtn) closeModalBtn.textContent = t('ok');
@@ -230,6 +394,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initCalculatorForm();
   initFooterButtons();
+  
+  // إضافة التفاعلية
+  initInteractivity();
 
   document.getElementById('closeSonsPopup').addEventListener('click', () => {
     document.getElementById('sons_numbers').classList.remove('show')
@@ -408,7 +575,7 @@ function initCalculatorForm() {
   const template = Handlebars.compile(templateSource);
   document.getElementById('dynamic-fields').innerHTML = template({ groups: fieldsData });
 
-  // تحديث العناوين بعد الترجمة
+  // تهيئة التفاعلية بعد إنشاء الحقول
   setTimeout(() => {
     initInteractivity();
     updateFieldLabels();
@@ -417,6 +584,7 @@ function initCalculatorForm() {
   document.querySelectorAll('input[name="deceased_gender"]').forEach(input => {
     input.addEventListener('change', toggleSpouseField);
   });
+
   form.addEventListener('submit', openSonsModal);
   
   // تحديث تسميات الحقول بعد الترجمة
@@ -513,165 +681,6 @@ function collectFormData() {
 
   return formData;
 }
-// تهيئة التفاعلية
-function initInteractivity() {
-  initFormFieldInteractivity();
-  initButtonInteractivity();
-  initTableInteractivity();
-  initTabInteractivity();
-}
-
-// تفاعلية حقول النموذج
-function initFormFieldInteractivity() {
-  // تفاعلية الحقول النصية
-  document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
-    input.addEventListener('focus', function() {
-      this.parentElement.classList.add('focused-field');
-    });
-    
-    input.addEventListener('blur', function() {
-      this.parentElement.classList.remove('focused-field');
-      if (this.value.trim() !== '') {
-        this.classList.add('filled-field');
-      } else {
-        this.classList.remove('filled-field');
-      }
-    });
-    
-    // التحقق من الحقول المملوءة مسبقاً
-    if (input.value.trim() !== '') {
-      input.classList.add('filled-field');
-    }
-  });
-
-  // تفاعلية حقول التحديد
-  document.querySelectorAll('select').forEach(select => {
-    select.addEventListener('change', function() {
-      if (this.value && this.value !== 'لا' && this.value !== 'no') {
-        this.classList.add('filled-field');
-        this.parentElement.classList.add('selected-group');
-        
-        // تأثير مرئي عند التحديد
-        this.style.transform = 'scale(1.02)';
-        setTimeout(() => {
-          this.style.transform = 'scale(1)';
-        }, 200);
-      } else {
-        this.classList.remove('filled-field');
-        this.parentElement.classList.remove('selected-group');
-      }
-      
-      // تحديث العداد
-      calulcateWarth(all);
-    });
-    
-    select.addEventListener('focus', function() {
-      this.parentElement.classList.add('focused-field');
-    });
-    
-    select.addEventListener('blur', function() {
-      this.parentElement.classList.remove('focused-field');
-    });
-    
-    // التحقق من الحقول المحددة مسبقاً
-    if (select.value && select.value !== 'لا' && select.value !== 'no') {
-      select.classList.add('filled-field');
-      select.parentElement.classList.add('selected-group');
-    }
-  });
-
-  // تفاعلية أزرار الراديو
-  document.querySelectorAll('.radio-input').forEach(radio => {
-    radio.addEventListener('change', function() {
-      document.querySelectorAll('.radio-item').forEach(item => {
-        item.classList.remove('selected-radio');
-      });
-      this.closest('.radio-item').classList.add('selected-radio');
-    });
-  });
-}
-
-// تفاعلية الأزرار
-function initButtonInteractivity() {
-  document.querySelectorAll('.btn').forEach(button => {
-    button.addEventListener('mouseenter', function() {
-      this.style.transform = 'translateY(-2px)';
-    });
-    
-    button.addEventListener('mouseleave', function() {
-      this.style.transform = 'translateY(0)';
-    });
-    
-    button.addEventListener('mousedown', function() {
-      this.style.transform = 'translateY(0)';
-    });
-    
-    button.addEventListener('mouseup', function() {
-      this.style.transform = 'translateY(-2px)';
-    });
-  });
-}
-
-// تفاعلية الجداول
-function initTableInteractivity() {
-  document.querySelectorAll('table tr').forEach(row => {
-    row.addEventListener('mouseenter', function() {
-      this.style.backgroundColor = 'var(--bg-secondary)';
-    });
-    
-    row.addEventListener('mouseleave', function() {
-      this.style.backgroundColor = '';
-    });
-    
-    row.addEventListener('click', function() {
-      document.querySelectorAll('table tr').forEach(r => {
-        r.classList.remove('selected-row');
-      });
-      this.classList.add('selected-row');
-    });
-  });
-}
-
-// تفاعلية التبويبات
-function initTabInteractivity() {
-  document.querySelectorAll('.tab-button').forEach(tab => {
-    tab.addEventListener('mouseenter', function() {
-      if (!this.classList.contains('active') && !this.disabled) {
-        this.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-      }
-    });
-    
-    tab.addEventListener('mouseleave', function() {
-      if (!this.classList.contains('active') && !this.disabled) {
-        this.style.backgroundColor = '';
-      }
-    });
-  });
-}
-
-// تفاعلية خاصة بحقول الورثة
-function initHeirsInteractivity() {
-  document.querySelectorAll('.heir-name, .heir-religion').forEach(field => {
-    field.addEventListener('focus', function() {
-      const row = this.closest('tr');
-      row.style.backgroundColor = 'rgba(52, 168, 83, 0.1)';
-      row.classList.add('editing-row');
-    });
-    
-    field.addEventListener('blur', function() {
-      const row = this.closest('tr');
-      row.style.backgroundColor = '';
-      row.classList.remove('editing-row');
-      
-      // إذا كان الحقل مملوءاً، أضف تأثير
-      if (this.value.trim() !== '') {
-        this.classList.add('filled-field');
-      } else {
-        this.classList.remove('filled-field');
-      }
-    });
-  });
-}
 
 function updateReligiousTab(data) {
   let deceasedInfoHTML = "";
@@ -686,9 +695,6 @@ function updateReligiousTab(data) {
             </tr>
         `;
   }
-   setTimeout(() => {
-    initHeirsInteractivity();
-  }, 100);
   document.getElementById('deceasedInfoBody').innerHTML = deceasedInfoHTML;
 
   let heirsHTML = "";
@@ -722,6 +728,11 @@ function updateReligiousTab(data) {
         `;
   }
   document.getElementById('resultTableBody').innerHTML = heirsHTML;
+
+  // تهيئة تفاعلية حقول الورثة
+  setTimeout(() => {
+    initHeirsInteractivity();
+  }, 100);
 
   document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
 }
@@ -959,31 +970,41 @@ window.addEventListener('DOMContentLoaded', (e) => {
   document.getElementById('closeModal').addEventListener('click', closeModal)
 })
 
+// ========== دالة calulcateWarth المحسنة ==========
 function calulcateWarth(all) {
-  let count = 0
+  let count = 0;
   let hiddenWift = document.getElementById('spouse_female').classList.contains('hidden');
-  let hiddenHasband = document.getElementById('spouse_male').classList.contains('hidden')
+  let hiddenHasband = document.getElementById('spouse_male').classList.contains('hidden');
+  
   for (const [key, item] of Object.entries(all)) {
-    if (key === 'dad_sons' || key === 'dad_girls') {
-      continue
-    }
-    if (key === 'wift' && hiddenWift) {
-      continue
-    }
-    if (key === 'husband' && hiddenHasband) {
-      continue
-    }
+    if (key === 'dad_sons' || key === 'dad_girls') continue;
+    if (key === 'wift' && hiddenWift) continue;
+    if (key === 'husband' && hiddenHasband) continue;
 
     if (item === 'نعم' || item === 'yes') {
-      count += 1
+      count += 1;
     } else if (item === 'لا' || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
-      continue
-    }
-    else {
-      count += parseNumber(item)
+      continue;
+    } else {
+      count += parseNumber(item);
     }
   }
-  document.getElementById('worthCount').textContent = formatNumber(count)
+  
+  const worthElement = document.getElementById('worthCount');
+  const worthContainer = worthElement.closest('.worth-count');
+  
+  worthElement.textContent = formatNumber(count);
+  
+  // تأثير تفاعلي للعداد
+  if (count > 0) {
+    worthContainer.classList.add('has-heirs');
+    worthElement.style.transform = 'scale(1.2)';
+    setTimeout(() => {
+      worthElement.style.transform = 'scale(1)';
+    }, 300);
+  } else {
+    worthContainer.classList.remove('has-heirs');
+  }
 }
 
 function openSonsModal(e) {
@@ -1006,6 +1027,3 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
-
-
-
