@@ -1116,7 +1116,7 @@
             <div class="input-group hidden" id="spouse_female">
               <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
               <select id="wife" name="wife" data-i18n-title="numberOfWives">
-                <option value="0" data-i18n="no">لا</option>
+                <option value="0" data-i18n="noOption">لا</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -1127,8 +1127,8 @@
             <div class="input-group hidden" id="spouse_male">
               <label for="husband" data-i18n="hasHusband">هل يوجد زوج؟</label>
               <select id="husband" name="husband" data-i18n-title="hasHusband">
-                <option value="no" data-i18n="no">لا</option>
-                <option value="yes" data-i18n="yes">نعم</option>
+                <option value="no" data-i18n="noOption">لا</option>
+                <option value="yes" data-i18n="yesOption">نعم</option>
               </select>
             </div>
 
@@ -1250,9 +1250,15 @@
           <div class="input-group">
             <label for="{{id}}" data-i18n="{{id}}">{{title}}</label>
             <select id="{{id}}" name="{{id}}" data-i18n-title="{{id}}">
-             {{#each options}}
-  <option value="{{this}}" data-i18n="{{this}}">{{#if (isString this)}}{{t this}}{{else}}{{this}}{{/if}}</option>
-{{/each}}
+              {{#each options}}
+                <option value="{{this}}" data-i18n="{{this}}">
+                  {{#if (isTranslatable this)}}
+                    {{t this}}
+                  {{else}}
+                    {{this}}
+                  {{/if}}
+                </option>
+              {{/each}}
             </select>
           </div>
         {{/each}}
