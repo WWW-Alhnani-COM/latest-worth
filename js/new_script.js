@@ -3,18 +3,25 @@ import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, g
 
 // ========== ⭐ Helpers for Handlebars ==========
 // تسجيل helper جديد لـ Handlebars
-Handlebars.registerHelper('isTranslatable', function(value) {
-  return typeof value === 'string' && ['noOption', 'yesOption'].includes(value);
+document.addEventListener('DOMContentLoaded', function() {
+    // تسجيل helper جديد لـ Handlebars
+    Handlebars.registerHelper('isTranslatable', function(value) {
+        return typeof value === 'string' && ['noOption', 'yesOption'].includes(value);
+    });
+
+    Handlebars.registerHelper('t', function(key) {
+        return window.t ? window.t(key) : key;
+    });
+
+    // جعل دالة الترجمة متاحة globally لـ Handlebars
+    window.t = t;
+    
+    // الآن تهيئة التطبيق
+    initTranslationSystem();
+    initTabs();
+    initCalculatorForm();
+    initFooterButtons();
 });
-
-Handlebars.registerHelper('t', function(key) {
-  return window.t ? window.t(key) : key;
-});
-
-// جعل دالة الترجمة متاحة globally لـ Handlebars
-window.t = t;
-// ========== نهاية الـ Helpers ==========
-
 const all = {};
 const booleanOptions = ["noOption", "yesOption"];
 const defaultOptions = ["noOption", ...Array.from({ length: 49 }, (_, i) => i + 1)];
@@ -878,3 +885,4 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
