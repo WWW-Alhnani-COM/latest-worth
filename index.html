@@ -1250,9 +1250,9 @@
           <div class="input-group">
             <label for="{{id}}" data-i18n="{{id}}">{{title}}</label>
             <select id="{{id}}" name="{{id}}" data-i18n-title="{{id}}">
-              {{#each options}}
-                <option value="{{this}}" data-i18n="{{this}}">{{this}}</option>
-              {{/each}}
+             {{#each options}}
+  <option value="{{this}}" data-i18n="{{this}}">{{#if (isString this)}}{{t this}}{{else}}{{this}}{{/if}}</option>
+{{/each}}
             </select>
           </div>
         {{/each}}
