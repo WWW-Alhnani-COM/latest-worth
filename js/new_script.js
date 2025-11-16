@@ -201,9 +201,8 @@ function applyTranslations() {
   
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
+  translateSelectOptions();
   
-  // ⭐ جديد: ترجمة خيارات القوائم المنسدلة
-  ();
 }
 
 // دالة جديدة لترجمة خيارات القوائم المنسدلة
@@ -888,5 +887,6 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
 
