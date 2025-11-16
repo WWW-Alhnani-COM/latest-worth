@@ -942,15 +942,17 @@ function updateSharesTab(data) {
 }
 
 function hasSelectedHeirs() {
-  const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => select.value !== 'لا');
-  const maleChecked = document.getElementById('male').checked;
-  const femaleChecked = document.getElementById('female').checked;
-  const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
-  const husbandSelected = deceasedGender === 'female' && document.getElementById('husband')?.value === 'yes';
-  const wifeSelected = deceasedGender === 'male' && parseInt(document.getElementById('wife')?.value) > 0;
-  return (hasOtherHeirs || husbandSelected || wifeSelected) && (maleChecked || femaleChecked);
+    const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => 
+        select.value !== 'noOption' && select.value !== 'لا'
+    );
+    const maleChecked = document.getElementById('male').checked;
+    const femaleChecked = document.getElementById('female').checked;
+    const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
+    const husbandSelected = deceasedGender === 'female' && document.getElementById('husband')?.value === 'yesOption';
+    const wifeSelected = deceasedGender === 'male' && parseInt(document.getElementById('wife')?.value) > 0;
+    
+    return (hasOtherHeirs || husbandSelected || wifeSelected) && (maleChecked || femaleChecked);
 }
-
 function showModal() {
   document.getElementById('modalOverlay').style.display = 'block';
   document.getElementById('validationModal').style.display = 'block';
