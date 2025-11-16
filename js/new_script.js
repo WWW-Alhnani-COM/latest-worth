@@ -2,10 +2,23 @@ import { calculateInheritance } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
 const all = {};
-const booleanOptions = ["لا", "نعم"];
-const defaultOptions = ["لا", ...Array.from({ length: 49 }, (_, i) => i + 1)];
+const booleanOptions = ["noOption", "yesOption"];
+const defaultOptions = ["noOption", ...Array.from({ length: 49 }, (_, i) => i + 1)];
 const customOptions = ["لا", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
-
+// دالة جديدة لترجمة خيارات القوائم المنسدلة
+function translateSelectOptions() {
+  const lang = getCurrentLanguage();
+  
+  // ترجمة جميع عناصر select
+  document.querySelectorAll('select').forEach(select => {
+    Array.from(select.options).forEach(option => {
+      const key = option.getAttribute('data-i18n');
+      if (key && translations[lang] && translations[lang][key]) {
+        option.textContent = translations[lang][key];
+      }
+    });
+  });
+}
 const fieldsData = [
   {
     groupTitle: "1",
@@ -180,6 +193,7 @@ function applyTranslations() {
   
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
+  translateSelectOptions();
 }
 
 
@@ -847,4 +861,5 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
