@@ -17,7 +17,17 @@ export const translations = {
     tab1Title: "البيانات الأساسية",
     tab2Title: "بيانات الورثة",
     tab3Title: "نتائج التوزيع",
-    
+
+    // التنبيهات
+alertTitle: "تنبيه",
+deceasedTypeRequired: "يجب تحديد نوع المتوفى للمتابعة",
+heirsRequired: "يجب اختيار وارث واحد على الأقل للمتابعة",
+
+// أزرار التنبيهات
+ok: "حسناً",
+confirm: "تأكيد",
+cancel: "إلغاء"
+  
     // Step numbers
     step: "الخطوة",
     noOption: "لا",
@@ -228,6 +238,15 @@ yesOption: "نعم",
     tab1Title: "Basic Information",
     tab2Title: "Heirs Information",
     tab3Title: "Distribution Results",
+    // Alerts
+alertTitle: "Alert",
+deceasedTypeRequired: "You must specify the deceased type to continue",
+heirsRequired: "You must select at least one heir to continue",
+
+// Alert buttons
+ok: "OK",
+confirm: "Confirm", 
+cancel: "Cancel"
     
     // Step numbers
     step: "Step",
@@ -438,6 +457,15 @@ yesOption: "Yes",
     tab1Title: "بنیادی معلومات",
     tab2Title: "وارثوں کی معلومات",
     tab3Title: "تقسیم کے نتائج",
+    // التنبيهات
+alertTitle: "تنبيه",
+deceasedTypeRequired: "جاری رکھنے کے لیے متوفی کی قسم متعین کرنا ضروری ہے",
+heirsRequired: "جاری رکھنے کے لیے کم از کم ایک وارث منتخب کرنا ضروری ہے",
+
+// أزرار التنبيهات
+ok: "ٹھیک ہے",
+confirm: "تصدیق کریں",
+cancel: "منسوخ کریں"
     
     // Step numbers
     step: "مرحلہ",
