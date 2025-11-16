@@ -979,6 +979,203 @@
     align-items: center;
     gap: 5px;
 }
+    /* ========== أنماط التنبيهات المحسنة ========== */
+.alert-system {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition-slow);
+    backdrop-filter: blur(5px);
+}
+
+.alert-system.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.alert-container {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    max-width: 450px;
+    width: 90%;
+    padding: 0;
+    overflow: hidden;
+    transform: scale(0.9) translateY(-20px);
+    opacity: 0;
+    transition: var(--transition-slow);
+}
+
+.alert-system.active .alert-container {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.alert-header {
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.alert-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.alert-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.alert-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.alert-message {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+}
+
+.alert-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.alert-button {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    min-width: 120px;
+}
+
+/* أنواع التنبيهات */
+.alert-error .alert-header {
+    background: rgba(234, 67, 53, 0.1);
+    border-left: 4px solid var(--danger-color);
+}
+
+.alert-error .alert-icon {
+    background: var(--danger-color);
+    color: white;
+}
+
+.alert-warning .alert-header {
+    background: rgba(249, 171, 0, 0.1);
+    border-left: 4px solid var(--warning-color);
+}
+
+.alert-warning .alert-icon {
+    background: var(--warning-color);
+    color: white;
+}
+
+.alert-success .alert-header {
+    background: rgba(52, 168, 83, 0.1);
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-success .alert-icon {
+    background: var(--success-color);
+    color: white;
+}
+
+.alert-info .alert-header {
+    background: rgba(26, 115, 232, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.alert-info .alert-icon {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* أزرار التنبيهات */
+.alert-button-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.alert-button-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.alert-button-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.alert-button-secondary:hover {
+    background: var(--border-medium);
+    transform: translateY(-2px);
+}
+
+/* تأثيرات للهواتف */
+@media (max-width: 768px) {
+    .alert-container {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .alert-header {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .alert-content {
+        padding: 1.5rem;
+    }
+    
+    .alert-actions {
+        flex-direction: column;
+    }
+    
+    .alert-button {
+        width: 100%;
+    }
+}
+
+/* أنيميشن للظهور */
+@keyframes alertSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.alert-container {
+    animation: alertSlideIn 0.3s ease-out;
+}
   </style>
 </head>
 <body>
@@ -1238,6 +1435,25 @@
       </div>
     </div>
   </div>
+  <!-- نظام التنبيهات المحسن -->
+<div id="alertSystem" class="alert-system hidden">
+    <div class="alert-container">
+        <div class="alert-header">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="alert-title" data-i18n="alertTitle">تنبيه</h3>
+        </div>
+        <div class="alert-content">
+            <p class="alert-message" id="alertMessage">هنا سيظهر نص التنبيه</p>
+            <div class="alert-actions">
+                <button class="alert-button alert-button-primary" id="alertConfirm">
+                    <span data-i18n="ok">حسناً</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
   <!-- قالب Handlebars -->
   <script id="field-template" type="text/x-handlebars-template">
