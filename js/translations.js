@@ -31,7 +31,7 @@ cancel: "إلغاء",
     // Step numbers
     step: "الخطوة",
     noOption: "لا",
-    yesOption: "نعم"
+    yesOption: "نعم",
     // Buttons
     next: "التالي",
     previous: "السابق",
@@ -246,7 +246,7 @@ heirsRequired: "You must select at least one heir to continue",
 // Alert buttons
 ok: "OK",
 confirm: "Confirm", 
-cancel: "Cancel"
+cancel: "Cancel",
     
     // Step numbers
     step: "Step",
@@ -465,7 +465,7 @@ heirsRequired: "جاری رکھنے کے لیے کم از کم ایک وارث �
 // أزرار التنبيهات
 ok: "ٹھیک ہے",
 confirm: "تصدیق کریں",
-cancel: "منسوخ کریں"
+cancel: "منسوخ کریں".
     
     // Step numbers
     step: "مرحلہ",
