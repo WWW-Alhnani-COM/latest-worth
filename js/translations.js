@@ -26,12 +26,12 @@ heirsRequired: "يجب اختيار وارث واحد على الأقل للمت
 // أزرار التنبيهات
 ok: "حسناً",
 confirm: "تأكيد",
-cancel: "إلغاء"
+cancel: "إلغاء",
   
     // Step numbers
     step: "الخطوة",
     noOption: "لا",
-    yesOption: "نعم",
+    yesOption: "نعم"
     // Buttons
     next: "التالي",
     previous: "السابق",
