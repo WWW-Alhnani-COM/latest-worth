@@ -203,9 +203,10 @@ function applyTranslations() {
   updateNumberInputs();
   
   // ⭐ جديد: ترجمة خيارات القوائم المنسدلة
-  translateSelectOptions();
+  ();
 }
 
+// دالة جديدة لترجمة خيارات القوائم المنسدلة
 // دالة جديدة لترجمة خيارات القوائم المنسدلة
 function translateSelectOptions() {
   const lang = getCurrentLanguage();
@@ -214,13 +215,15 @@ function translateSelectOptions() {
   document.querySelectorAll('select').forEach(select => {
     Array.from(select.options).forEach(option => {
       const key = option.getAttribute('data-i18n');
-      if (key && translations[lang] && translations[lang][key]) {
-        option.textContent = translations[lang][key];
+      if (key) {
+        const translation = t(key); // استخدم دالة t بدلاً من translations مباشرة
+        if (translation && translation !== key) {
+          option.textContent = translation;
+        }
       }
     });
   });
 }
-
 // تحديث تسميات الأزرار
 function updateButtonTexts() {
   const nextBtn = document.getElementById('footer-next-btn');
@@ -885,4 +888,5 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
