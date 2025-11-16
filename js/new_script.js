@@ -298,7 +298,141 @@ function initTranslationSystem() {
     });
   }
 }
+// ========== نظام التنبيهات المحسن ==========
 
+class AlertSystem {
+    constructor() {
+        this.alertSystem = document.getElementById('alertSystem');
+        this.alertContainer = this.alertSystem.querySelector('.alert-container');
+        this.alertHeader = this.alertSystem.querySelector('.alert-header');
+        this.alertIcon = this.alertSystem.querySelector('.alert-icon');
+        this.alertTitle = this.alertSystem.querySelector('.alert-title');
+        this.alertMessage = document.getElementById('alertMessage');
+        this.alertConfirm = document.getElementById('alertConfirm');
+        
+        this.init();
+    }
+
+    init() {
+        // إضافة مستمع للأحداث
+        this.alertConfirm.addEventListener('click', () => this.hide());
+        this.alertSystem.addEventListener('click', (e) => {
+            if (e.target === this.alertSystem) {
+                this.hide();
+            }
+        });
+    }
+
+    show(type, message, title = null) {
+        // إعداد نوع التنبيه
+        this.setAlertType(type);
+        
+        // تعيين النص
+        this.alertMessage.textContent = message;
+        if (title) {
+            this.alertTitle.textContent = title;
+        }
+        
+        // إظهار التنبيه
+        this.alertSystem.classList.remove('hidden');
+        setTimeout(() => {
+            this.alertSystem.classList.add('active');
+        }, 10);
+    }
+
+    setAlertType(type) {
+        // إزالة جميع classes السابقة
+        this.alertContainer.classList.remove('alert-error', 'alert-warning', 'alert-success', 'alert-info');
+        
+        // إضافة class الجديد
+        this.alertContainer.classList.add(`alert-${type}`);
+        
+        // تغيير الأيقونة بناءً على النوع
+        const icon = this.alertIcon.querySelector('i');
+        icon.className = this.getIconForType(type);
+    }
+
+    getIconForType(type) {
+        const icons = {
+            'error': 'fas fa-exclamation-circle',
+            'warning': 'fas fa-exclamation-triangle',
+            'success': 'fas fa-check-circle',
+            'info': 'fas fa-info-circle'
+        };
+        return icons[type] || 'fas fa-info-circle';
+    }
+
+    hide() {
+        this.alertSystem.classList.remove('active');
+        setTimeout(() => {
+            this.alertSystem.classList.add('hidden');
+        }, 300);
+    }
+}
+
+// تهيئة نظام التنبيهات
+let alertSystem;
+
+// دوال مساعدة للتنبيهات
+function showAlert(type, messageKey, titleKey = null) {
+    if (!alertSystem) {
+        alertSystem = new AlertSystem();
+    }
+    
+    const message = t(messageKey);
+    const title = titleKey ? t(titleKey) : null;
+    alertSystem.show(type, message, title);
+}
+
+// التنبيهات المحددة
+function showDeceasedTypeAlert() {
+    showAlert('error', 'deceasedTypeRequired', 'alertTitle');
+}
+
+function showHeirsRequiredAlert() {
+    showAlert('warning', 'heirsRequired', 'alertTitle');
+}
+
+// تحديث دالة التحقق من الصحة
+function validateCalculatorForm() {
+    const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked');
+    const hasHeirs = hasSelectedHeirs();
+
+    if (!deceasedGender) {
+        showDeceasedTypeAlert();
+        return false;
+    }
+
+    if (!hasHeirs) {
+        showHeirsRequiredAlert();
+        return false;
+    }
+
+    return true;
+}
+
+// تحديث دالة openSonsModal
+function openSonsModal(e) {
+    e.preventDefault();
+    
+    // التحقق من الصحة أولاً
+    if (!validateCalculatorForm()) {
+        return;
+    }
+
+    let daughter = document.getElementById('daughter').value === 'noOption';
+    let mother = document.getElementById('mother').value === 'yesOption';
+    let father = document.getElementById('father').value === 'yesOption';
+    let son = document.getElementById('son').value === 'noOption';
+
+    if (mother && father && daughter && son) {
+        document.getElementById('sons_numbers').classList.add('show');
+    } else {
+        document.getElementById('dad_sons').value = 'noOption';
+        document.getElementById('dad_girls').value = 'noOption';
+        handleCalculatorSubmit();
+    }
+}
 // إعادة تحميل بيانات النموذج بعد تغيير اللغة
 function reloadFormData() {
   const storedData = localStorage.getItem("inheritanceData");
@@ -887,6 +1021,7 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
+
 
 
 
