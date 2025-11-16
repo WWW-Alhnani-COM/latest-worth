@@ -411,7 +411,6 @@ function validateCalculatorForm() {
     return true;
 }
 
-// تحديث دالة openSonsModal
 function openSonsModal(e) {
     e.preventDefault();
     
@@ -1003,26 +1002,8 @@ function calulcateWarth(all) {
   document.getElementById('worthCount').textContent = formatNumber(count)
 }
 
-function openSonsModal(e) {
-  e.preventDefault()
-  let daughter = document.getElementById('daughter').value === 'لا'
-  let mother = document.getElementById('mother').value === 'نعم'
-  let father = document.getElementById('father').value === 'نعم'
-  let son = document.getElementById('son').value === 'لا'
 
-  if (!hasSelectedHeirs()) {
-    showModal();
-    return;
-  }
 
-  if (mother && father && daughter && son) {
-    document.getElementById('sons_numbers').classList.add('show')
-  } else {
-    document.getElementById('dad_sons').value = 'لا'
-    document.getElementById('dad_girls').value = 'لا'
-    handleCalculatorSubmit()
-  }
-}
 
 
 
