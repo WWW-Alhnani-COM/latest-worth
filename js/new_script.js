@@ -1,5 +1,7 @@
 import { calculateInheritance } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
+
+// ========== ⭐ Helpers for Handlebars ==========
 // تسجيل helper جديد لـ Handlebars
 Handlebars.registerHelper('isTranslatable', function(value) {
   return typeof value === 'string' && ['noOption', 'yesOption'].includes(value);
@@ -8,13 +10,15 @@ Handlebars.registerHelper('isTranslatable', function(value) {
 Handlebars.registerHelper('t', function(key) {
   return window.t ? window.t(key) : key;
 });
-window.t = t;
 
+// جعل دالة الترجمة متاحة globally لـ Handlebars
+window.t = t;
+// ========== نهاية الـ Helpers ==========
 
 const all = {};
 const booleanOptions = ["noOption", "yesOption"];
 const defaultOptions = ["noOption", ...Array.from({ length: 49 }, (_, i) => i + 1)];
-const customOptions = ["لا", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
+const customOptions = ["noOption", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
 
 const fieldsData = [
   {
@@ -190,9 +194,25 @@ function applyTranslations() {
   
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
+  
+  // ⭐ جديد: ترجمة خيارات القوائم المنسدلة
   translateSelectOptions();
 }
 
+// دالة جديدة لترجمة خيارات القوائم المنسدلة
+function translateSelectOptions() {
+  const lang = getCurrentLanguage();
+  
+  // ترجمة جميع عناصر select
+  document.querySelectorAll('select').forEach(select => {
+    Array.from(select.options).forEach(option => {
+      const key = option.getAttribute('data-i18n');
+      if (key && translations[lang] && translations[lang][key]) {
+        option.textContent = translations[lang][key];
+      }
+    });
+  });
+}
 
 // تحديث تسميات الأزرار
 function updateButtonTexts() {
@@ -228,20 +248,6 @@ function updateNumberInputs() {
     const currentValue = parseNumber(materialsInput.value);
     materialsInput.value = formatNumber(currentValue);
   }
-}
-// دالة جديدة لترجمة خيارات القوائم المنسدلة
-function translateSelectOptions() {
-  const lang = getCurrentLanguage();
-  
-  // ترجمة جميع عناصر select
-  document.querySelectorAll('select').forEach(select => {
-    Array.from(select.options).forEach(option => {
-      const key = option.getAttribute('data-i18n');
-      if (key && translations[lang] && translations[lang][key]) {
-        option.textContent = translations[lang][key];
-      }
-    });
-  });
 }
 
 // تحويل الأرقام إلى كلمات حسب اللغة
@@ -872,6 +878,3 @@ function openSonsModal(e) {
     handleCalculatorSubmit()
   }
 }
-
-
-
