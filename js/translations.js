@@ -20,7 +20,8 @@ export const translations = {
     
     // Step numbers
     step: "الخطوة",
-    
+    noOption: "لا",
+    yesOption: "نعم",
     // Buttons
     next: "التالي",
     previous: "السابق",
@@ -230,7 +231,8 @@ yesOption: "نعم",
     
     // Step numbers
     step: "Step",
-    
+    noOption: "No",
+    yesOption: "Yes",
     // Buttons
     next: "Next",
     previous: "Previous",
@@ -439,7 +441,8 @@ yesOption: "Yes",
     
     // Step numbers
     step: "مرحلہ",
-    
+    noOption: "نہیں",
+    yesOption: "جی ہاں",
     // Buttons
     next: "اگلا",
     previous: "پچھلا",
