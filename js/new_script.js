@@ -2,7 +2,6 @@ import { calculateInheritance } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
 // ========== ⭐ Helpers for Handlebars ==========
-// تسجيل helper جديد لـ Handlebars
 document.addEventListener('DOMContentLoaded', function() {
     // تسجيل helper جديد لـ Handlebars
     Handlebars.registerHelper('isTranslatable', function(value) {
@@ -21,7 +20,25 @@ document.addEventListener('DOMContentLoaded', function() {
     initTabs();
     initCalculatorForm();
     initFooterButtons();
+    
+    // إضافة مستمعين للأبناء
+    document.getElementById('closeSonsPopup').addEventListener('click', () => {
+        document.getElementById('sons_numbers').classList.remove('show');
+    });
+    
+    document.getElementById('sonsNextBtn').addEventListener('click', () => {
+        document.getElementById('sons_numbers').classList.remove('show');
+        setTimeout(() => {
+            handleCalculatorSubmit();
+        }, 300);
+    });
+    
+    // التأكد من التبويب الأول هو النشط
+    setTimeout(() => {
+        switchTab('calculator');
+    }, 100);
 });
+
 const all = {};
 const booleanOptions = ["noOption", "yesOption"];
 const defaultOptions = ["noOption", ...Array.from({ length: 49 }, (_, i) => i + 1)];
@@ -65,7 +82,6 @@ const fieldsData = [
       { id: "FR_brother", title: "أخ لأبيه", options: defaultOptions, gender: "male" },
       { id: "FR_sister", title: "أخت لأبيه", options: defaultOptions, gender: "female" }
     ]
-
   },
   {
     groupTitle: "5",
@@ -77,7 +93,6 @@ const fieldsData = [
       { id: "FR_BR_boys", title: "ولد أخ لأبيه", options: defaultOptions, gender: "male" },
       { id: "FR_SR_boys", title: "ولد أخت لأبيه", options: defaultOptions, gender: "male" }
     ]
-
   }, {
     groupTitle: "6",
     fields: [
@@ -88,9 +103,7 @@ const fieldsData = [
       { id: "FR_BR_girls", title: "بنت أخ لأبيه", options: defaultOptions, gender: "female" },
       { id: "FR_SR_girls", title: "بنت أخت لأبيه", options: defaultOptions, gender: "female" }
     ]
-
   },
-
   {
     groupTitle: "7",
     fields: [
@@ -107,7 +120,6 @@ const fieldsData = [
       { id: "FR_aunt_father_K", title: "عمة لأبيه", options: defaultOptions, gender: "female" },
       { id: "MR_aunt_mother_K", title: "عمة لأمه", options: defaultOptions, gender: "female" }
     ]
-
   },
   {
     groupTitle: "8",
@@ -125,7 +137,6 @@ const fieldsData = [
       { id: "FR_aunt_daughter_A", title: "بنت عمة لأبيه", options: defaultOptions, gender: "female" },
       { id: "MR_aunt_daughter_A", title: "بنت عمة لأم", options: defaultOptions, gender: "female" }
     ]
-
   },
   {
     groupTitle: "9",
@@ -143,7 +154,6 @@ const fieldsData = [
       { id: "FR_aunt_daughter_K", title: "بنت خالة لأبيه", options: defaultOptions, gender: "female" },
       { id: "MR_aunt_daughter_K", title: "بنت خالة لأمه", options: defaultOptions, gender: "female" }
     ]
-
   }
 ];
 
@@ -157,12 +167,12 @@ function applyTranslations() {
   document.body.className = isRTL(lang) ? '' : 'ltr';
   if (lang === 'ur') document.body.classList.add('lang-ur');
   
-  // تحديث مبدل اللغة - التصحيح هنا
+  // تحديث مبدل اللغة
   const languageSelect = document.getElementById('languageSelect');
   if (languageSelect) {
     languageSelect.value = lang;
     
-    // استخدام نصوص ثابتة للغات (الحل السريع)
+    // استخدام نصوص ثابتة للغات
     const options = languageSelect.querySelectorAll('option');
     options[0].textContent = 'العربية';
     options[1].textContent = 'English';
@@ -202,10 +212,8 @@ function applyTranslations() {
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
   translateSelectOptions();
-  
 }
 
-// دالة جديدة لترجمة خيارات القوائم المنسدلة
 // دالة جديدة لترجمة خيارات القوائم المنسدلة
 function translateSelectOptions() {
   const lang = getCurrentLanguage();
@@ -215,7 +223,7 @@ function translateSelectOptions() {
     Array.from(select.options).forEach(option => {
       const key = option.getAttribute('data-i18n');
       if (key) {
-        const translation = t(key); // استخدم دالة t بدلاً من translations مباشرة
+        const translation = t(key);
         if (translation && translation !== key) {
           option.textContent = translation;
         }
@@ -223,6 +231,7 @@ function translateSelectOptions() {
     });
   });
 }
+
 // تحديث تسميات الأزرار
 function updateButtonTexts() {
   const nextBtn = document.getElementById('footer-next-btn');
@@ -264,24 +273,90 @@ function numberToLocalizedWord(number, gender) {
   return getOrdinalNumber(number, gender) || number.toString();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // تهيئة نظام الترجمة
-  initTranslationSystem();
-  initTabs();
-  initCalculatorForm();
-  initFooterButtons();
+// ========== نظام التنبيهات المحسن ==========
+class AlertSystem {
+  constructor() {
+    this.alertSystem = document.getElementById('alertSystem');
+    this.alertContainer = this.alertSystem.querySelector('.alert-container');
+    this.alertHeader = this.alertSystem.querySelector('.alert-header');
+    this.alertIcon = this.alertSystem.querySelector('.alert-icon');
+    this.alertTitle = this.alertSystem.querySelector('.alert-title');
+    this.alertMessage = document.getElementById('alertMessage');
+    this.alertConfirm = document.getElementById('alertConfirm');
+    
+    this.init();
+  }
 
-  document.getElementById('closeSonsPopup').addEventListener('click', () => {
-    document.getElementById('sons_numbers').classList.remove('show')
-  })
+  init() {
+    this.alertConfirm.addEventListener('click', () => this.hide());
+    this.alertSystem.addEventListener('click', (e) => {
+      if (e.target === this.alertSystem) {
+        this.hide();
+      }
+    });
+  }
+
+  show(type, message, title = null) {
+    this.setAlertType(type);
+    
+    this.alertMessage.textContent = message;
+    if (title) {
+      this.alertTitle.textContent = title;
+    }
+    
+    this.alertSystem.classList.remove('hidden');
+    setTimeout(() => {
+      this.alertSystem.classList.add('active');
+    }, 10);
+  }
+
+  setAlertType(type) {
+    this.alertContainer.classList.remove('alert-error', 'alert-warning', 'alert-success', 'alert-info');
+    this.alertContainer.classList.add(`alert-${type}`);
+    
+    const icon = this.alertIcon.querySelector('i');
+    icon.className = this.getIconForType(type);
+  }
+
+  getIconForType(type) {
+    const icons = {
+      'error': 'fas fa-exclamation-circle',
+      'warning': 'fas fa-exclamation-triangle',
+      'success': 'fas fa-check-circle',
+      'info': 'fas fa-info-circle'
+    };
+    return icons[type] || 'fas fa-info-circle';
+  }
+
+  hide() {
+    this.alertSystem.classList.remove('active');
+    setTimeout(() => {
+      this.alertSystem.classList.add('hidden');
+    }, 300);
+  }
+}
+
+let alertSystem;
+
+function showAlert(type, messageKey, titleKey = null) {
+  if (!alertSystem) {
+    alertSystem = new AlertSystem();
+  }
   
-  document.getElementById('sonsNextBtn').addEventListener('click', () => {
-    document.getElementById('sons_numbers').classList.remove('show')
-    handleCalculatorSubmit();
-  })
-});
+  const message = t(messageKey);
+  const title = titleKey ? t(titleKey) : null;
+  alertSystem.show(type, message, title);
+}
 
-// تهيئة نظام الترجمة
+function showDeceasedTypeAlert() {
+  showAlert('error', 'deceasedTypeRequired', 'alertTitle');
+}
+
+function showHeirsRequiredAlert() {
+  showAlert('warning', 'heirsRequired', 'alertTitle');
+}
+
+// ========== تهيئة نظام الترجمة ==========
 function initTranslationSystem() {
   // تطبيق الترجمة عند التحميل
   applyTranslations();
@@ -298,141 +373,49 @@ function initTranslationSystem() {
     });
   }
 }
-// ========== نظام التنبيهات المحسن ==========
 
-class AlertSystem {
-    constructor() {
-        this.alertSystem = document.getElementById('alertSystem');
-        this.alertContainer = this.alertSystem.querySelector('.alert-container');
-        this.alertHeader = this.alertSystem.querySelector('.alert-header');
-        this.alertIcon = this.alertSystem.querySelector('.alert-icon');
-        this.alertTitle = this.alertSystem.querySelector('.alert-title');
-        this.alertMessage = document.getElementById('alertMessage');
-        this.alertConfirm = document.getElementById('alertConfirm');
-        
-        this.init();
-    }
-
-    init() {
-        // إضافة مستمع للأحداث
-        this.alertConfirm.addEventListener('click', () => this.hide());
-        this.alertSystem.addEventListener('click', (e) => {
-            if (e.target === this.alertSystem) {
-                this.hide();
-            }
-        });
-    }
-
-    show(type, message, title = null) {
-        // إعداد نوع التنبيه
-        this.setAlertType(type);
-        
-        // تعيين النص
-        this.alertMessage.textContent = message;
-        if (title) {
-            this.alertTitle.textContent = title;
-        }
-        
-        // إظهار التنبيه
-        this.alertSystem.classList.remove('hidden');
-        setTimeout(() => {
-            this.alertSystem.classList.add('active');
-        }, 10);
-    }
-
-    setAlertType(type) {
-        // إزالة جميع classes السابقة
-        this.alertContainer.classList.remove('alert-error', 'alert-warning', 'alert-success', 'alert-info');
-        
-        // إضافة class الجديد
-        this.alertContainer.classList.add(`alert-${type}`);
-        
-        // تغيير الأيقونة بناءً على النوع
-        const icon = this.alertIcon.querySelector('i');
-        icon.className = this.getIconForType(type);
-    }
-
-    getIconForType(type) {
-        const icons = {
-            'error': 'fas fa-exclamation-circle',
-            'warning': 'fas fa-exclamation-triangle',
-            'success': 'fas fa-check-circle',
-            'info': 'fas fa-info-circle'
-        };
-        return icons[type] || 'fas fa-info-circle';
-    }
-
-    hide() {
-        this.alertSystem.classList.remove('active');
-        setTimeout(() => {
-            this.alertSystem.classList.add('hidden');
-        }, 300);
-    }
-}
-
-// تهيئة نظام التنبيهات
-let alertSystem;
-
-// دوال مساعدة للتنبيهات
-function showAlert(type, messageKey, titleKey = null) {
-    if (!alertSystem) {
-        alertSystem = new AlertSystem();
-    }
-    
-    const message = t(messageKey);
-    const title = titleKey ? t(titleKey) : null;
-    alertSystem.show(type, message, title);
-}
-
-// التنبيهات المحددة
-function showDeceasedTypeAlert() {
-    showAlert('error', 'deceasedTypeRequired', 'alertTitle');
-}
-
-function showHeirsRequiredAlert() {
-    showAlert('warning', 'heirsRequired', 'alertTitle');
-}
-
-// تحديث دالة التحقق من الصحة
+// ========== دالة التحقق من الصحة ==========
 function validateCalculatorForm() {
-    const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked');
-    const hasHeirs = hasSelectedHeirs();
+  const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked');
+  const hasHeirs = hasSelectedHeirs();
 
-    if (!deceasedGender) {
-        showDeceasedTypeAlert();
-        return false;
-    }
+  if (!deceasedGender) {
+    showDeceasedTypeAlert();
+    return false;
+  }
 
-    if (!hasHeirs) {
-        showHeirsRequiredAlert();
-        return false;
-    }
+  if (!hasHeirs) {
+    showHeirsRequiredAlert();
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
+// ========== فتح نافذة الأبناء ==========
 function openSonsModal(e) {
-    e.preventDefault();
-    
-    // التحقق من الصحة أولاً
-    if (!validateCalculatorForm()) {
-        return;
-    }
+  e.preventDefault();
+  
+  // التحقق من الصحة أولاً
+  if (!validateCalculatorForm()) {
+    return;
+  }
 
-    let daughter = document.getElementById('daughter').value === 'noOption';
-    let mother = document.getElementById('mother').value === 'yesOption';
-    let father = document.getElementById('father').value === 'yesOption';
-    let son = document.getElementById('son').value === 'noOption';
+  let daughter = document.getElementById('daughter').value === 'noOption';
+  let mother = document.getElementById('mother').value === 'yesOption';
+  let father = document.getElementById('father').value === 'yesOption';
+  let son = document.getElementById('son').value === 'noOption';
 
-    if (mother && father && daughter && son) {
-        document.getElementById('sons_numbers').classList.add('show');
-    } else {
-        document.getElementById('dad_sons').value = 'noOption';
-        document.getElementById('dad_girls').value = 'noOption';
-        handleCalculatorSubmit();
-    }
+  if (mother && father && daughter && son) {
+    document.getElementById('sons_numbers').classList.add('show');
+  } else {
+    document.getElementById('dad_sons').value = 'noOption';
+    document.getElementById('dad_girls').value = 'noOption';
+    handleCalculatorSubmit();
+  }
 }
-// إعادة تحميل بيانات النموذج بعد تغيير اللغة
+
+// ========== إعادة تحميل بيانات النموذج بعد تغيير اللغة ==========
 function reloadFormData() {
   const storedData = localStorage.getItem("inheritanceData");
   if (storedData) {
@@ -462,14 +445,24 @@ function reloadFormData() {
   }
 }
 
-// دالة جديدة للتحكم في أزرار الفوتر
+// ========== دالة التحكم في أزرار الفوتر ==========
 function initFooterButtons() {
   const prevBtn = document.getElementById('footer-prev-btn');
   const nextBtn = document.getElementById('footer-next-btn');
   const printBtn = document.getElementById('footer-print-btn');
 
+  // إزالة جميع الأحداث القديمة
+  const newNextBtn = nextBtn.cloneNode(true);
+  const newPrevBtn = prevBtn.cloneNode(true);
+  nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+  prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+
+  // الحصول على الأزرار الجديدة
+  const newNextButton = document.getElementById('footer-next-btn');
+  const newPrevButton = document.getElementById('footer-prev-btn');
+
   // زر السابق
-  prevBtn.addEventListener('click', () => {
+  newPrevButton.addEventListener('click', () => {
     const currentTab = document.querySelector('.tab-content.active').id;
     
     if (currentTab === 'religious') {
@@ -479,12 +472,33 @@ function initFooterButtons() {
     }
   });
 
-  // زر التالي
-  nextBtn.addEventListener('click', () => {
+  // زر التالي - الإصلاح الرئيسي هنا
+  newNextButton.addEventListener('click', () => {
     const currentTab = document.querySelector('.tab-content.active').id;
     
     if (currentTab === 'calculator') {
-      document.getElementById('inheritanceForm').dispatchEvent(new Event('submit'));
+      // التحقق من الصحة أولاً
+      if (!validateCalculatorForm()) {
+        return;
+      }
+      
+      // فحص حالة خاصة (أب + أم + ابنة واحدة فقط)
+      const mother = document.getElementById('mother').value === 'yesOption';
+      const father = document.getElementById('father').value === 'yesOption';
+      const daughter = document.getElementById('daughter').value === 'noOption';
+      const son = document.getElementById('son').value === 'noOption';
+      
+      if (mother && father && daughter && son) {
+        // فتح نافذة الأبناء
+        document.getElementById('sons_numbers').classList.add('show');
+      } else {
+        // تعيين قيم افتراضية
+        document.getElementById('dad_sons').value = 'noOption';
+        document.getElementById('dad_girls').value = 'noOption';
+        
+        // الانتقال مباشرة إلى الخطوة الثانية
+        handleCalculatorSubmit();
+      }
     } else if (currentTab === 'religious') {
       document.getElementById('resultForm').dispatchEvent(new Event('submit'));
     }
@@ -493,10 +507,7 @@ function initFooterButtons() {
   // زر الطباعة
   if (printBtn) {
     printBtn.addEventListener('click', () => {
-      // التأكد من أن تبويب النتائج هو النشط
       switchTab('shares');
-      
-      // انتظار حتى يتم التحديث
       setTimeout(() => {
         window.print();
       }, 300);
@@ -504,6 +515,7 @@ function initFooterButtons() {
   }
 }
 
+// ========== تبديل التبويبات ==========
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
@@ -563,9 +575,18 @@ function updateFooterButtons(activeTab) {
   }
 }
 
+// ========== تهيئة التبويبات ==========
 function initTabs() {
   document.querySelectorAll('.tab-button').forEach(button => {
-    button.addEventListener('click', (e) => e.preventDefault());
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tabId = button.getAttribute('data-tab');
+      
+      // التحقق من أن التبويب ليس معطلاً
+      if (!button.disabled) {
+        switchTab(tabId);
+      }
+    });
   });
 
   document.querySelector('.tab-button.religious').disabled = true;
@@ -575,6 +596,7 @@ function initTabs() {
   updateFooterButtons('calculator');
 }
 
+// ========== تهيئة نموذج الحاسبة ==========
 function initCalculatorForm() {
   const form = document.getElementById('inheritanceForm');
   const templateSource = document.getElementById('field-template').innerHTML;
@@ -614,6 +636,7 @@ function updateFieldLabels() {
   }, 200);
 }
 
+// ========== تبديل حقل الزوج/الزوجة ==========
 function toggleSpouseField() {
   const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
   if (deceasedGender !== 'male') {
@@ -631,6 +654,7 @@ function toggleSpouseField() {
   calulcateWarth(all)
 }
 
+// ========== معالجة إرسال الحاسبة ==========
 function handleCalculatorSubmit() {
   const formData = collectFormData();
   localStorage.setItem("inheritanceData", JSON.stringify(formData));
@@ -640,6 +664,7 @@ function handleCalculatorSubmit() {
   updateReligiousTab(formData);
 }
 
+// ========== جمع بيانات النموذج ==========
 function collectFormData() {
   const formData = {
     deceased_gender: document.querySelector('input[name="deceased_gender"]:checked')?.value || "",
@@ -690,6 +715,7 @@ function collectFormData() {
   return formData;
 }
 
+// ========== تحديث تبويب البيانات الدينية ==========
 function updateReligiousTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
@@ -740,6 +766,7 @@ function updateReligiousTab(data) {
   document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
 }
 
+// ========== معالجة إرسال البيانات الدينية ==========
 function handleReligiousSubmit(event) {
   event.preventDefault();
   const data = JSON.parse(localStorage.getItem("inheritanceData"));
@@ -755,14 +782,12 @@ function handleReligiousSubmit(event) {
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
 
-  // ========== استخدام النظام الجديد للمفاتيح الستة ==========
+  // حساب التوزيع
   const totalAmount = processTotalAmount(data.amount);
   const materialsAmount = parseNumber(data.materials) || 0;
   
-  // حساب توزيع المال باستخدام النظام الجديد
   const moneyResults = calculateInheritance(totalAmount, data?.heirs);
   
-  // حساب توزيع المواد (بنفس النسب) فقط إذا كانت هناك مواد
   let materialsResults = null;
   if (materialsAmount > 0) {
     materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
@@ -776,13 +801,12 @@ function handleReligiousSubmit(event) {
   });
 }
 
-// ========== دالة معالجة المبلغ فقط (بدون مواد) ==========
+// ========== دالة معالجة المبلغ فقط ==========
 function processTotalAmount(amount) {
   let total = parseNumber(amount) || 0;
   
-  // إذا لم يتم إدخال أي مبلغ، نستخدم قيمة افتراضية للحسابات النسبية
   if (total === 0) {
-    total = 100; // قيمة افتراضية للحسابات النسبية
+    total = 100;
   }
   
   return total;
@@ -799,13 +823,14 @@ function calculateMaterialsDistribution(moneyResults, materialsAmount) {
     materialsDistribution[key] = {
       ...heirData,
       materialsAmount: materialsShare.toFixed(3),
-      materialsPercentage: heirData.percentage // نفس النسبة المئوية
+      materialsPercentage: heirData.percentage
     };
   }
   
   return materialsDistribution;
 }
 
+// ========== تحديث تبويب النتائج ==========
 function updateSharesTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
@@ -824,16 +849,13 @@ function updateSharesTab(data) {
   let sharesHTML = "";
   let i = 0;
   
-  // ========== التحكم في عرض المبالغ بناء على وجود مبلغ تركة ==========
   const showAmounts = data.hasAmount;
   
   for (let key in data.heirs) {
     i++;
     
-    // ========== معالجة صلة القرابة ==========
     let relationship = data.heirs[key].title;
     
-    // إذا كان العنوان غير محدد، نستخدم معرف الوارث لاستنتاج الصلة
     if (!relationship || relationship === 'undefined' || relationship.includes('undefined')) {
       if (key.startsWith('son_')) {
         const sonNumber = key.split('_')[1] || '';
@@ -862,10 +884,8 @@ function updateSharesTab(data) {
       }
     }
     
-    // ========== معالجة رسائل التوضيح ==========
     let note = data.heirs[key].note || '';
     
-    // تنظيف الملاحظات
     if (note.includes('الباقي يرد')) {
       note = note.replace('الباقي يرد', t('raddNote').split('حسب')[0]);
     }
@@ -888,7 +908,6 @@ function updateSharesTab(data) {
       note = t('remainderNote');
     }
     
-    // الحصول على كمية المواد لهذا الوريث
     const materialsData = data.materialsDistribution?.[key];
     const materialsAmount = materialsData?.materialsAmount || '0.000';
     const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
@@ -909,7 +928,6 @@ function updateSharesTab(data) {
     `;
   }
   
-  // ========== إضافة بيت المال إذا كان موجوداً في النتائج ==========
   if (data.heirs.bayt_al_mal) {
     i++;
     const materialsData = data.materialsDistribution?.bayt_al_mal;
@@ -940,6 +958,7 @@ function updateSharesTab(data) {
   document.getElementById('sharesTableBody').innerHTML = sharesHTML;
 }
 
+// ========== التحقق من وجود ورثة ==========
 function hasSelectedHeirs() {
     const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => 
         select.value !== 'noOption' && select.value !== 'لا'
@@ -952,6 +971,8 @@ function hasSelectedHeirs() {
     
     return (hasOtherHeirs || husbandSelected || wifeSelected) && (maleChecked || femaleChecked);
 }
+
+// ========== إظهار وإغلاق المودال ==========
 function showModal() {
   document.getElementById('modalOverlay').style.display = 'block';
   document.getElementById('validationModal').style.display = 'block';
@@ -962,6 +983,7 @@ function closeModal() {
   document.getElementById('validationModal').style.display = 'none';
 }
 
+// ========== حساب عدد الورثة ==========
 window.addEventListener('DOMContentLoaded', (e) => {
   const allSelect = [...document.querySelectorAll('select')];
   allSelect.forEach(el => {
@@ -1001,10 +1023,3 @@ function calulcateWarth(all) {
   }
   document.getElementById('worthCount').textContent = formatNumber(count)
 }
-
-
-
-
-
-
-
