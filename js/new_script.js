@@ -1,6 +1,23 @@
 import { calculateInheritance } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
+// Local storage helper with in-memory fallback
+const appStorage = (() => {
+  try {
+    const testKey = "app_storage_test";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return window.localStorage;
+  } catch (error) {
+    const memoryStore = {};
+    return {
+      getItem: (key) => (key in memoryStore ? memoryStore[key] : null),
+      setItem: (key, value) => { memoryStore[key] = String(value); },
+      removeItem: (key) => { delete memoryStore[key]; }
+    };
+  }
+})();
+
 // ========== ⭐ Helpers for Handlebars ==========
 document.addEventListener('DOMContentLoaded', function() {
     // تسجيل helper جديد لـ Handlebars
