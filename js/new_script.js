@@ -1263,9 +1263,11 @@ function updateSharesTab(data) {
 
 // ========== التحقق من وجود ورثة ==========
 function hasSelectedHeirs() {
-    const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => 
-        select.value !== 'noOption' && select.value !== 'لا'
-    );
+    const worthCountText = document.getElementById('worthCount')?.textContent || '0';
+    const heirsCount = parseNumber(worthCountText);
+
+    const hasOtherHeirs = heirsCount > 0 || [...document.querySelectorAll('#dynamic-fields select')]
+        .some(select => select.value !== 'noOption' && select.value !== 'لا');
     const maleChecked = document.getElementById('male').checked;
     const femaleChecked = document.getElementById('female').checked;
     const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
@@ -1315,9 +1317,12 @@ function calulcateWarth(all) {
       continue
     }
 
-    if (item === 'نعم' || item === 'yes') {
+    const yesValues = ['نعم', 'yes', 'yesOption'];
+    const noValues = ['لا', 'no', 'noOption'];
+
+    if (yesValues.includes(item)) {
       count += 1
-    } else if (item === 'لا' || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
+    } else if (noValues.includes(item) || item === 'مسلم' || item === 'غير مسلم') {
       continue
     }
     else {
