@@ -1,6 +1,23 @@
 import { calculateInheritance } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
+// Local storage helper with in-memory fallback
+const appStorage = (() => {
+  try {
+    const testKey = "app_storage_test";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return window.localStorage;
+  } catch (error) {
+    const memoryStore = {};
+    return {
+      getItem: (key) => (key in memoryStore ? memoryStore[key] : null),
+      setItem: (key, value) => { memoryStore[key] = String(value); },
+      removeItem: (key) => { delete memoryStore[key]; }
+    };
+  }
+})();
+
 // ========== ⭐ Helpers for Handlebars ==========
 document.addEventListener('DOMContentLoaded', function() {
     // تسجيل helper جديد لـ Handlebars
@@ -595,17 +612,19 @@ function reloadFormData() {
     if (activeTab === 'shares') {
       const totalAmount = processTotalAmount(data.amount);
       const materialsAmount = parseNumber(data.materials) || 0;
-      
-      const moneyResults = calculateInheritance(totalAmount, data?.heirs);
-      
+
+      const formattedHeirs = formatHeirsForCalculation(data.heirs);
+      const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
+      const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
+
       let materialsResults = null;
       if (materialsAmount > 0) {
-        materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+        materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
       }
 
-      updateSharesTab({ 
-        ...data, 
-        heirs: moneyResults,
+      updateSharesTab({
+        ...data,
+        heirs: enrichedResults,
         materialsDistribution: materialsResults,
         hasAmount: !!data.amount && parseNumber(data.amount) > 0
       });
@@ -1039,23 +1058,40 @@ function handleReligiousSubmit(event) {
   // حساب التوزيع
   const totalAmount = processTotalAmount(data.amount);
   const materialsAmount = parseNumber(data.materials) || 0;
-  
+
   // ========== إصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
   const formattedHeirs = formatHeirsForCalculation(data.heirs);
-  
   const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
-  
+  const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
+
   let materialsResults = null;
   if (materialsAmount > 0) {
-    materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+    materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
   }
 
-  updateSharesTab({ 
-    ...data, 
-    heirs: moneyResults,
+  updateSharesTab({
+    ...data,
+    heirs: enrichedResults,
     materialsDistribution: materialsResults,
     hasAmount: !!data.amount && parseNumber(data.amount) > 0
   });
+}
+
+// يدمج بيانات العرض (الاسم/القرابة) في نتائج الحساب لضمان ظهورها دائمًا
+function enrichResultsWithDisplayData(calculatedResults, formattedHeirs) {
+  const merged = {};
+
+  for (const [key, result] of Object.entries(calculatedResults)) {
+    const display = formattedHeirs[key] || {};
+    merged[key] = {
+      ...display,
+      ...result,
+      title: result.title || display.title,
+      name: result.name || display.name || ''
+    };
+  }
+
+  return merged;
 }
 
 // ========== دالة جديدة: تنسيق الورثة للحساب ==========
@@ -1064,15 +1100,17 @@ function formatHeirsForCalculation(heirsData) {
   
   for (let key in heirsData) {
     const heir = heirsData[key];
-    
-    if (heir.isMultiple && heir.count > 1) {
-      // تقسيم الحقول المتعددة إلى أفراد
-      for (let i = 1; i <= heir.count; i++) {
+    const count = heir.isMultiple ? Math.max(parseInt(heir.count, 10) || 0, 1) : 1;
+
+    if (heir.isMultiple) {
+      // تقسيم الحقول المتعددة إلى أفراد (حتى لو كان العدد واحدًا)
+      for (let i = 1; i <= count; i++) {
         const individualKey = `${key}_${i}`;
         formatted[individualKey] = {
           title: `${heir.title} ${numberToLocalizedWord(i, heir.gender || 'male')}`,
-          name: heir.names && heir.names[i] ? heir.names[i] : '',
-          religion: heir.religion || 'مسلم'
+          name: heir.names && heir.names[i] ? heir.names[i] : heir.name || '',
+          religion: heir.religion || 'مسلم',
+          gender: heir.gender || 'male'
         };
       }
     } else {
@@ -1080,7 +1118,8 @@ function formatHeirsForCalculation(heirsData) {
       formatted[key] = {
         title: heir.title,
         name: heir.name || '',
-        religion: heir.religion || 'مسلم'
+        religion: heir.religion || 'مسلم',
+        gender: heir.gender || 'male'
       };
     }
   }
@@ -1140,18 +1179,20 @@ function updateSharesTab(data) {
   
   // ========== إصلاح: عرض جميع الورثة ==========
   for (let key in data.heirs) {
+    if (key === 'bayt_al_mal') continue;
+
     i++;
-    
+
     const heir = data.heirs[key];
     
     // ========== إصلاح: عرض الاسم ==========
     const heirName = heir.name || '-';
-    
+
     // ========== إصلاح: عرض صلة القرابة ==========
-    let relationship = heir.title || '-';
-    
+    let relationship = heir.title || '';
+
     // تحسين عرض صلة القرابة
-    if (relationship.includes('undefined')) {
+    if (!relationship || relationship.includes('undefined')) {
       // استخراج نوع العلاقة من المفتاح
       const relationshipMap = {
         'father': t('father'),
@@ -1176,7 +1217,7 @@ function updateSharesTab(data) {
       for (const [fieldId, translation] of Object.entries(relationshipMap)) {
         if (key.startsWith(fieldId)) {
           relationship = translation;
-          
+
           // إضافة الرقم إذا كان حقل متعدد
           if (key.includes('_') && !isNaN(key.split('_')[1])) {
             const num = key.split('_')[1];
@@ -1186,6 +1227,8 @@ function updateSharesTab(data) {
         }
       }
     }
+
+    relationship = relationship || '-';
     
     let note = heir.note || '';
     
@@ -1263,9 +1306,11 @@ function updateSharesTab(data) {
 
 // ========== التحقق من وجود ورثة ==========
 function hasSelectedHeirs() {
-    const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => 
-        select.value !== 'noOption' && select.value !== 'لا'
-    );
+    const worthCountText = document.getElementById('worthCount')?.textContent || '0';
+    const heirsCount = parseNumber(worthCountText);
+
+    const hasOtherHeirs = heirsCount > 0 || [...document.querySelectorAll('#dynamic-fields select')]
+        .some(select => select.value !== 'noOption' && select.value !== 'لا');
     const maleChecked = document.getElementById('male').checked;
     const femaleChecked = document.getElementById('female').checked;
     const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
@@ -1315,9 +1360,12 @@ function calulcateWarth(all) {
       continue
     }
 
-    if (item === 'نعم' || item === 'yes') {
+    const yesValues = ['نعم', 'yes', 'yesOption'];
+    const noValues = ['لا', 'no', 'noOption'];
+
+    if (yesValues.includes(item)) {
       count += 1
-    } else if (item === 'لا' || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
+    } else if (noValues.includes(item) || item === 'مسلم' || item === 'غير مسلم') {
       continue
     }
     else {
