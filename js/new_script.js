@@ -1,6 +1,23 @@
 import { calculateInheritance } from "./functions.js";
 import { t, getCurrentLanguage, setLanguage, isRTL, formatNumber, parseNumber, getOrdinalNumber } from "./translations.js";
 
+// Local storage helper with in-memory fallback
+const appStorage = (() => {
+  try {
+    const testKey = "app_storage_test";
+    window.localStorage.setItem(testKey, "1");
+    window.localStorage.removeItem(testKey);
+    return window.localStorage;
+  } catch (error) {
+    const memoryStore = {};
+    return {
+      getItem: (key) => (key in memoryStore ? memoryStore[key] : null),
+      setItem: (key, value) => { memoryStore[key] = String(value); },
+      removeItem: (key) => { delete memoryStore[key]; }
+    };
+  }
+})();
+
 // ========== ⭐ Helpers for Handlebars ==========
 document.addEventListener('DOMContentLoaded', function() {
     // تسجيل helper جديد لـ Handlebars
@@ -1064,15 +1081,17 @@ function formatHeirsForCalculation(heirsData) {
   
   for (let key in heirsData) {
     const heir = heirsData[key];
-    
-    if (heir.isMultiple && heir.count > 1) {
-      // تقسيم الحقول المتعددة إلى أفراد
-      for (let i = 1; i <= heir.count; i++) {
+    const count = heir.isMultiple ? Math.max(parseInt(heir.count, 10) || 0, 1) : 1;
+
+    if (heir.isMultiple) {
+      // تقسيم الحقول المتعددة إلى أفراد (حتى لو كان العدد واحدًا)
+      for (let i = 1; i <= count; i++) {
         const individualKey = `${key}_${i}`;
         formatted[individualKey] = {
           title: `${heir.title} ${numberToLocalizedWord(i, heir.gender || 'male')}`,
-          name: heir.names && heir.names[i] ? heir.names[i] : '',
-          religion: heir.religion || 'مسلم'
+          name: heir.names && heir.names[i] ? heir.names[i] : heir.name || '',
+          religion: heir.religion || 'مسلم',
+          gender: heir.gender || 'male'
         };
       }
     } else {
@@ -1080,7 +1099,8 @@ function formatHeirsForCalculation(heirsData) {
       formatted[key] = {
         title: heir.title,
         name: heir.name || '',
-        religion: heir.religion || 'مسلم'
+        religion: heir.religion || 'مسلم',
+        gender: heir.gender || 'male'
       };
     }
   }
@@ -1263,9 +1283,11 @@ function updateSharesTab(data) {
 
 // ========== التحقق من وجود ورثة ==========
 function hasSelectedHeirs() {
-    const hasOtherHeirs = [...document.querySelectorAll('#dynamic-fields select')].some(select => 
-        select.value !== 'noOption' && select.value !== 'لا'
-    );
+    const worthCountText = document.getElementById('worthCount')?.textContent || '0';
+    const heirsCount = parseNumber(worthCountText);
+
+    const hasOtherHeirs = heirsCount > 0 || [...document.querySelectorAll('#dynamic-fields select')]
+        .some(select => select.value !== 'noOption' && select.value !== 'لا');
     const maleChecked = document.getElementById('male').checked;
     const femaleChecked = document.getElementById('female').checked;
     const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
@@ -1315,9 +1337,12 @@ function calulcateWarth(all) {
       continue
     }
 
-    if (item === 'نعم' || item === 'yes') {
+    const yesValues = ['نعم', 'yes', 'yesOption'];
+    const noValues = ['لا', 'no', 'noOption'];
+
+    if (yesValues.includes(item)) {
       count += 1
-    } else if (item === 'لا' || item === 'مسلم' || item === 'غير مسلم' || item === 'no') {
+    } else if (noValues.includes(item) || item === 'مسلم' || item === 'غير مسلم') {
       continue
     }
     else {
