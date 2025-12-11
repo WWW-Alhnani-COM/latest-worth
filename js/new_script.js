@@ -1025,57 +1025,89 @@ function updateReligiousTab(data) {
 }
 
 // ========== معالجة إرسال البيانات الدينية ==========
-function handleReligiousSubmit(event) {
-  event.preventDefault();
-  const data = JSON.parse(appStorage.getItem("inheritanceData"));
+  function handleReligiousSubmit(event) {
+    event.preventDefault();
+    let data;
 
-  // ========== إصلاح: جمع بيانات الأسماء والديانات ==========
-  document.querySelectorAll('.heir-name').forEach(input => {
-    const heirId = input.getAttribute('data-heir-id');
-    const religionSelect = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`);
-    
-    // حفظ الاسم والديانة
-    if (heirId.includes('_')) {
-      // حالة الحقول المتعددة (son_1, son_2, إلخ)
-      const [baseId, index] = heirId.split('_');
-      if (!data.heirs[baseId].names) {
-        data.heirs[baseId].names = {};
-      }
-      data.heirs[baseId].names[index] = input.value;
-      data.heirs[baseId].religion = religionSelect.value;
-    } else {
-      // حالة الحقول المفردة
-      data.heirs[heirId].name = input.value;
-      data.heirs[heirId].religion = religionSelect.value;
+    try {
+      data = JSON.parse(appStorage.getItem("inheritanceData")) || {};
+    } catch (error) {
+      data = {};
     }
-  });
 
-  appStorage.setItem("inheritanceData", JSON.stringify(data));
+    if (!data || typeof data !== "object") {
+      data = {};
+    }
 
-  document.querySelector('.tab-button.shares').disabled = false;
-  switchTab('shares');
+    if (!data.heirs || typeof data.heirs !== "object") {
+      data.heirs = {};
+    }
 
-  // حساب التوزيع
-  const totalAmount = processTotalAmount(data.amount);
-  const materialsAmount = parseNumber(data.materials) || 0;
+    // ========== إصلاح: جمع بيانات الأسماء والديانات ==========
+    document.querySelectorAll('.heir-name').forEach(input => {
+      const heirId = input.getAttribute('data-heir-id');
+      const religionSelect = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`);
 
-  // ========== إصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
-  const formattedHeirs = formatHeirsForCalculation(data.heirs);
-  const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
-  const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
+      if (!religionSelect) {
+        return;
+      }
 
-  let materialsResults = null;
-  if (materialsAmount > 0) {
-    materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
+      // حفظ الاسم والديانة
+      if (heirId.includes('_')) {
+        // حالة الحقول المتعددة (son_1, son_2، إلخ)
+        const [baseId, index] = heirId.split('_');
+
+        if (!baseId || !index) {
+          return;
+        }
+
+        if (!data.heirs[baseId] || typeof data.heirs[baseId] !== "object") {
+          data.heirs[baseId] = {};
+        }
+
+        if (!data.heirs[baseId].names || typeof data.heirs[baseId].names !== "object") {
+          data.heirs[baseId].names = {};
+        }
+
+        data.heirs[baseId].names[index] = input.value;
+        data.heirs[baseId].religion = religionSelect.value;
+      } else {
+        // حالة الحقول المفردة
+        if (!data.heirs[heirId] || typeof data.heirs[heirId] !== "object") {
+          data.heirs[heirId] = {};
+        }
+
+        data.heirs[heirId].name = input.value;
+        data.heirs[heirId].religion = religionSelect.value;
+      }
+    });
+
+    appStorage.setItem("inheritanceData", JSON.stringify(data));
+
+    document.querySelector('.tab-button.shares').disabled = false;
+    switchTab('shares');
+
+    // حساب التوزيع
+    const totalAmount = processTotalAmount(data.amount);
+    const materialsAmount = parseNumber(data.materials) || 0;
+
+    // ========== إصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
+    const formattedHeirs = formatHeirsForCalculation(data.heirs);
+    const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
+    const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
+
+    let materialsResults = null;
+    if (materialsAmount > 0) {
+      materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
+    }
+
+    updateSharesTab({
+      ...data,
+      heirs: enrichedResults,
+      materialsDistribution: materialsResults,
+      hasAmount: !!data.amount && parseNumber(data.amount) > 0
+    });
   }
-
-  updateSharesTab({
-    ...data,
-    heirs: enrichedResults,
-    materialsDistribution: materialsResults,
-    hasAmount: !!data.amount && parseNumber(data.amount) > 0
-  });
-}
 
 // يدمج بيانات العرض (الاسم/القرابة) في نتائج الحساب لضمان ظهورها دائمًا
 function enrichResultsWithDisplayData(calculatedResults, formattedHeirs) {
