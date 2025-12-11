@@ -585,7 +585,7 @@ function openSonsModal(e) {
 
 // ========== إعادة تحميل بيانات النموذج بعد تغيير اللغة ==========
 function reloadFormData() {
-  const storedData = localStorage.getItem("inheritanceData");
+  const storedData = appStorage.getItem("inheritanceData");
   if (storedData) {
     const data = JSON.parse(storedData);
     updateReligiousTab(data);
@@ -833,7 +833,7 @@ function toggleSpouseField() {
 // ========== معالجة إرسال الحاسبة ==========
 function handleCalculatorSubmit() {
   const formData = collectFormData();
-  localStorage.setItem("inheritanceData", JSON.stringify(formData));
+  appStorage.setItem("inheritanceData", JSON.stringify(formData));
 
   document.querySelector('.tab-button.religious').disabled = false;
   switchTab('religious');
@@ -841,19 +841,21 @@ function handleCalculatorSubmit() {
 }
 
 // ========== جمع بيانات النموذج ==========
+// ========== جمع بيانات النموذج ==========
 function collectFormData() {
   const formData = {
     deceased_gender: document.querySelector('input[name="deceased_gender"]:checked')?.value || "",
-    deceased_religion: document.getElementById("deceased_religion").value || "",
-    deceased_name: document.getElementById("deceased_name").value || "",
-    amount: document.getElementById("amount").value || "",
-    materials: document.getElementById("materials").value || "",
+    deceased_religion: document.getElementById("deceased_religion")?.value || "مسلم",
+    deceased_name: document.getElementById("deceased_name")?.value || "",
+    amount: document.getElementById("amount")?.value || "",
+    materials: document.getElementById("materials")?.value || "",
     heirs: {}
   };
 
   document.querySelectorAll("#inheritanceForm select").forEach(select => {
     const id = select.id;
-    const title = select.parentElement.querySelector("label").textContent;
+    const label = select.parentElement.querySelector("label");
+    const title = label ? label.textContent : id;
     const value = select.value;
     const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
     const gender = fieldConfig?.gender || "male";
@@ -862,16 +864,23 @@ function collectFormData() {
     if (id === "wife") {
       if (parseInt(value) > 0) {
         formData.heirs["wife"] = { 
-          title: t('wife'),
+          title: t('wife') || 'زوجة',
           name: "",
-          count: parseInt(value)
+          count: parseInt(value),
+          religion: "مسلم",
+          isMultiple: true,
+          gender: "female"
         };
       }
       return;
     }
 
     if (id === "husband" && value === "yes" && formData.deceased_gender === "female") {
-      formData.heirs["husband"] = { title: t('husband'), name: "" };
+      formData.heirs["husband"] = { 
+        title: t('husband') || 'زوج', 
+        name: "",
+        religion: "مسلم"
+      };
       return;
     }
 
@@ -880,7 +889,7 @@ function collectFormData() {
       formData.heirs[id] = { 
         title: title, 
         name: "",
-        religion: "مسلم" // قيمة افتراضية
+        religion: "مسلم"
       };
       return;
     }
@@ -891,8 +900,9 @@ function collectFormData() {
         title: title,
         name: "",
         count: parseInt(value),
-        religion: "مسلم", // قيمة افتراضية
-        isMultiple: true
+        religion: "مسلم",
+        isMultiple: true,
+        gender: gender
       };
     }
   });
@@ -998,7 +1008,7 @@ function updateReligiousTab(data) {
 // ========== معالجة إرسال البيانات الدينية ==========
 function handleReligiousSubmit(event) {
   event.preventDefault();
-  const data = JSON.parse(localStorage.getItem("inheritanceData"));
+  const data = JSON.parse(appStorage.getItem("inheritanceData"));
 
   // ========== إصلاح: جمع بيانات الأسماء والديانات ==========
   document.querySelectorAll('.heir-name').forEach(input => {
@@ -1021,7 +1031,7 @@ function handleReligiousSubmit(event) {
     }
   });
 
-  localStorage.setItem("inheritanceData", JSON.stringify(data));
+  appStorage.setItem("inheritanceData", JSON.stringify(data));
 
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
@@ -1339,3 +1349,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
