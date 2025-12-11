@@ -814,12 +814,21 @@ body {
 
 /* تحسينات الطباعة */
 @media print {
+  @page {
+    margin: 1cm;
+  }
+
   .header,
   .footer,
   .fixed-footer,
   .tabs,
-  .btn {
+  .btn,
+  .print-hide {
     display: none !important;
+  }
+
+  body {
+    background: white;
   }
 
   .app-container {
@@ -828,7 +837,23 @@ body {
   }
 
   .tab-content {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #shares {
     display: block !important;
-    padding: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #shares .section-card,
+  #shares .card,
+  #shares table,
+  #shares .table-responsive {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    box-shadow: none;
   }
 }

@@ -1027,7 +1027,9 @@ function updateReligiousTab(data) {
 // ========== معالجة إرسال البيانات الدينية ==========
 function handleReligiousSubmit(event) {
   event.preventDefault();
-  const data = JSON.parse(appStorage.getItem("inheritanceData"));
+  const stored = appStorage.getItem("inheritanceData");
+  const data = stored ? JSON.parse(stored) : {};
+  data.heirs = data.heirs || {};
 
   // ========== إصلاح: جمع بيانات الأسماء والديانات ==========
   document.querySelectorAll('.heir-name').forEach(input => {
@@ -1038,6 +1040,9 @@ function handleReligiousSubmit(event) {
     if (heirId.includes('_')) {
       // حالة الحقول المتعددة (son_1, son_2, إلخ)
       const [baseId, index] = heirId.split('_');
+      if (!data.heirs[baseId]) {
+        data.heirs[baseId] = { names: {}, religion: "مسلم" };
+      }
       if (!data.heirs[baseId].names) {
         data.heirs[baseId].names = {};
       }
@@ -1045,6 +1050,9 @@ function handleReligiousSubmit(event) {
       data.heirs[baseId].religion = religionSelect.value;
     } else {
       // حالة الحقول المفردة
+      if (!data.heirs[heirId]) {
+        data.heirs[heirId] = { religion: "مسلم" };
+      }
       data.heirs[heirId].name = input.value;
       data.heirs[heirId].religion = religionSelect.value;
     }
@@ -1107,7 +1115,7 @@ function formatHeirsForCalculation(heirsData) {
       for (let i = 1; i <= count; i++) {
         const individualKey = `${key}_${i}`;
         formatted[individualKey] = {
-          title: `${heir.title} ${numberToLocalizedWord(i, heir.gender || 'male')}`,
+          title: `${(heir.title || t(key)) ?? ''} ${numberToLocalizedWord(i, heir.gender || 'male')}`.trim(),
           name: heir.names && heir.names[i] ? heir.names[i] : heir.name || '',
           religion: heir.religion || 'مسلم',
           gender: heir.gender || 'male'
@@ -1116,7 +1124,7 @@ function formatHeirsForCalculation(heirsData) {
     } else {
       // الحقول المفردة
       formatted[key] = {
-        title: heir.title,
+        title: heir.title || t(key),
         name: heir.name || '',
         religion: heir.religion || 'مسلم',
         gender: heir.gender || 'male'
@@ -1156,6 +1164,25 @@ function calculateMaterialsDistribution(moneyResults, materialsAmount) {
   return materialsDistribution;
 }
 
+// يستخرج صلة القرابة الصحيحة مع التعامل مع الحقول المتعددة
+function getRelationshipLabel(key, heir = {}) {
+  let relationship = heir.title || "";
+  const baseKey = key.split('_')[0];
+
+  if (!relationship || relationship === baseKey) {
+    relationship = t(baseKey) || "";
+  }
+
+  if (key.includes('_')) {
+    const numPart = key.split('_')[1];
+    if (!isNaN(numPart)) {
+      relationship = `${relationship} ${numberToLocalizedWord(parseInt(numPart, 10), heir.gender || 'male')}`.trim();
+    }
+  }
+
+  return relationship || "-";
+}
+
 // ========== تحديث تبويب النتائج ==========
 function updateSharesTab(data) {
   let deceasedInfoHTML = "";
@@ -1189,46 +1216,7 @@ function updateSharesTab(data) {
     const heirName = heir.name || '-';
 
     // ========== إصلاح: عرض صلة القرابة ==========
-    let relationship = heir.title || '';
-
-    // تحسين عرض صلة القرابة
-    if (!relationship || relationship.includes('undefined')) {
-      // استخراج نوع العلاقة من المفتاح
-      const relationshipMap = {
-        'father': t('father'),
-        'mother': t('mother'),
-        'son': t('son'),
-        'daughter': t('daughter'),
-        'brother': t('brother'),
-        'sister': t('sister'),
-        'husband': t('husband'),
-        'wife': t('wife'),
-        'FR_grandfather': t('FR_grandfather'),
-        'MR_grandfather': t('MR_grandfather'),
-        'FR_grandmother': t('FR_grandmother'),
-        'MR_grandmother': t('MR_grandmother'),
-        'SN_grandson': t('SN_grandson'),
-        'SN_granddaughter': t('SN_granddaughter'),
-        'DR_grandson': t('DR_grandson'),
-        'DR_granddaughter': t('DR_granddaughter')
-      };
-      
-      // البحث عن الترجمة المناسبة
-      for (const [fieldId, translation] of Object.entries(relationshipMap)) {
-        if (key.startsWith(fieldId)) {
-          relationship = translation;
-
-          // إضافة الرقم إذا كان حقل متعدد
-          if (key.includes('_') && !isNaN(key.split('_')[1])) {
-            const num = key.split('_')[1];
-            relationship += ` ${numberToLocalizedWord(parseInt(num), heir.gender || 'male')}`;
-          }
-          break;
-        }
-      }
-    }
-
-    relationship = relationship || '-';
+    const relationship = getRelationshipLabel(key, heir);
     
     let note = heir.note || '';
     
