@@ -852,152 +852,157 @@
       }
     }
 
-    /* ========== أنماط التفاعلية المضافة ========== */
-    
-    /* تأثيرات تفاعلية للعناصر */
-    .input-group select:valid,
-    .input-group input:valid {
-      border-color: var(--success-color) !important;
-      background-color: rgba(52, 168, 83, 0.05) !important;
-    }
+/* ========== أنماط التفاعلية المضافة (تم تعديلها لضمان التجاوز) ========== */
 
-    .input-group select:focus:valid,
-    .input-group input:focus:valid {
-      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-    }
+/* 1. النمط الافتراضي لحقول الفئات (الورثة) - الأزرق */
+/* هذا النمط يطبق على الحقول ضمن #dynamic-fields قبل أن يتم اختيار أي قيمة */
+#dynamic-fields .input-group select {
+    /* الأزرق الافتراضي */
+    border-color: var(--primary-color) !important;
+    background-color: rgba(26, 115, 232, 0.05) !important;
+}
 
-    /* تأثيرات على الحقول المملوءة */
-    .filled-field {
-      border-color: var(--success-color) !important;
-      background-color: rgba(52, 168, 83, 0.05) !important;
-    }
+/* 2. النمط الشرطي للحقول المملوءة (بما في ذلك الفئات) - الأخضر */
+/* هذا النمط يطبق عندما يتم اختيار قيمة، ويتجاوز النمط الأزرق أعلاه */
+.input-group select:valid,
+.input-group input:valid,
+.filled-field {
+    /* الأخضر عند الإجابة */
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+}
 
-    /* 1. جعل حقول الفئات (ضمن #dynamic-fields) باللون الأزرق الافتراضي */
-    #dynamic-fields .input-group select {
-      border-color: var(--primary-color); /* الأزرق الافتراضي */
-      background-color: rgba(26, 115, 232, 0.05); /* أزرق فاتح جداً */
-    }
+/* 3. النمط الشرطي لحقل الديانة (#deceased_religion) */
 
-    /* 2. تطبيق الأنماط الشرطية لحقل الديانة (#deceased_religion) */
+/* الحالة الحمراء: غير مسلم (الأعلى أولوية) */
+#deceased_religion[value="غير مسلم"] {
+    border-color: var(--danger-color) !important; /* أحمر */
+    background-color: rgba(234, 67, 53, 0.05) !important;
+}
 
-    /* الحالة الحمراء: غير مسلم */
-    #deceased_religion[value="غير مسلم"] {
-        border-color: var(--danger-color) !important; /* أحمر */
-        background-color: rgba(234, 67, 53, 0.05) !important;
-    }
+/* الحالة الخضراء: مسلم (سيتجاوز النمط الأزرق الافتراضي، ولكن النمط الأخضر العام يغطيه أيضًا) */
+#deceased_religion[value="مسلم"] {
+    /* الأخضر عند اختيار "مسلم" لضمان التزامها باللون الأخضر */
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+}
 
-    /* الحالة الخضراء: مسلم */
-    #deceased_religion[value="مسلم"] {
-        border-color: var(--success-color) !important; /* أخضر */
-        background-color: rgba(52, 168, 83, 0.05) !important;
-    }
+/* إزالة الأنماط العامة القديمة التي قد تتعارض مع اللون الأزرق الافتراضي للفئات */
+/* (الأنماط التي كانت تجعل كل شيء أخضر افتراضياً) - تم توحيدها في النقطة 2 */
 
-    /* تأثيرات على العناصر المحددة */
-    .selected-item {
-      background: var(--success-color) !important;
-      color: white !important;
-    }
+/* ========== أنماط تفاعلية أخرى (تم نقلها أو تعديلها) ========== */
 
-    /* تأثيرات على أزرار الراديو */
-    .radio-item:hover .radio-custom {
-      border-color: var(--success-color);
-    }
+.input-group select:focus:valid,
+.input-group input:focus:valid {
+  box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+}
 
-    .radio-input:checked + .radio-custom {
-      border-color: var(--success-color);
-      background: rgba(52, 168, 83, 0.1);
-    }
+/* تأثيرات على العناصر المحددة */
+.selected-item {
+  background: var(--success-color) !important;
+  color: white !important;
+}
 
-    /* أنماط تفاعلية إضافية */
-    .focused-field {
-      position: relative;
-    }
+/* تأثيرات على أزرار الراديو */
+.radio-item:hover .radio-custom {
+  border-color: var(--success-color);
+}
 
-    .focused-field::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--primary-color);
-      border-radius: 2px;
-    }
+.radio-input:checked + .radio-custom {
+  border-color: var(--success-color);
+  background: rgba(52, 168, 83, 0.1);
+}
 
-    .selected-group {
-      border-left: 3px solid var(--success-color);
-      padding-left: 10px;
-    }
+/* أنماط تفاعلية إضافية */
+.focused-field {
+  position: relative;
+}
 
-    .selected-radio {
-      background: rgba(52, 168, 83, 0.1) !important;
-      border-radius: var(--radius-md);
-    }
+.focused-field::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--primary-color);
+  border-radius: 2px;
+}
 
-    .selected-row {
-      background: rgba(52, 168, 83, 0.1) !important;
-      border-left: 3px solid var(--success-color);
-    }
+.selected-group {
+  border-left: 3px solid var(--success-color);
+  padding-left: 10px;
+}
 
-    .editing-row {
-      box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.3);
-      border-radius: var(--radius-sm);
-    }
+.selected-radio {
+  background: rgba(52, 168, 83, 0.1) !important;
+  border-radius: var(--radius-md);
+}
 
-    /* تأثيرات على خطوات التبويب */
-    .tab-button.completed {
-      background: rgba(52, 168, 83, 0.1);
-      color: var(--success-color);
-    }
+.selected-row {
+  background: rgba(52, 168, 83, 0.1) !important;
+  border-left: 3px solid var(--success-color);
+}
 
-    .tab-button.completed .step-number {
-      background: var(--success-color);
-      color: white;
-    }
+.editing-row {
+  box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.3);
+  border-radius: var(--radius-sm);
+}
 
-    /* تأثيرات على العداد */
-    .worth-count.has-heirs {
-      background: rgba(52, 168, 83, 0.1);
-      color: var(--success-color);
-      border: 1px solid var(--success-color);
-    }
+/* تأثيرات على خطوات التبويب */
+.tab-button.completed {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--success-color);
+}
 
-    .worth-count.has-heirs span {
-      background: var(--success-color);
-    }
+.tab-button.completed .step-number {
+  background: var(--success-color);
+  color: white;
+}
 
-    /* تأثيرات على الحقول النشطة */
-    .input-group.active {
-      transform: translateY(-2px);
-    }
+/* تأثيرات على العداد */
+.worth-count.has-heirs {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--success-color);
+  border: 1px solid var(--success-color);
+}
 
-    .input-group.active label {
-      color: var(--success-color);
-    }
+.worth-count.has-heirs span {
+  background: var(--success-color);
+}
 
-    /* تأثيرات على الجداول التفاعلية */
-    .heir-name:focus,
-    .heir-religion:focus {
-      border-color: var(--success-color);
-      box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.2);
-    }
+/* تأثيرات على الحقول النشطة */
+.input-group.active {
+  transform: translateY(-2px);
+}
 
-    .heir-name.filled-field,
-    .heir-religion.filled-field {
-      background: rgba(52, 168, 83, 0.05);
-      border-color: var(--success-color);
-    }
-    .currency-icon {
-    width: 35px;
-    height: 20px;
-    vertical-align: middle;
-    margin-right: 5px;
+.input-group.active label {
+  color: var(--success-color);
+}
+
+/* تأثيرات على الجداول التفاعلية */
+.heir-name:focus,
+.heir-religion:focus {
+  border-color: var(--success-color);
+  box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.2);
+}
+
+.heir-name.filled-field,
+.heir-religion.filled-field {
+  background: rgba(52, 168, 83, 0.05);
+  border-color: var(--success-color);
+}
+.currency-icon {
+width: 35px;
+height: 20px;
+vertical-align: middle;
+margin-right: 5px;
 }
 
 .unit {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+display: flex;
+align-items: center;
+gap: 5px;
 }
     /* ========== أنماط التنبيهات المحسنة ========== */
 .alert-system {
