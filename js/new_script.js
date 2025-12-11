@@ -157,6 +157,175 @@ const fieldsData = [
   }
 ];
 
+// ========== نظام ترميز الألوان لحقول الورثة وحقل الديانة ==========
+function initColorCodingSystem() {
+    // 1. حل مشكلة لون فئات الورثة (الأزرق → الأخضر)
+    function updateHeirFieldColors() {
+        const dynamicFields = document.getElementById('dynamic-fields');
+        if (!dynamicFields) return;
+        
+        // تطبيق الأنماط الأولية
+        applyHeirFieldStyles();
+        
+        // إضافة مستمعين للأحداث للتحديث الفوري
+        document.addEventListener('change', function(e) {
+            if (e.target.closest('#dynamic-fields select')) {
+                updateSelectColor(e.target);
+            }
+            // مراقبة حقل الديانة أيضًا
+            if (e.target.id === 'deceased_religion') {
+                updateReligionColor(e.target);
+            }
+        });
+        
+        // إضافة مستمعين للأحداث focus وblur
+        document.addEventListener('focusin', function(e) {
+            if (e.target.closest('#dynamic-fields select')) {
+                e.target.classList.add('focused-field');
+            }
+            if (e.target.id === 'deceased_religion') {
+                e.target.classList.add('focused-field');
+            }
+        });
+        
+        document.addEventListener('focusout', function(e) {
+            if (e.target.closest('#dynamic-fields select')) {
+                e.target.classList.remove('focused-field');
+            }
+            if (e.target.id === 'deceased_religion') {
+                e.target.classList.remove('focused-field');
+            }
+        });
+    }
+    
+    function applyHeirFieldStyles() {
+        const heirSelects = document.querySelectorAll('#dynamic-fields select');
+        heirSelects.forEach(select => {
+            updateSelectColor(select);
+        });
+    }
+    
+    function updateSelectColor(selectElement) {
+        // تحديث سمة value لتعمل مع CSS
+        selectElement.setAttribute('value', selectElement.value);
+        
+        // إضافة/إزالة class بناءً على القيمة
+        const defaultValue = selectElement.options[0] ? selectElement.options[0].value : '0';
+        
+        if (selectElement.value && selectElement.value !== defaultValue && selectElement.value !== '0' && selectElement.value !== 'لا') {
+            selectElement.classList.add('filled-field');
+            selectElement.classList.remove('empty-field');
+        } else {
+            selectElement.classList.remove('filled-field');
+            selectElement.classList.add('empty-field');
+        }
+    }
+    
+    // 2. حل مشكلة لون حقل الديانة (تغيير الديانة → اللون الأحمر)
+    function updateReligionFieldColor() {
+        const religionSelect = document.getElementById('deceased_religion');
+        if (!religionSelect) return;
+        
+        // تحديث أولي
+        updateReligionColor(religionSelect);
+    }
+    
+    function updateReligionColor(selectElement) {
+        // تحديث سمة value لتعمل مع CSS
+        selectElement.setAttribute('value', selectElement.value);
+        
+        // إزالة جميع الفئات الملونة أولاً
+        selectElement.classList.remove('non-muslim-field', 'muslim-field', 'empty-field');
+        
+        // تطبيق اللون الأحمر إذا كانت القيمة "غير مسلم"
+        if (selectElement.value === 'غير مسلم') {
+            selectElement.classList.add('non-muslim-field');
+        }
+        // اللون الأخضر إذا كانت القيمة "مسلم"
+        else if (selectElement.value === 'مسلم') {
+            selectElement.classList.add('muslim-field');
+        }
+        // حالة فارغة
+        else {
+            selectElement.classList.add('empty-field');
+        }
+    }
+    
+    // 3. تهيئة نظام مراقبة الحقول الديناميكية عند إضافتها
+    function initDynamicFieldsObserver() {
+        const targetNode = document.getElementById('dynamic-fields');
+        if (!targetNode) return;
+        
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    // إعادة تطبيق الأنماط عند إضافة حقول جديدة
+                    setTimeout(() => {
+                        applyHeirFieldStyles();
+                    }, 100);
+                }
+            });
+        });
+        
+        observer.observe(targetNode, {
+            childList: true,
+            subtree: true
+        });
+    }
+    
+    // 4. تهيئة جميع الأنظمة
+    function initColorSystems() {
+        updateHeirFieldColors();
+        updateReligionFieldColor();
+        initDynamicFieldsObserver();
+        
+        // أيضًا مراقبة تغييرات التبويبات (في حالة التبديل بينها)
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                setTimeout(() => {
+                    applyHeirFieldStyles();
+                    updateReligionFieldColor();
+                }, 300);
+            });
+        });
+    }
+    
+    // 5. الانتظار حتى تحميل المحتوى الديناميكي
+    setTimeout(() => {
+        initColorSystems();
+    }, 500);
+    
+    // 6. أيضًا إعادة التهيئة عند تغيير اللغة
+    document.getElementById('languageSelect')?.addEventListener('change', function() {
+        setTimeout(() => {
+            initColorSystems();
+        }, 500);
+    });
+}
+
+// 7. تطبيق الأنماط عند تحميل الصفحة
+window.addEventListener('load', function() {
+    setTimeout(() => {
+        const heirSelects = document.querySelectorAll('#dynamic-fields select');
+        heirSelects.forEach(select => {
+            const defaultValue = select.options[0] ? select.options[0].value : '0';
+            if (select.value && select.value !== defaultValue && select.value !== '0' && select.value !== 'لا') {
+                select.classList.add('filled-field');
+                select.setAttribute('value', select.value);
+            }
+        });
+        
+        const religionSelect = document.getElementById('deceased_religion');
+        if (religionSelect) {
+            religionSelect.setAttribute('value', religionSelect.value);
+            if (religionSelect.value === 'غير مسلم') {
+                religionSelect.classList.add('non-muslim-field');
+            }
+        }
+    }, 1500);
+});
+
 // تطبيق الترجمة على الصفحة
 function applyTranslations() {
   const lang = getCurrentLanguage();
@@ -212,6 +381,11 @@ function applyTranslations() {
   // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
   translateSelectOptions();
+  
+  // تحديث نظام ترميز الألوان بعد الترجمة
+  setTimeout(() => {
+    initColorCodingSystem();
+  }, 300);
 }
 
 // دالة جديدة لترجمة خيارات القوائم المنسدلة
@@ -528,6 +702,11 @@ function switchTab(tabId) {
   
   // التحكم في إظهار/إخفاء أزرار الفوتر حسب التبويب النشط
   updateFooterButtons(tabId);
+  
+  // تطبيق نظام ترميز الألوان عند تغيير التبويب
+  setTimeout(() => {
+    initColorCodingSystem();
+  }, 300);
 }
 
 // تحديث حالة أزرار التبويب
@@ -619,6 +798,9 @@ function initCalculatorForm() {
   
   // تحديث تسميات الحقول بعد الترجمة
   updateFieldLabels();
+  
+  // تهيئة نظام ترميز الألوان
+  initColorCodingSystem();
 }
 
 // تحديث تسميات الحقول
@@ -1022,4 +1204,4 @@ function calulcateWarth(all) {
     }
   }
   document.getElementById('worthCount').textContent = formatNumber(count)
-}
+       }
