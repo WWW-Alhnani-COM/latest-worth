@@ -612,17 +612,19 @@ function reloadFormData() {
     if (activeTab === 'shares') {
       const totalAmount = processTotalAmount(data.amount);
       const materialsAmount = parseNumber(data.materials) || 0;
-      
-      const moneyResults = calculateInheritance(totalAmount, data?.heirs);
-      
+
+      const formattedHeirs = formatHeirsForCalculation(data.heirs);
+      const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
+      const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
+
       let materialsResults = null;
       if (materialsAmount > 0) {
-        materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+        materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
       }
 
-      updateSharesTab({ 
-        ...data, 
-        heirs: moneyResults,
+      updateSharesTab({
+        ...data,
+        heirs: enrichedResults,
         materialsDistribution: materialsResults,
         hasAmount: !!data.amount && parseNumber(data.amount) > 0
       });
@@ -1056,23 +1058,40 @@ function handleReligiousSubmit(event) {
   // حساب التوزيع
   const totalAmount = processTotalAmount(data.amount);
   const materialsAmount = parseNumber(data.materials) || 0;
-  
+
   // ========== إصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
   const formattedHeirs = formatHeirsForCalculation(data.heirs);
-  
   const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
-  
+  const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
+
   let materialsResults = null;
   if (materialsAmount > 0) {
-    materialsResults = calculateMaterialsDistribution(moneyResults, materialsAmount);
+    materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
   }
 
-  updateSharesTab({ 
-    ...data, 
-    heirs: moneyResults,
+  updateSharesTab({
+    ...data,
+    heirs: enrichedResults,
     materialsDistribution: materialsResults,
     hasAmount: !!data.amount && parseNumber(data.amount) > 0
   });
+}
+
+// يدمج بيانات العرض (الاسم/القرابة) في نتائج الحساب لضمان ظهورها دائمًا
+function enrichResultsWithDisplayData(calculatedResults, formattedHeirs) {
+  const merged = {};
+
+  for (const [key, result] of Object.entries(calculatedResults)) {
+    const display = formattedHeirs[key] || {};
+    merged[key] = {
+      ...display,
+      ...result,
+      title: result.title || display.title,
+      name: result.name || display.name || ''
+    };
+  }
+
+  return merged;
 }
 
 // ========== دالة جديدة: تنسيق الورثة للحساب ==========
@@ -1166,12 +1185,12 @@ function updateSharesTab(data) {
     
     // ========== إصلاح: عرض الاسم ==========
     const heirName = heir.name || '-';
-    
+
     // ========== إصلاح: عرض صلة القرابة ==========
-    let relationship = heir.title || '-';
-    
+    let relationship = heir.title || '';
+
     // تحسين عرض صلة القرابة
-    if (relationship.includes('undefined')) {
+    if (!relationship || relationship.includes('undefined')) {
       // استخراج نوع العلاقة من المفتاح
       const relationshipMap = {
         'father': t('father'),
@@ -1196,7 +1215,7 @@ function updateSharesTab(data) {
       for (const [fieldId, translation] of Object.entries(relationshipMap)) {
         if (key.startsWith(fieldId)) {
           relationship = translation;
-          
+
           // إضافة الرقم إذا كان حقل متعدد
           if (key.includes('_') && !isNaN(key.split('_')[1])) {
             const num = key.split('_')[1];
@@ -1206,6 +1225,8 @@ function updateSharesTab(data) {
         }
       }
     }
+
+    relationship = relationship || '-';
     
     let note = heir.note || '';
     
