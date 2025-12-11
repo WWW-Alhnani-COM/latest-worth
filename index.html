@@ -1177,27 +1177,27 @@
     animation: alertSlideIn 0.3s ease-out;
 }
 
-    /* ========== أنماط مخصصة لحقل الديانة ========== */
+    /* ========== أنماط مخصصة لحقل الديانة (تعتمد على JS) ========== */
 
-    /* النمط الافتراضي عند اختيار "مسلم" */
-    .input-group #deceased_religion[value="مسلم"] {
+    /* النمط عند اختيار "مسلم" - JS سيطبق فئة .muslim-selected */
+    .input-group #deceased_religion.muslim-selected {
         border-color: var(--success-color) !important;
         background-color: rgba(52, 168, 83, 0.05) !important; /* خلفية خفيفة خضراء */
     }
 
-    /* النمط الافتراضي عند اختيار "غير مسلم" */
-    .input-group #deceased_religion[value="غير مسلم"] {
+    /* النمط عند اختيار "غير مسلم" - JS سيطبق فئة .non-muslim-selected */
+    .input-group #deceased_religion.non-muslim-selected {
         border-color: var(--danger-color) !important;
         background-color: rgba(234, 67, 53, 0.05) !important; /* خلفية خفيفة حمراء */
     }
 
     /* نمط التركيز (Focus) عند اختيار "مسلم" */
-    .input-group #deceased_religion:focus[value="مسلم"] {
+    .input-group #deceased_religion:focus.muslim-selected {
         box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
     }
 
     /* نمط التركيز (Focus) عند اختيار "غير مسلم" */
-    .input-group #deceased_religion:focus[value="غير مسلم"] {
+    .input-group #deceased_religion:focus.non-muslim-selected {
         box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
     }
   </style>
@@ -1565,9 +1565,42 @@
     // تطبيق الترجمة عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', function() {
       applyTranslations();
+      // تشغيل دالة الأنماط عند التحميل لضبط اللون الأولي
+      updateReligionStyle(); 
     });
   </script>
 
+  <script>
+    function updateReligionStyle() {
+        const religionSelect = document.getElementById('deceased_religion');
+        if (!religionSelect) return;
+
+        const selectedValue = religionSelect.value;
+        
+        // إزالة جميع الفئات اللونية قبل تطبيق الجديدة
+        religionSelect.classList.remove('muslim-selected', 'non-muslim-selected');
+
+        // تطبيق الفئة بناءً على القيمة المختارة
+        if (selectedValue === 'مسلم') {
+            religionSelect.classList.add('muslim-selected');
+        } else if (selectedValue === 'غير مسلم') {
+            religionSelect.classList.add('non-muslim-selected');
+        }
+    }
+
+    // الاستماع إلى حدث التغيير (Change) على قائمة الديانة لتطبيق الأنماط
+    document.addEventListener('DOMContentLoaded', () => {
+        const religionSelect = document.getElementById('deceased_religion');
+        if (religionSelect) {
+            // يتم تشغيل الدالة عند تغيير قيمة القائمة
+            religionSelect.addEventListener('change', updateReligionStyle);
+            
+            // يتم تشغيل الدالة مرة واحدة عند تحميل الصفحة لضبط اللون الأولي
+            updateReligionStyle(); 
+        }
+    });
+  </script>
+  
   <script type="module" src="js/new_script.js"></script>
 </body>
 </html>
