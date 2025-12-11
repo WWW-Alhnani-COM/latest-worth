@@ -1277,6 +1277,131 @@ gap: 5px;
     padding-left: 5px;
     border-left: 3px solid var(--danger-color);
 }
+    /* ========== أنماط ترميز الألوان للتبويب الثاني ========== */
+
+/* 1. حقل الاسم (heir-name) */
+#resultTableBody .heir-name {
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 1rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* الحالة الفارغة - أزرق */
+#resultTableBody .heir-name.empty-field {
+    border-color: var(--primary-color) !important;
+    background-color: rgba(26, 115, 232, 0.05) !important;
+}
+
+/* الحالة المملوءة - أخضر */
+#resultTableBody .heir-name.filled-field {
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+    font-weight: 600;
+}
+
+/* 2. حقل الديانة (heir-religion) */
+#resultTableBody .heir-religion {
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 1rem;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 1rem center;
+    padding-left: 3rem;
+}
+
+/* الحالة المسلمة - أخضر */
+#resultTableBody .heir-religion.muslim-field {
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+}
+
+/* الحالة غير المسلمة - أحمر */
+#resultTableBody .heir-religion.non-muslim-field {
+    border-color: var(--danger-color) !important;
+    background-color: rgba(234, 67, 53, 0.05) !important;
+}
+
+/* تأثيرات التركيز */
+#resultTableBody .heir-name:focus,
+#resultTableBody .heir-religion:focus {
+    outline: none;
+    transform: translateY(-1px);
+}
+
+#resultTableBody .heir-name.filled-field:focus {
+    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+}
+
+#resultTableBody .heir-religion.muslim-field:focus {
+    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+}
+
+#resultTableBody .heir-religion.non-muslim-field:focus {
+    box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
+}
+
+/* تأثيرات التمرير */
+#resultTableBody .heir-name:hover,
+#resultTableBody .heir-religion:hover {
+    border-color: var(--border-medium);
+}
+
+#resultTableBody .heir-name.filled-field:hover {
+    border-color: #2e7d32 !important;
+    background-color: rgba(52, 168, 83, 0.08) !important;
+}
+
+#resultTableBody .heir-religion.muslim-field:hover {
+    border-color: #2e7d32 !important;
+    background-color: rgba(52, 168, 83, 0.08) !important;
+}
+
+#resultTableBody .heir-religion.non-muslim-field:hover {
+    border-color: #d32f2f !important;
+    background-color: rgba(234, 67, 53, 0.08) !important;
+}
+
+/* شريط جانبي للصفوف */
+#resultTableBody tr:has(.filled-field) td:first-child {
+    border-left: 3px solid var(--success-color);
+}
+
+#resultTableBody tr:has(.non-muslim-field) td:first-child {
+    border-left: 3px solid var(--danger-color);
+}
+
+/* أيقونات توضيحية */
+#resultTableBody .heir-name.filled-field::after {
+    content: '✓';
+    position: absolute;
+    left: 10px;
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+/* رسالة توضيحية أسفل الجدول */
+.table-container:has(#resultTableBody)::after {
+    content: 'جميع الحقول المطلوبة';
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+}
   </style>
 </head>
 <body>
