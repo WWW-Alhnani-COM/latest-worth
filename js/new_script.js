@@ -1081,15 +1081,17 @@ function formatHeirsForCalculation(heirsData) {
   
   for (let key in heirsData) {
     const heir = heirsData[key];
-    
-    if (heir.isMultiple && heir.count > 1) {
-      // تقسيم الحقول المتعددة إلى أفراد
-      for (let i = 1; i <= heir.count; i++) {
+    const count = heir.isMultiple ? Math.max(parseInt(heir.count, 10) || 0, 1) : 1;
+
+    if (heir.isMultiple) {
+      // تقسيم الحقول المتعددة إلى أفراد (حتى لو كان العدد واحدًا)
+      for (let i = 1; i <= count; i++) {
         const individualKey = `${key}_${i}`;
         formatted[individualKey] = {
           title: `${heir.title} ${numberToLocalizedWord(i, heir.gender || 'male')}`,
-          name: heir.names && heir.names[i] ? heir.names[i] : '',
-          religion: heir.religion || 'مسلم'
+          name: heir.names && heir.names[i] ? heir.names[i] : heir.name || '',
+          religion: heir.religion || 'مسلم',
+          gender: heir.gender || 'male'
         };
       }
     } else {
@@ -1097,7 +1099,8 @@ function formatHeirsForCalculation(heirsData) {
       formatted[key] = {
         title: heir.title,
         name: heir.name || '',
-        religion: heir.religion || 'مسلم'
+        religion: heir.religion || 'مسلم',
+        gender: heir.gender || 'male'
       };
     }
   }
