@@ -57,10 +57,6 @@
       /* التحولات */
       --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       --transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-
-      /* New Colors for Category Selects - الأخضر الغامق (الحالة غير المجابة) */
-      --category-unanswered-border: #1e6e33; 
-      --category-unanswered-bg: rgba(30, 110, 51, 0.1);
     }
 
     * {
@@ -187,10 +183,9 @@
 
     /* تخصيص خيارات اللغات */
     .language-switcher option {
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
       background: white;
       color: var(--text-primary);
+      padding: 0.75rem 1rem;
       font-weight: 500;
     }
 
@@ -859,7 +854,7 @@
 
     /* ========== أنماط التفاعلية المضافة ========== */
     
-    /* تأثيرات تفاعلية للعناصر - يستخدم لجميع الحقول المملوءة الأخرى (الأخضر الفاتح) */
+    /* تأثيرات تفاعلية للعناصر */
     .input-group select:valid,
     .input-group input:valid {
       border-color: var(--success-color) !important;
@@ -871,38 +866,31 @@
       box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
     }
 
-    /* تأثيرات على الحقول المملوءة (الأخضر الفاتح) - هذا سيتجاوز اللون الغامق */
+    /* تأثيرات على الحقول المملوءة */
     .filled-field {
       border-color: var(--success-color) !important;
       background-color: rgba(52, 168, 83, 0.05) !important;
     }
 
-    /* ======================================================= */
-    /* التعديل المخصص لحقول الفئات (الورثة) - الأخضر الغامق الافتراضي */
-    /* *** تم إزالة !important للسماح لـ .filled-field بتجاوزها *** */
+    /* 1. جعل حقول الفئات (ضمن #dynamic-fields) باللون الأزرق الافتراضي */
     #dynamic-fields .input-group select {
-        border-color: var(--category-unanswered-border);
-        background-color: var(--category-unanswered-bg);
-    }
-    /* ======================================================= */
-
-    /* ======================================================= */
-    /* الأنماط الشرطية لحقل الديانة (#deceased_religion) */
-    
-    /* 1. الحالة الخضراء: عندما تكون "مسلم" (لتجاوز أي أنماط افتراضية أخرى) */
-    #deceased_religion[value="مسلم"] {
-        border-color: var(--success-color) !important;
-        background-color: rgba(52, 168, 83, 0.05) !important;
+      border-color: var(--primary-color); /* الأزرق الافتراضي */
+      background-color: rgba(26, 115, 232, 0.05); /* أزرق فاتح جداً */
     }
 
-    /* 2. الحالة الحمراء: عندما تكون "غير مسلم" (تطبيق اللون الأحمر) */
+    /* 2. تطبيق الأنماط الشرطية لحقل الديانة (#deceased_religion) */
+
+    /* الحالة الحمراء: غير مسلم */
     #deceased_religion[value="غير مسلم"] {
-        border-color: var(--danger-color) !important;
+        border-color: var(--danger-color) !important; /* أحمر */
         background-color: rgba(234, 67, 53, 0.05) !important;
     }
 
-    /* ======================================================= */
-
+    /* الحالة الخضراء: مسلم */
+    #deceased_religion[value="مسلم"] {
+        border-color: var(--success-color) !important; /* أخضر */
+        background-color: rgba(52, 168, 83, 0.05) !important;
+    }
 
     /* تأثيرات على العناصر المحددة */
     .selected-item {
