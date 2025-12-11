@@ -1202,6 +1202,81 @@ gap: 5px;
 .alert-container {
     animation: alertSlideIn 0.3s ease-out;
 }
+
+  /* ========== أنماط ترميز الألوان المطلوبة ========== */
+
+/* 1. النمط الافتراضي لحقول فئات الورثة - الأزرق */
+#dynamic-fields .input-group select.empty-field {
+    border-color: var(--primary-color) !important;
+    background-color: rgba(26, 115, 232, 0.05) !important;
+    border-width: 2px !important;
+}
+
+/* 2. النمط للحقول المملوءة (الأخضر) */
+#dynamic-fields .input-group select.filled-field {
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+    border-width: 2px !important;
+}
+
+/* 3. الأنماط الخاصة بحقل الديانة */
+#deceased_religion.non-muslim-field {
+    border-color: var(--danger-color) !important;
+    background-color: rgba(234, 67, 53, 0.05) !important;
+    border-width: 2px !important;
+}
+
+#deceased_religion.muslim-field {
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+    border-width: 2px !important;
+}
+
+/* تأثيرات انتقالية */
+#dynamic-fields select,
+#deceased_religion {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* تأثيرات التركيز */
+#dynamic-fields .input-group select.filled-field:focus {
+    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+}
+
+#deceased_religion.non-muslim-field:focus {
+    box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
+}
+
+#deceased_religion.muslim-field:focus {
+    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+}
+
+/* تحسين المظهر عند التمرير */
+#dynamic-fields .input-group select.filled-field:hover {
+    border-color: #2e7d32 !important;
+    background-color: rgba(52, 168, 83, 0.08) !important;
+}
+
+#deceased_religion.non-muslim-field:hover {
+    border-color: #d32f2f !important;
+    background-color: rgba(234, 67, 53, 0.08) !important;
+}
+
+#deceased_religion.muslim-field:hover {
+    border-color: #2e7d32 !important;
+    background-color: rgba(52, 168, 83, 0.08) !important;
+}
+
+/* شريط جانبي للإشارة */
+.input-group:has(.filled-field) {
+    padding-left: 5px;
+    border-left: 3px solid var(--success-color);
+}
+
+.input-group:has(.non-muslim-field) {
+    padding-left: 5px;
+    border-left: 3px solid var(--danger-color);
+}
   </style>
 </head>
 <body>
