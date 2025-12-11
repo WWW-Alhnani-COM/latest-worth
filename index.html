@@ -1160,29 +1160,6 @@
         width: 100%;
     }
 }
-    /* ========== أنماط مخصصة لحقل الديانة ========== */
-
-/* النمط الافتراضي عند اختيار "مسلم" */
-.input-group #deceased_religion[value="مسلم"] {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important; /* خلفية خفيفة خضراء */
-}
-
-/* النمط الافتراضي عند اختيار "غير مسلم" */
-.input-group #deceased_religion[value="غير مسلم"] {
-    border-color: var(--danger-color) !important;
-    background-color: rgba(234, 67, 53, 0.05) !important; /* خلفية خفيفة حمراء */
-}
-
-/* نمط التركيز (Focus) عند اختيار "مسلم" */
-.input-group #deceased_religion:focus[value="مسلم"] {
-    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-}
-
-/* نمط التركيز (Focus) عند اختيار "غير مسلم" */
-.input-group #deceased_religion:focus[value="غير مسلم"] {
-    box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
-}
 
 /* أنيميشن للظهور */
 @keyframes alertSlideIn {
@@ -1199,10 +1176,33 @@
 .alert-container {
     animation: alertSlideIn 0.3s ease-out;
 }
+
+    /* ========== أنماط مخصصة لحقل الديانة ========== */
+
+    /* النمط الافتراضي عند اختيار "مسلم" */
+    .input-group #deceased_religion[value="مسلم"] {
+        border-color: var(--success-color) !important;
+        background-color: rgba(52, 168, 83, 0.05) !important; /* خلفية خفيفة خضراء */
+    }
+
+    /* النمط الافتراضي عند اختيار "غير مسلم" */
+    .input-group #deceased_religion[value="غير مسلم"] {
+        border-color: var(--danger-color) !important;
+        background-color: rgba(234, 67, 53, 0.05) !important; /* خلفية خفيفة حمراء */
+    }
+
+    /* نمط التركيز (Focus) عند اختيار "مسلم" */
+    .input-group #deceased_religion:focus[value="مسلم"] {
+        box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+    }
+
+    /* نمط التركيز (Focus) عند اختيار "غير مسلم" */
+    .input-group #deceased_religion:focus[value="غير مسلم"] {
+        box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
+    }
   </style>
 </head>
 <body>
-  <!-- الهيدر المحسن -->
   <header class="header">
     <div class="header-container">
       <a href="#" class="logo">
@@ -1224,7 +1224,6 @@
     </div>
   </header>
 
-  <!-- مودال إدخال عدد الأبناء -->
   <div id="sons_numbers" class="sons-modal hidden">
     <div class="sons-modal-content">
       <h2 data-i18n="fatherChildrenTitle">كم عدد أبناء وبنات الأب</h2>
@@ -1256,7 +1255,6 @@
     </div>
   </div>
   
-  <!-- المحتوى الرئيسي -->
   <div class="app-container">
     <h1 class="app-title" data-i18n="mainTitle">حاسبة تقسيم الميراث</h1>
     
@@ -1276,7 +1274,6 @@
         </button>
       </div>
       
-      <!-- تبويب البيانات الأساسية -->
       <div class="tab-content active" id="calculator">
         <div class="form-container">
           <p class="alert" data-i18n="alert1">
@@ -1358,7 +1355,6 @@
         </div>
       </div>
       
-      <!-- تبويب بيانات الورثة -->
       <div class="tab-content" id="religious">
         <div class="form-container">
           <p class="alert" data-i18n="alert2">
@@ -1396,7 +1392,6 @@
         </div>
       </div>
 
-      <!-- تبويب نتائج التوزيع -->
       <div class="tab-content" id="shares">
         <p class="alert alert-deceased print-hide" data-i18n="alert3">
           تمت القسمة ويمكنك طباعة نتيجة القسمة أو اضغط على السابق للتعديل
@@ -1441,7 +1436,6 @@
     </div>
   </div>
 
-  <!-- الفوتر الثابت -->
   <div class="fixed-footer">
     <div class="footer-buttons">
       <button id="footer-prev-btn" class="btn btn-previous hidden" data-i18n="previous" data-i18n-title="previous">
@@ -1458,8 +1452,7 @@
       </div>
     </div>
   </div>
-  <!-- نظام التنبيهات المحسن -->
-<div id="alertSystem" class="alert-system hidden">
+  <div id="alertSystem" class="alert-system hidden">
     <div class="alert-container">
         <div class="alert-header">
             <div class="alert-icon">
@@ -1478,7 +1471,6 @@
     </div>
 </div>
 
-  <!-- قالب Handlebars -->
   <script id="field-template" type="text/x-handlebars-template">
     {{#each groups}}
       <div class="form-group-container">
@@ -1506,7 +1498,6 @@
     {{/each}}
   </script>
 
-  <!-- مودال التحقق -->
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="validationModal">
       <div class="modal-content" data-i18n="validationError">يجب اختيار وارث واحد على الأقل للمتابعة</div>
@@ -1514,7 +1505,6 @@
     </div>
   </div>
 
-  <!-- نظام الترجمة -->
   <script type="module">
     import { translations, getCurrentLanguage, setLanguage, t, isRTL } from './js/translations.js';
     
