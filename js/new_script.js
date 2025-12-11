@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
 const all = {};
 const booleanOptions = ["noOption", "yesOption"];
 const defaultOptions = ["noOption", ...Array.from({ length: 49 }, (_, i) => i + 1)];
-const customOptions = ["noOption", "مولى مُعتِق", "مولى مُعتَق", "مولى بالموالاه"];
 
 const fieldsData = [
   {
@@ -859,33 +858,42 @@ function collectFormData() {
     const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
     const gender = fieldConfig?.gender || "male";
 
-    if (id === "wife" && parseInt(value) > 0) {
-      for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { 
-          title: `${t('wife')} ${numberToLocalizedWord(i, "female")}`, 
-          name: "" 
+    // ========== إصلاح: معالجة حقول الزوج والزوجة ==========
+    if (id === "wife") {
+      if (parseInt(value) > 0) {
+        formData.heirs["wife"] = { 
+          title: t('wife'),
+          name: "",
+          count: parseInt(value)
         };
       }
       return;
     }
 
     if (id === "husband" && value === "yes" && formData.deceased_gender === "female") {
-      formData.heirs[id] = { title: t('husband'), name: "" };
+      formData.heirs["husband"] = { title: t('husband'), name: "" };
       return;
     }
 
-    if (value === "نعم") {
-      formData.heirs[id] = { title: title, name: "" };
+    // ========== إصلاح: معالجة الحقول العادية ==========
+    if (value === "نعم" || value === "yesOption") {
+      formData.heirs[id] = { 
+        title: title, 
+        name: "",
+        religion: "مسلم" // قيمة افتراضية
+      };
       return;
     }
 
     if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
-      for (let i = 1; i <= parseInt(value); i++) {
-        formData.heirs[`${id}_${i}`] = { 
-          title: `${title} ${numberToLocalizedWord(i, gender)}`, 
-          name: "" 
-        };
-      }
+      // ========== إصلاح: إنشاء مفتاح واحد للحقول المتعددة ==========
+      formData.heirs[id] = { 
+        title: title,
+        name: "",
+        count: parseInt(value),
+        religion: "مسلم", // قيمة افتراضية
+        isMultiple: true
+      };
     }
   });
 
@@ -910,34 +918,73 @@ function updateReligiousTab(data) {
 
   let heirsHTML = "";
   let i = 0;
+  
+  // ========== إصلاح: عرض جميع الورثة ==========
   for (let key in data.heirs) {
-    if (data.deceased_gender === 'female' && key.startsWith("wife")) {
+    const heir = data.heirs[key];
+    
+    // تخطي الزوجات الذكور إذا كان المتوفى أنثى
+    if (data.deceased_gender === 'female' && key === "wife") {
       continue;
     }
-    i++
-    heirsHTML += `
+    
+    i++;
+    
+    // ========== إصلاح: معالجة الحقول المتعددة ==========
+    if (heir.isMultiple && heir.count > 1) {
+      for (let j = 1; j <= heir.count; j++) {
+        heirsHTML += `
+                <tr>
+                    <td class="counter">${formatNumber(i)}</td>
+                    <td>${heir.title} ${numberToLocalizedWord(j, heir.gender || 'male')}</td>
+                    <td>
+                      <input 
+                        type="text" 
+                        class="heir-name" 
+                        data-heir-id="${key}_${j}" 
+                        value="${heir.names && heir.names[j] ? heir.names[j] : ''}" 
+                        placeholder="${t('enterHeirName')}"
+                        title="${t('enterHeirName')}"
+                      >
+                    </td>
+                    <td>
+                        <select class="heir-religion" data-heir-id="${key}_${j}" title="${t('religiousStatus')}">
+                            <option value="مسلم" ${heir.religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
+                            <option value="غير مسلم" ${heir.religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
+                        </select>
+                    </td>
+                </tr>
+            `;
+        i++; // زيادة العداد لكل فرد
+      }
+      i--; // تصحيح العداد
+    } else {
+      // ========== إصلاح: الحقول المفردة ==========
+      heirsHTML += `
             <tr>
                 <td class="counter">${formatNumber(i)}</td>
-                <td>${data.heirs[key].title}</td>
+                <td>${heir.title}</td>
                 <td>
                   <input 
                     type="text" 
                     class="heir-name" 
                     data-heir-id="${key}" 
-                    value="${data.heirs[key].name || ''}" 
+                    value="${heir.name || ''}" 
                     placeholder="${t('enterHeirName')}"
                     title="${t('enterHeirName')}"
                   >
                 </td>
                 <td>
                     <select class="heir-religion" data-heir-id="${key}" title="${t('religiousStatus')}">
-                        <option value="مسلم" ${data.heirs[key].religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
-                        <option value="غير مسلم" ${data.heirs[key].religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
+                        <option value="مسلم" ${heir.religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
+                        <option value="غير مسلم" ${heir.religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
                     </select>
                 </td>
             </tr>
         `;
+    }
   }
+  
   document.getElementById('resultTableBody').innerHTML = heirsHTML;
 
   document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
@@ -953,10 +1000,25 @@ function handleReligiousSubmit(event) {
   event.preventDefault();
   const data = JSON.parse(localStorage.getItem("inheritanceData"));
 
+  // ========== إصلاح: جمع بيانات الأسماء والديانات ==========
   document.querySelectorAll('.heir-name').forEach(input => {
     const heirId = input.getAttribute('data-heir-id');
-    data.heirs[heirId].name = input.value;
-    data.heirs[heirId].religion = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`).value;
+    const religionSelect = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`);
+    
+    // حفظ الاسم والديانة
+    if (heirId.includes('_')) {
+      // حالة الحقول المتعددة (son_1, son_2, إلخ)
+      const [baseId, index] = heirId.split('_');
+      if (!data.heirs[baseId].names) {
+        data.heirs[baseId].names = {};
+      }
+      data.heirs[baseId].names[index] = input.value;
+      data.heirs[baseId].religion = religionSelect.value;
+    } else {
+      // حالة الحقول المفردة
+      data.heirs[heirId].name = input.value;
+      data.heirs[heirId].religion = religionSelect.value;
+    }
   });
 
   localStorage.setItem("inheritanceData", JSON.stringify(data));
@@ -968,7 +1030,10 @@ function handleReligiousSubmit(event) {
   const totalAmount = processTotalAmount(data.amount);
   const materialsAmount = parseNumber(data.materials) || 0;
   
-  const moneyResults = calculateInheritance(totalAmount, data?.heirs);
+  // ========== إصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
+  const formattedHeirs = formatHeirsForCalculation(data.heirs);
+  
+  const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
   
   let materialsResults = null;
   if (materialsAmount > 0) {
@@ -981,6 +1046,36 @@ function handleReligiousSubmit(event) {
     materialsDistribution: materialsResults,
     hasAmount: !!data.amount && parseNumber(data.amount) > 0
   });
+}
+
+// ========== دالة جديدة: تنسيق الورثة للحساب ==========
+function formatHeirsForCalculation(heirsData) {
+  const formatted = {};
+  
+  for (let key in heirsData) {
+    const heir = heirsData[key];
+    
+    if (heir.isMultiple && heir.count > 1) {
+      // تقسيم الحقول المتعددة إلى أفراد
+      for (let i = 1; i <= heir.count; i++) {
+        const individualKey = `${key}_${i}`;
+        formatted[individualKey] = {
+          title: `${heir.title} ${numberToLocalizedWord(i, heir.gender || 'male')}`,
+          name: heir.names && heir.names[i] ? heir.names[i] : '',
+          religion: heir.religion || 'مسلم'
+        };
+      }
+    } else {
+      // الحقول المفردة
+      formatted[key] = {
+        title: heir.title,
+        name: heir.name || '',
+        religion: heir.religion || 'مسلم'
+      };
+    }
+  }
+  
+  return formatted;
 }
 
 // ========== دالة معالجة المبلغ فقط ==========
@@ -1033,40 +1128,56 @@ function updateSharesTab(data) {
   
   const showAmounts = data.hasAmount;
   
+  // ========== إصلاح: عرض جميع الورثة ==========
   for (let key in data.heirs) {
     i++;
     
-    let relationship = data.heirs[key].title;
+    const heir = data.heirs[key];
     
-    if (!relationship || relationship === 'undefined' || relationship.includes('undefined')) {
-      if (key.startsWith('son_')) {
-        const sonNumber = key.split('_')[1] || '';
-        relationship = sonNumber ? `${t('son')} (${numberToLocalizedWord(parseInt(sonNumber), 'male')})` : t('son');
-      } else if (key.startsWith('daughter_')) {
-        const daughterNumber = key.split('_')[1] || '';
-        relationship = daughterNumber ? `${t('daughter')} (${numberToLocalizedWord(parseInt(daughterNumber), 'female')})` : t('daughter');
-      } else if (key.startsWith('wife_')) {
-        const wifeNumber = key.split('_')[1] || '';
-        relationship = wifeNumber ? `${t('wife')} (${numberToLocalizedWord(parseInt(wifeNumber), 'female')})` : t('wife');
-      } else if (key.startsWith('sister_')) {
-        const sisterNumber = key.split('_')[1] || '';
-        relationship = sisterNumber ? `${t('sister')} (${numberToLocalizedWord(parseInt(sisterNumber), 'female')})` : t('sister');
-      } else if (key === 'father') {
-        relationship = t('father');
-      } else if (key === 'mother') {
-        relationship = t('mother');
-      } else if (key === 'husband') {
-        relationship = t('husband');
-      } else if (key === 'FR_grandmother') {
-        relationship = t('FR_grandmother');
-      } else if (key === 'MR_grandmother') {
-        relationship = t('MR_grandmother');
-      } else {
-        relationship = key;
+    // ========== إصلاح: عرض الاسم ==========
+    const heirName = heir.name || '-';
+    
+    // ========== إصلاح: عرض صلة القرابة ==========
+    let relationship = heir.title || '-';
+    
+    // تحسين عرض صلة القرابة
+    if (relationship.includes('undefined')) {
+      // استخراج نوع العلاقة من المفتاح
+      const relationshipMap = {
+        'father': t('father'),
+        'mother': t('mother'),
+        'son': t('son'),
+        'daughter': t('daughter'),
+        'brother': t('brother'),
+        'sister': t('sister'),
+        'husband': t('husband'),
+        'wife': t('wife'),
+        'FR_grandfather': t('FR_grandfather'),
+        'MR_grandfather': t('MR_grandfather'),
+        'FR_grandmother': t('FR_grandmother'),
+        'MR_grandmother': t('MR_grandmother'),
+        'SN_grandson': t('SN_grandson'),
+        'SN_granddaughter': t('SN_granddaughter'),
+        'DR_grandson': t('DR_grandson'),
+        'DR_granddaughter': t('DR_granddaughter')
+      };
+      
+      // البحث عن الترجمة المناسبة
+      for (const [fieldId, translation] of Object.entries(relationshipMap)) {
+        if (key.startsWith(fieldId)) {
+          relationship = translation;
+          
+          // إضافة الرقم إذا كان حقل متعدد
+          if (key.includes('_') && !isNaN(key.split('_')[1])) {
+            const num = key.split('_')[1];
+            relationship += ` ${numberToLocalizedWord(parseInt(num), heir.gender || 'male')}`;
+          }
+          break;
+        }
       }
     }
     
-    let note = data.heirs[key].note || '';
+    let note = heir.note || '';
     
     if (note.includes('الباقي يرد')) {
       note = note.replace('الباقي يرد', t('raddNote').split('حسب')[0]);
@@ -1094,17 +1205,17 @@ function updateSharesTab(data) {
     const materialsAmount = materialsData?.materialsAmount || '0.000';
     const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
     
-    const moneyAmount = data.heirs[key].amount ? Number(data.heirs[key].amount).toFixed(3) : '-';
+    const moneyAmount = heir.amount ? Number(heir.amount).toFixed(3) : '-';
     const moneyDisplay = showAmounts ? formatNumber(moneyAmount) : '-';
     
     sharesHTML += `
         <tr>
             <td class="counter">${formatNumber(i)}</td>
             <td>${relationship}</td>
-            <td>${data.heirs[key].name || '-'}</td>
+            <td>${heirName}</td>
             <td>${moneyDisplay}</td>
             <td>${materialsDisplay}</td>
-            <td>${formatNumber(data.heirs[key].percentage) + '%' || '-'}</td>
+            <td>${formatNumber(heir.percentage) + '%' || '-'}</td>
             <td>${note}</td>
         </tr>
     `;
