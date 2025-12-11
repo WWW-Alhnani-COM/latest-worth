@@ -57,10 +57,6 @@
       /* التحولات */
       --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       --transition-slow: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-
-      /* New Colors for Category Selects - الأخضر الغامق */
-      --category-unanswered-border: #1e6e33; 
-      --category-unanswered-bg: rgba(30, 110, 51, 0.1);
     }
 
     * {
@@ -870,22 +866,11 @@
       box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
     }
 
-    /* تأثيرات على الحقول المملوءة (الأخضر الفاتح) */
+    /* تأثيرات على الحقول المملوءة */
     .filled-field {
       border-color: var(--success-color) !important;
       background-color: rgba(52, 168, 83, 0.05) !important;
     }
-
-    /* ======================================================= */
-    /* التعديل المخصص لحقول الفئات (الورثة) - الأخضر الغامق */
-    /* هذا هو النمط الافتراضي (الحالة غير المجابة) */
-    #dynamic-fields .input-group select {
-        border-color: var(--category-unanswered-border) !important;
-        background-color: var(--category-unanswered-bg) !important;
-    }
-
-    /* سيتم تجاوز هذا النمط تلقائياً بواسطة .filled-field عند اختيار قيمة */
-    /* ======================================================= */
 
     /* تأثيرات على العناصر المحددة */
     .selected-item {
