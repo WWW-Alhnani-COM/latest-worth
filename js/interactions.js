@@ -127,10 +127,10 @@ class InteractionManager {
     if (wifeSelect && wifeSelect.value !== '0') {
       count += parseInt(wifeSelect.value);
     }
-    
+
     // حساب الزوج
     const husbandSelect = document.getElementById('husband');
-    if (huslimSelect && husbandSelect.value === 'yes') {
+    if (husbandSelect && husbandSelect.value === 'yes') {
       count += 1;
     }
     
