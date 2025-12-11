@@ -1035,26 +1035,35 @@ function handleReligiousSubmit(event) {
   document.querySelectorAll('.heir-name').forEach(input => {
     const heirId = input.getAttribute('data-heir-id');
     const religionSelect = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`);
-    
+
+    if (!heirId) return;
+
+    // تجاهل المدخلات التي لا تحتوي على اختيار ديانة (في حال حذف أو عدم تحميل الحقول)
+    const selectedReligion = religionSelect?.value || "مسلم";
+
     // حفظ الاسم والديانة
     if (heirId.includes('_')) {
       // حالة الحقول المتعددة (son_1, son_2, إلخ)
       const [baseId, index] = heirId.split('_');
+      if (!baseId || !index) return;
+
       if (!data.heirs[baseId]) {
         data.heirs[baseId] = { names: {}, religion: "مسلم" };
       }
       if (!data.heirs[baseId].names) {
         data.heirs[baseId].names = {};
       }
+
       data.heirs[baseId].names[index] = input.value;
-      data.heirs[baseId].religion = religionSelect.value;
+      data.heirs[baseId].religion = selectedReligion;
     } else {
       // حالة الحقول المفردة
       if (!data.heirs[heirId]) {
         data.heirs[heirId] = { religion: "مسلم" };
       }
+
       data.heirs[heirId].name = input.value;
-      data.heirs[heirId].religion = religionSelect.value;
+      data.heirs[heirId].religion = selectedReligion;
     }
   });
 
@@ -1258,33 +1267,6 @@ function updateSharesTab(data) {
             <td>${materialsDisplay}</td>
             <td>${formatNumber(heir.percentage) + '%' || '-'}</td>
             <td>${note}</td>
-        </tr>
-    `;
-  }
-  
-  if (data.heirs.bayt_al_mal) {
-    i++;
-    const materialsData = data.materialsDistribution?.bayt_al_mal;
-    const materialsAmount = materialsData?.materialsAmount || '0.000';
-    const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
-    
-    const baytMoneyAmount = data.heirs.bayt_al_mal.amount ? Number(data.heirs.bayt_al_mal.amount).toFixed(3) : '-';
-    const baytMoneyDisplay = showAmounts ? formatNumber(baytMoneyAmount) : '-';
-    
-    let baytNote = data.heirs.bayt_al_mal.note || '';
-    if (baytNote.includes('الباقي يرد')) {
-      baytNote = t('baytAlMalNote');
-    }
-    
-    sharesHTML += `
-        <tr>
-            <td class="counter">${formatNumber(i)}</td>
-            <td>${t('baytAlMal')}</td>
-            <td>-</td>
-            <td>${baytMoneyDisplay}</td>
-            <td>${materialsDisplay}</td>
-            <td>${formatNumber(data.heirs.bayt_al_mal.percentage) + '%' || '-'}</td>
-            <td>${baytNote}</td>
         </tr>
     `;
   }
