@@ -898,8 +898,12 @@ tr:hover {
   }
 
   .tab-content {
-    display: block !important;
+    display: none !important;
     padding: 0;
+  }
+
+  .tab-content.active {
+    display: block !important;
   }
 }
 
