@@ -852,22 +852,19 @@
       }
     }
 
-/* ========== أنماط التفاعلية المضافة (تم تعديلها لضمان التجاوز) ========== */
+/* ========== أنماط التفاعلية المضافة (تم التعديل لتعتمد على قيمة السمة المُحدثة بالجافاسكريبت) ========== */
 
 /* 1. النمط الافتراضي لحقول الفئات (الورثة) - الأزرق */
-/* هذا النمط يطبق على الحقول ضمن #dynamic-fields قبل أن يتم اختيار أي قيمة */
-#dynamic-fields .input-group select {
-    /* الأزرق الافتراضي */
+/* يطبق إذا كانت القيمة الافتراضية "0" (القيمة قبل الاختيار) */
+#dynamic-fields .input-group select[value="0"] {
     border-color: var(--primary-color) !important;
     background-color: rgba(26, 115, 232, 0.05) !important;
 }
 
-/* 2. النمط الشرطي للحقول المملوءة (بما في ذلك الفئات) - الأخضر */
-/* هذا النمط يطبق عندما يتم اختيار قيمة، ويتجاوز النمط الأزرق أعلاه */
-.input-group select:valid,
-.input-group input:valid,
+/* 2. النمط الشرطي للحقول المملوءة (الأخضر) - يتجاوز النمط الأزرق */
+/* يطبق إذا كانت القيمة أي شيء آخر غير "0" */
+#dynamic-fields .input-group select:not([value="0"]),
 .filled-field {
-    /* الأخضر عند الإجابة */
     border-color: var(--success-color) !important;
     background-color: rgba(52, 168, 83, 0.05) !important;
 }
@@ -880,15 +877,19 @@
     background-color: rgba(234, 67, 53, 0.05) !important;
 }
 
-/* الحالة الخضراء: مسلم (سيتجاوز النمط الأزرق الافتراضي، ولكن النمط الأخضر العام يغطيه أيضًا) */
+/* الحالة الخضراء: مسلم */
+/* يطبق على هذا الحقل إذا اختيرت "مسلم" لتجاوز أي نمط آخر */
 #deceased_religion[value="مسلم"] {
-    /* الأخضر عند اختيار "مسلم" لضمان التزامها باللون الأخضر */
     border-color: var(--success-color) !important;
     background-color: rgba(52, 168, 83, 0.05) !important;
 }
 
-/* إزالة الأنماط العامة القديمة التي قد تتعارض مع اللون الأزرق الافتراضي للفئات */
-/* (الأنماط التي كانت تجعل كل شيء أخضر افتراضياً) - تم توحيدها في النقطة 2 */
+/* الأنماط العامة لـ :valid يمكن أن تظل (للعناصر التي تعمل معها بشكل طبيعي) */
+.input-group input:valid {
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+}
+
 
 /* ========== أنماط تفاعلية أخرى (تم نقلها أو تعديلها) ========== */
 
@@ -1505,6 +1506,21 @@ gap: 5px;
       <button class="modal-button" id="closeModal" data-i18n="ok" data-i18n-title="ok">حسناً</button>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            // 1. تعيين السمة "value" الأولية عند التحميل
+            select.setAttribute('value', select.value);
+
+            select.addEventListener('change', function() {
+                // 2. تحديث السمة "value" عند تغيير القيمة
+                this.setAttribute('value', this.value);
+            });
+        });
+    });
+  </script>
 
   <script type="module">
     import { translations, getCurrentLanguage, setLanguage, t, isRTL } from './js/translations.js';
