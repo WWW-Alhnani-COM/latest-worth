@@ -21,13 +21,14 @@ const appStorage = (() => {
 // ========== ⭐ Helpers for Handlebars ==========
 document.addEventListener('DOMContentLoaded', function() {
     // تسجيل helper جديد لـ Handlebars
-    Handlebars.registerHelper('isTranslatable', function(value) {
-        return typeof value === 'string' && ['noOption', 'yesOption'].includes(value);
-    });
-
-    Handlebars.registerHelper('t', function(key) {
-        return window.t ? window.t(key) : key;
-    });
+    // Helper لتجميع الحقول في صفوف (كل صف حقلين)
+Handlebars.registerHelper('groupFields', function(fields) {
+    const rows = [];
+    for (let i = 0; i < fields.length; i += 2) {
+        rows.push(fields.slice(i, i + 2));
+    }
+    return rows;
+});
 
     // جعل دالة الترجمة متاحة globally لـ Handlebars
     window.t = t;
@@ -1427,4 +1428,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
