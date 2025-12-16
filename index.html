@@ -1868,32 +1868,33 @@ gap: 5px;
     </div>
 </div>
 
-  <script id="field-template" type="text/x-handlebars-template">
-    {{#each groups}}
-      <div class="form-group-container">
-        <div class="group-header">
-          <h3 data-i18n="category{{@index}}">الفئة {{groupTitle}}</h3>
-        </div>
-        {{#each fields}}
-          <div class="input-group">
-            <label for="{{id}}" data-i18n="{{id}}">{{title}}</label>
-            <select id="{{id}}" name="{{id}}" data-i18n-title="{{id}}">
-              {{#each options}}
-                <option value="{{this}}" data-i18n="{{this}}">
-                  {{#if (isTranslatable this)}}
-                    {{t this}}
-                  {{else}}
-                    {{this}}
-                  {{/if}}
-                </option>
-              {{/each}}
-            </select>
-          </div>
-        {{/each}}
+<!-- في نهاية الملف index.html -->
+<script id="field-template" type="text/x-handlebars-template">
+  {{#each groups}}
+    <div class="form-group-container">
+      <div class="group-header">
+        <h3 data-i18n="category{{@index}}">الفئة {{groupTitle}}</h3>
       </div>
-      <hr />
-    {{/each}}
-  </script>
+      {{#each fields}}
+        <div class="input-group">
+          <label for="{{id}}" data-i18n="{{id}}">{{title}}</label>
+          <select id="{{id}}" name="{{id}}" data-i18n-title="{{id}}">
+            {{#each options}}
+              <option value="{{this}}" data-i18n="{{this}}">
+                {{#if (isTranslatable this)}}
+                  {{t this}}
+                {{else}}
+                  {{this}}
+                {{/if}}
+              </option>
+            {{/each}}
+          </select>
+        </div>
+      {{/each}}
+    </div>
+    <hr />
+  {{/each}}
+</script>
 
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="validationModal">
