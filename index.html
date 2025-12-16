@@ -198,6 +198,160 @@
       background: white;
       color: var(--text-primary);
     }
+    /* ========== تنسيق الفئات بشبكة عمودين - كل زوج في سطر ========== */
+.form-group-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.form-group-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+}
+
+.group-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px dashed rgba(26, 115, 232, 0.2);
+}
+
+.group-header h3 {
+    color: var(--primary-dark);
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: white;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
+}
+
+/* === صفوف الحقول (كل صف يحوي حقلين) === */
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+/* حقل فردي داخل الصف */
+.field-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: var(--bg-primary);
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    transition: var(--transition);
+    height: 100%;
+}
+
+.field-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.field-item label {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.field-item label::before {
+    content: "•";
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+.field-item select {
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 1rem center;
+    padding-left: 3rem;
+}
+
+.field-item select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+/* === تخصيص لكل فئة حسب عدد الحقول === */
+
+/* الفئات ذات 4 حقول (2 صفوف) */
+.form-group-container:has(.field-item:nth-child(4)) {
+    /* لا حاجة لتعديل خاص */
+}
+
+/* الفئات ذات 6 حقول (3 صفوف) */
+.form-group-container:has(.field-item:nth-child(6)) {
+    /* لا حاجة لتعديل خاص */
+}
+
+/* الفئات ذات 12 حقول (6 صفوف) */
+.form-group-container:has(.field-item:nth-child(12)) {
+    /* لا حاجة لتعديل خاص */
+}
+
+/* === فواصل بين الصفوف === */
+.field-row:not(:last-child) {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+/* === نظام ترميز الألوان للحقول === */
+.field-item select.empty-field {
+    border-color: var(--primary-color) !important;
+    background-color: rgba(26, 115, 232, 0.05) !important;
+}
+
+.field-item select.filled-field {
+    border-color: var(--success-color) !important;
+    background-color: rgba(52, 168, 83, 0.05) !important;
+    font-weight: 600;
+}
+
+/* === تأثيرات التركيز === */
+.field-item select.filled-field:focus {
+    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+}
+
+/* === مؤشر عند الحقول المملوءة === */
+.field-item:has(.filled-field) {
+    border-left: 3px solid var(--success-color);
+    padding-left: calc(1.25rem - 3px);
+}
 
     .language-switcher option[value="ur"] {
       background: white;
@@ -1401,6 +1555,47 @@ gap: 5px;
     margin-top: 1rem;
     font-size: 0.9rem;
     color: var(--text-tertiary);
+}
+    @media (max-width: 768px) {
+    .form-group-container {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .field-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .field-item {
+        padding: 1rem;
+    }
+    
+    .field-row:not(:last-child) {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .group-header h3 {
+        font-size: 1.1rem;
+        padding: 0.4rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-group-container {
+        padding: 1rem;
+    }
+    
+    .field-item {
+        padding: 0.875rem;
+    }
+    
+    .field-item select {
+        padding: 0.75rem;
+        padding-left: 2.5rem;
+        font-size: 0.95rem;
+    }
 }
   </style>
 </head>
