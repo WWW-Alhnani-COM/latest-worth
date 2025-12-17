@@ -215,69 +215,57 @@ export class InheritanceCalculator {
   // ========== نظام "للذكر مثل حظ الانثيين" المحسن ==========
   
   applyMaleFemaleRatio() {
-    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
+    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_') || key === 'son');
     const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
-    const sisterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('sister_'));
 
-    // حساب الأنصبة الثابتة أولاً
-    this.calculateFixedSharesBeforeRatio();
+    // إذا لم يكن هناك أبناء أو بنات، لا تفعل شيئاً
+    if (sonHeirs.length === 0 && daughterHeirs.length === 0) {
+      return;
+    }
 
-    // إضافة الأبناء والأخوات الذين لم يحصلوا على شيء بعد
-    const allSons = sonHeirs.filter(son => !this.results[son]);
-    const allDaughters = daughterHeirs.filter(daughter => !this.results[daughter]);
-    const allSisters = sisterHeirs.filter(sister => !this.results[sister]);
-
-    const totalShares = (allSons.length * 2) + allDaughters.length + allSisters.length;
+    // حساب حصص الأبناء والبنات
+    const totalShares = (sonHeirs.length * 2) + daughterHeirs.length;
+    
     if (totalShares === 0) return;
 
     const sharePerUnit = this.remainingAmount / totalShares;
 
     // توزيع على الأبناء (للذكر مثل حظ الانثيين)
-    for (const son of allSons) {
+    for (const son of sonHeirs) {
       const sonData = this.heirs[son] || {};
-      this.results[son] = {
-        ...sonData,
-        title: sonData.title || this.getHeirTitle(son),
-        name: sonData.name || '',
-        religion: sonData.religion || 'مسلم',
-        gender: 'male',
-        amount: (sharePerUnit * 2).toFixed(3),
-        percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
-        note: t('maleFemaleRatioNote'),
-        originalTitle: sonData.originalTitle || sonData.title
-      };
+      // تأكد من عدم تكرر الابن في النتائج
+      if (!this.results[son]) {
+        this.results[son] = {
+          ...sonData,
+          title: sonData.title || this.getHeirTitle(son),
+          name: sonData.name || '',
+          religion: sonData.religion || 'مسلم',
+          gender: 'male',
+          amount: (sharePerUnit * 2).toFixed(3),
+          percentage: this.formatPercentage(((sharePerUnit * 2) / this.totalAmount) * 100),
+          note: t('maleFemaleRatioNote'),
+          originalTitle: sonData.originalTitle || sonData.title
+        };
+      }
     }
 
     // توزيع على البنات
-    for (const daughter of allDaughters) {
+    for (const daughter of daughterHeirs) {
       const daughterData = this.heirs[daughter] || {};
-      this.results[daughter] = {
-        ...daughterData,
-        title: daughterData.title || this.getHeirTitle(daughter),
-        name: daughterData.name || '',
-        religion: daughterData.religion || 'مسلم',
-        gender: 'female',
-        amount: sharePerUnit.toFixed(3),
-        percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-        note: t('maleFemaleRatioNote'),
-        originalTitle: daughterData.originalTitle || daughterData.title
-      };
-    }
-
-    // توزيع على الأخوات
-    for (const sister of allSisters) {
-      const sisterData = this.heirs[sister] || {};
-      this.results[sister] = {
-        ...sisterData,
-        title: sisterData.title || this.getHeirTitle(sister),
-        name: sisterData.name || '',
-        religion: sisterData.religion || 'مسلم',
-        gender: 'female',
-        amount: sharePerUnit.toFixed(3),
-        percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
-        note: t('maleFemaleRatioNote'),
-        originalTitle: sisterData.originalTitle || sisterData.title
-      };
+      // تأكد من عدم تكرار البنت في النتائج
+      if (!this.results[daughter]) {
+        this.results[daughter] = {
+          ...daughterData,
+          title: daughterData.title || this.getHeirTitle(daughter),
+          name: daughterData.name || '',
+          religion: daughterData.religion || 'مسلم',
+          gender: 'female',
+          amount: sharePerUnit.toFixed(3),
+          percentage: this.formatPercentage((sharePerUnit / this.totalAmount) * 100),
+          note: t('maleFemaleRatioNote'),
+          originalTitle: daughterData.originalTitle || daughterData.title
+        };
+      }
     }
 
     this.remainingAmount = 0;
@@ -800,6 +788,24 @@ export class InheritanceCalculator {
     const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
 
     const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
+
+    // ========== التصحيح: إضافة حالة خاصة للزوج + أب + أم + أبناء/بنات ==========
+    if (hasHusband && hasFather && hasMother && (hasSon || daughterHeirs.length > 0)) {
+      console.log('🔑 تطبيق الحالة الخاصة: زوج + أب + أم + أبناء/بنات');
+      
+      // الزوج: الربع
+      this.assignFixedShare('husband', SHARES.quarter, 'quarterNote');
+      
+      // الأب: السدس
+      this.assignFixedShare('father', SHARES.sixth, 'sixthNote');
+      
+      // الأم: السدس
+      this.assignFixedShare('mother', SHARES.sixth, 'sixthNote');
+      
+      // الباقي للأبناء والبنات (للذكر مثل حظ الانثيين)
+      this.applyMaleFemaleRatio();
+      return;
+    }
 
     // ابنتين مع الابن
     if (hasSon) {
