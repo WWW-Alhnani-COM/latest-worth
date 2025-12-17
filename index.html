@@ -1597,6 +1597,69 @@ gap: 5px;
         font-size: 0.95rem;
     }
 }
+    /* أضف هذا CSS في نهاية الوسم <style> في index.html */
+
+/* ========== إصلاح مشكلة التمرير في الخطوة الثالثة ========== */
+#shares {
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+#shares::-webkit-scrollbar {
+    width: 8px;
+}
+
+#shares::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+#shares::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+#shares::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
+
+/* تأكد من أن الهيدر يبقى في الأعلى */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    background: rgba(26, 115, 232, 0.95);
+}
+
+/* تنسيق عمود الملة في جدول النتائج */
+#sharesTableBody td:nth-child(4) {
+    font-weight: 600;
+    text-align: center;
+}
+
+#sharesTableBody td:nth-child(4):contains("مسلم") {
+    color: var(--success-color);
+}
+
+#sharesTableBody td:nth-child(4):contains("غير مسلم") {
+    color: var(--danger-color);
+}
+
+/* تنسيق كلمة ريال بجانب المبلغ */
+.money-with-currency {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+.money-with-currency .currency-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 3px;
+}
   </style>
 </head>
 <body>
@@ -1820,6 +1883,7 @@ gap: 5px;
                 <th class="counter">#</th>
                 <th data-i18n="relationship">صلة القرابة</th>
                 <th data-i18n="heirName">اسم الوارث</th>
+                <th data-i18n="religion">الملة</th>
                 <th data-i18n="moneyShare">مقدار الورث من المال</th>
                 <th data-i18n="materialsShare">مقدار الورث من الأمتار</th>
                 <th data-i18n="percentageShare">مقدار الورث بالنسبة</th>
