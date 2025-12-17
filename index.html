@@ -1696,17 +1696,69 @@ gap: 5px;
     z-index: 5;
 }
 /* ========== تنسيق مودال الأبناء بالكامل ========== */
-.next-btn-right {
-  /* الحفاظ على جميع تنسيقات btn-next الأساسية */
-  /* وإضافة تعديلات الموقع فقط */
+
+/* ========== تنسيق خاص لزر التالي على اليسار ========== */
+/* كلاس جديد لزر التالي */
+.next-btn-left {
+  /* إزالة أي margins تدفع الزر لليمين */
+  margin-right: auto !important;
+  margin-left: 0 !important;
   
-  /* لجعل الزر يلتصق باليمين داخل حاويته */
-  margin-right: 0 !important;
-  margin-left: auto !important;
-  
-  /* أو باستخدام order إذا كان داخل flex container */
-  order: 2 !important;
+  /* تأكيد أنه أول عنصر في الحاوية */
+  order: -1 !important;
+}
+
+/* تعديل حاوية الأزرار اليمنى */
+.footer-right-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-direction: row-reverse; /* يعكس الترتيب داخلياً */
+  justify-content: flex-start; /* يبدأ من اليسار */
+  width: 100%;
+}
+
+/* لجعل زر التالي يأتي أولاً (على أقصى اليسار) */
+.footer-right-buttons .next-btn-left {
+  order: 1 !important; /* الأول */
+}
+
+.footer-right-buttons .btn-print {
+  order: 2 !important; /* الثاني */
+}
+
+/* تعديل الفوتر بالكامل */
+.footer-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* تحسين التباعد */
+#footer-next-btn.next-btn-left {
+  margin-left: 0 !important;
+  margin-right: 10px !important;
+}
+
+/* للأجهزة الصغيرة */
+@media (max-width: 768px) {
+  .footer-right-buttons {
+    flex-direction: column;
+    width: 100%;
   }
+  
+  .next-btn-left,
+  .btn-print {
+    order: 0 !important;
+    width: 100%;
+    margin: 5px 0 !important;
+  }
+  
+  .footer-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
   </style>
 </head>
 <body>
@@ -1954,9 +2006,9 @@ gap: 5px;
           <i class="fas fa-print"></i>
           <span data-i18n="print">طباعة</span>
         </button>
-      <button id="footer-next-btn" class="btn btn-next next-btn-right" data-i18n="next">
-  التالي
-</button>
+        <button id="footer-next-btn" class="btn btn-next next-btn-left" data-i18n="next">
+          التالي
+        </button>
       </div>
     </div>
   </div>
