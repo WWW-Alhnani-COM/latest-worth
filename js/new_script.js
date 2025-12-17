@@ -448,7 +448,7 @@ function updateButtonTexts() {
   if (closeModalBtn) closeModalBtn.textContent = t('ok');
 }
 
-// تحديث تنسيق الأرقام في المدخلات
+// ========== الإصلاح: تحديث تنسيق الأرقام باستخدام الفاصلة الصحيحة ==========
 function updateNumberInputs() {
   const amountInput = document.getElementById('amount');
   const materialsInput = document.getElementById('materials');
@@ -951,7 +951,7 @@ function collectFormData() {
   return formData;
 }
 
-// ========== تحديث تبويب البيانات الدينية ==========
+// ========== تحديث تبويب البيانات الدينية - الإصلاح ==========
 function updateReligiousTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
@@ -984,6 +984,22 @@ function updateReligiousTab(data) {
     // ========== الإصلاح: معالجة الحقول المتعددة ==========
     if (heir.isMultiple && heir.count > 1) {
       for (let j = 1; j <= heir.count; j++) {
+        // الحصول على الاسم من مصفوفة names
+        let heirName = '';
+        if (heir.names && Array.isArray(heir.names) && heir.names[j-1]) {
+          heirName = heir.names[j-1];
+        } else if (heir.name) {
+          heirName = heir.name;
+        }
+        
+        // الحصول على الدين من مصفوفة religions أو القيمة الافتراضية
+        let heirReligion = 'مسلم';
+        if (heir.religions && Array.isArray(heir.religions) && heir.religions[j-1]) {
+          heirReligion = heir.religions[j-1];
+        } else if (heir.religion) {
+          heirReligion = heir.religion;
+        }
+        
         heirsHTML += `
                 <tr>
                     <td class="counter">${formatNumber(i)}</td>
@@ -993,15 +1009,15 @@ function updateReligiousTab(data) {
                         type="text" 
                         class="heir-name" 
                         data-heir-id="${key}_${j}" 
-                        value="${heir.names && heir.names[j] ? heir.names[j] : ''}" 
+                        value="${heirName}" 
                         placeholder="${t('enterHeirName')}"
                         title="${t('enterHeirName')}"
                       >
                     </td>
                     <td>
                         <select class="heir-religion" data-heir-id="${key}_${j}" title="${t('religiousStatus')}">
-                            <option value="مسلم" ${heir.religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
-                            <option value="غير مسلم" ${heir.religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
+                            <option value="مسلم" ${heirReligion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
+                            <option value="غير مسلم" ${heirReligion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
                         </select>
                     </td>
                 </tr>
@@ -1046,7 +1062,7 @@ function updateReligiousTab(data) {
   }, 100);
 }
 
-// ========== معالجة إرسال البيانات الدينية ==========
+// ========== معالجة إرسال البيانات الدينية - الإصلاح ==========
 function handleReligiousSubmit(event) {
   event.preventDefault();
   
@@ -1091,6 +1107,7 @@ function handleReligiousSubmit(event) {
           title: '', // سيتم تعبئته من البيانات الأصلية
           name: '',
           religion: 'مسلم',
+          religions: [],
           isMultiple: true,
           count: 0
         };
@@ -1101,9 +1118,15 @@ function handleReligiousSubmit(event) {
         data.heirs[baseId].names = [];
       }
       
+      // حفظ الأديان الفردية في مصفوفة religions
+      if (!data.heirs[baseId].religions || !Array.isArray(data.heirs[baseId].religions)) {
+        data.heirs[baseId].religions = [];
+      }
+      
       // حفظ الاسم في الفهرس الصحيح
-      data.heirs[baseId].names[parseInt(index) - 1] = input.value.trim();
-      data.heirs[baseId].religion = religionSelect.value;
+      const nameIndex = parseInt(index) - 1;
+      data.heirs[baseId].names[nameIndex] = input.value.trim();
+      data.heirs[baseId].religions[nameIndex] = religionSelect.value;
       
     } else {
       // حالة الحقول المفردة
@@ -1211,7 +1234,7 @@ function formatHeirsForCalculation(heirsData) {
         formatted[wifeKey] = {
           title: `${heir.title} ${numberToLocalizedWord(i, 'female')}`,
           name: (heir.names && heir.names[i-1]) || heir.name || '',
-          religion: heir.religion || 'مسلم',
+          religion: (heir.religions && heir.religions[i-1]) || heir.religion || 'مسلم',
           gender: 'female',
           originalTitle: heir.title
         };
@@ -1235,10 +1258,18 @@ function formatHeirsForCalculation(heirsData) {
           individualName = heir.name;
         }
         
+        // الحصول على الدين من مصفوفة religions أو القيمة الافتراضية
+        let individualReligion = 'مسلم';
+        if (heir.religions && Array.isArray(heir.religions) && heir.religions[nameIndex]) {
+          individualReligion = heir.religions[nameIndex];
+        } else if (heir.religion) {
+          individualReligion = heir.religion;
+        }
+        
         formatted[individualKey] = {
           title: `${heir.title} ${numberToLocalizedWord(i, heir.gender || 'male')}`,
           name: individualName,
-          religion: heir.religion || 'مسلم',
+          religion: individualReligion,
           gender: heir.gender || 'male',
           originalTitle: heir.title
         };
@@ -1287,28 +1318,47 @@ function calculateMaterialsDistribution(moneyResults, materialsAmount) {
   return materialsDistribution;
 }
 
-// ========== دالة خاصة لتحويل الأرقام مع إضافة كلمة ريال ==========
+// ========== دالة خاصة لتحويل الأرقام مع إضافة كلمة ريال - الإصلاح ==========
 function formatMoneyWithCurrency(amount) {
   if (amount === '-' || amount === '' || amount === undefined || amount === null) {
     return '-';
   }
   
-  // تحويل الرقم إلى تنسيق اللغة مع إضافة كلمة ريال
-  const formattedNumber = formatNumber(amount);
+  // التحقق إذا كان الرقم يحتوي على فاصلة عشرية
+  const numStr = amount.toString();
+  
+  // استخدام دالة formatNumber التي ستستخدم الفاصلة الصحيحة حسب اللغة
+  const formattedNumber = formatNumber(numStr);
+  
+  // إضافة كلمة ريال مترجمة
   return `${formattedNumber} ${t('riyal')}`;
 }
 
-// ========== دالة خاصة لعرض ديانة الوارث ==========
+// ========== دالة خاصة لعرض ديانة الوارث - الإصلاح ==========
 function getHeirReligionDisplay(heir) {
   if (!heir || !heir.religion) {
     return '-';
   }
   
-  // عرض الديانة مع الترجمة
-  return heir.religion === 'مسلم' ? t('muslim') : t('nonMuslim');
+  // عرض الديانة مع الترجمة - الإصلاح: التحقق من القيمة الفعلية
+  if (heir.religion === 'مسلم') {
+    return t('muslim');
+  } else if (heir.religion === 'غير مسلم') {
+    return t('nonMuslim');
+  } else {
+    // إذا كانت القيمة مختلفة، حاول تحويلها
+    const religionLower = heir.religion.toString().toLowerCase();
+    if (religionLower === 'muslim' || religionLower === 'مسلم') {
+      return t('muslim');
+    } else if (religionLower === 'non-muslim' || religionLower === 'غير مسلم') {
+      return t('nonMuslim');
+    }
+  }
+  
+  return heir.religion;
 }
 
-// ========== دالة لتنسيق الملاحظات حسب نوع وعدد الورثة ==========
+// ========== دالة لتنسيق الملاحظات حسب نوع وعدد الورثة - الإصلاح حسب المفاتيح ==========
 function formatHeirNote(key, heir, allHeirs) {
     let note = heir.note || '';
     
@@ -1337,25 +1387,31 @@ function formatHeirNote(key, heir, allHeirs) {
         }
     }
     
-    // ترجمة الملاحظات الموجودة
-    if (note.includes('الباقي يرد')) {
-        note = t('raddNote') || note;
+    // ترجمة الملاحظات الموجودة حسب المفاتيح
+    if (note.includes('الباقي يرد') || note.includes('يرد')) {
+        if (key.includes('daughter')) {
+            const daughterCount = Object.keys(allHeirs).filter(k => k.includes('daughter')).length;
+            if (daughterCount === 1) {
+                note = t('remainderToSingleDaughter') || 'النصف فرض والباقي يرد على الابنة';
+            } else {
+                note = t('remainderToMultipleDaughters') || 'الثلثين فرض والباقي يرد على البنات';
+            }
+        } else if (key.includes('son')) {
+            const sonCount = Object.keys(allHeirs).filter(k => k.includes('son')).length;
+            if (sonCount === 1) {
+                note = t('remainderToSonNote') || 'والباقي كاملاً للابن';
+            } else {
+                note = t('remainderToSons') || 'الباقي تعصيب للأبناء';
+            }
+        } else {
+            note = t('raddNote') || note;
+        }
     }
-    if (note.includes('حسب سهامهما')) {
-        note = t('raddNote') || note;
-    }
-    if (note.includes('يرد على الابنة')) {
-        note = t('remainderToDaughterNote') || note;
-    }
-    if (note.includes('يرد على البنات')) {
-        note = t('raddToDaughtersNote') || note;
-    }
+    
     if (note.includes('للذكر مثل حظ الأنثيين')) {
         note = t('maleFemaleRatioNote') || note;
     }
-    if (note.includes('والباقي كاملاً للابن')) {
-        note = t('remainderToSonNote') || note;
-    }
+    
     if (note.includes('الباقي تعصيب')) {
         note = t('remainderNote') || note;
     }
@@ -1394,24 +1450,32 @@ function updateSharesTab(data) {
     const heir = data.heirs[key];
     
     // ========== الإصلاح: الحصول على صلة القرابة الصحيحة ==========
-    let relationship = heir.title || '';
+    let relationship = heir.originalTitle || heir.title || '';
     
-    // إذا كان العنوان يحتوي على رقم ترتيبي (ابن 1، ابن 2، إلخ)
-    // نحتاج لإزالة الرقم للعثور على الترجمة الصحيحة
-    const baseTitle = relationship.split(' ')[0]; // الحصول على الكلمة الأولى فقط
-    
-    // ترجمة العلاقة إذا كانت موجودة في نظام الترجمة
-    let translatedRelationship = t(baseTitle) || relationship;
-    
-    // إذا كانت هناك أرقام ترتيبية، إضافتها
-    if (relationship.includes(' ') && relationship.split(' ').length > 1) {
-      const titleParts = relationship.split(' ');
-      if (titleParts.length > 1) {
-        translatedRelationship = (t(titleParts[0]) || titleParts[0]) + ' ' + titleParts.slice(1).join(' ');
+    // إذا كان المفتاح يحتوي على رقم (مثل son_1, daughter_2)
+    if (key.includes('_')) {
+      const baseKey = key.split('_')[0];
+      const index = key.split('_')[1];
+      
+      // الحصول على العنوان الأساسي
+      let baseTitle = '';
+      if (data.heirs[baseKey] && data.heirs[baseKey].originalTitle) {
+        baseTitle = data.heirs[baseKey].originalTitle;
+      } else {
+        baseTitle = t(baseKey) || baseKey;
       }
+      
+      // بناء العنوان النهائي مع الرقم الترتيبي
+      if (index && !isNaN(index)) {
+        const gender = heir.gender || 'male';
+        relationship = `${baseTitle} ${numberToLocalizedWord(parseInt(index), gender)}`;
+      } else {
+        relationship = baseTitle;
+      }
+    } else {
+      // للحقول المفردة
+      relationship = t(key) || heir.originalTitle || heir.title || key;
     }
-    
-    relationship = translatedRelationship || '-';
     
     // ========== الإصلاح: عرض اسم الوارث ==========
     let heirName = heir.name || '';
@@ -1421,8 +1485,17 @@ function updateSharesTab(data) {
       heirName = heir.originalTitle || heir.title || '-';
     }
     
-    // ديانة الوارث
-    const heirReligion = getHeirReligionDisplay(heir);
+    // ========== الإصلاح: ديانة الوارث - التحقق من القيمة الفعلية ==========
+    let heirReligion = 'مسلم';
+    if (heir.religion) {
+      if (heir.religion === 'مسلم' || heir.religion === 'Muslim') {
+        heirReligion = t('muslim');
+      } else if (heir.religion === 'غير مسلم' || heir.religion === 'Non-Muslim') {
+        heirReligion = t('nonMuslim');
+      } else {
+        heirReligion = heir.religion;
+      }
+    }
     
     // ========== الإصلاح: تنسيق الملاحظة حسب نوع الوريث ==========
     const note = formatHeirNote(key, heir, data.heirs);
