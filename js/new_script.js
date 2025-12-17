@@ -870,7 +870,7 @@ function handleCalculatorSubmit() {
   updateReligiousTab(formData);
 }
 
-// ========== جمع بيانات النموذج ==========
+// ========== جمع بيانات النموذج - الإصلاحات المهمة ==========
 function collectFormData() {
   const formData = {
     deceased_gender: document.querySelector('input[name="deceased_gender"]:checked')?.value || "",
@@ -889,7 +889,7 @@ function collectFormData() {
     const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
     const gender = fieldConfig?.gender || "male";
 
-    // ========== إصلاح: معالجة حقول الزوج والزوجة ==========
+    // ========== الإصلاح 1: معالجة حقول الزوج والزوجة بشكل صحيح ==========
     if (id === "wife") {
       if (parseInt(value) > 0) {
         formData.heirs["wife"] = { 
@@ -904,27 +904,39 @@ function collectFormData() {
       return;
     }
 
-    if (id === "husband" && value === "yes" && formData.deceased_gender === "female") {
-      formData.heirs["husband"] = { 
-        title: t('husband') || 'زوج', 
-        name: "",
-        religion: "مسلم"
-      };
+    if (id === "husband") {
+      const isYes = value === "yes" || value === "yesOption" || value === "نعم";
+      if (isYes && formData.deceased_gender === "female") {
+        formData.heirs["husband"] = { 
+          title: t('husband') || 'زوج', 
+          name: "",
+          religion: "مسلم",
+          gender: "male"
+        };
+      }
       return;
     }
 
-    // ========== إصلاح: معالجة الحقول العادية ==========
-    if (value === "نعم" || value === "yesOption") {
+    // ========== الإصلاح 2: معالجة الحقول العادية ==========
+    const isYesOption = value === "نعم" || value === "yesOption" || value === "yes";
+    const isNoOption = value === "لا" || value === "noOption" || value === "no";
+    
+    if (isYesOption) {
       formData.heirs[id] = { 
         title: title, 
         name: "",
-        religion: "مسلم"
+        religion: "مسلم",
+        gender: gender
       };
       return;
     }
 
+    if (isNoOption) {
+      return; // تجاهل القيم "لا"
+    }
+
     if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
-      // ========== إصلاح: إنشاء مفتاح واحد للحقول المتعددة ==========
+      // ========== الإصلاح 3: إنشاء مفتاح واحد للحقول المتعددة ==========
       formData.heirs[id] = { 
         title: title,
         name: "",
@@ -948,8 +960,8 @@ function updateReligiousTab(data) {
                 <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
                 <td>${data.deceased_religion}</td>
                 <td>${data.deceased_name || '-'}</td>
-                <td>${data.amount || t('noAmount')}</td>
-                <td>${data.materials || t('noMaterials')}</td>
+                <td>${data.amount ? formatMoneyWithCurrency(data.amount) : t('noAmount')}</td>
+                <td>${data.materials ? `${formatNumber(data.materials)} ${t('meter')}` : t('noMaterials')}</td>
             </tr>
         `;
   }
@@ -958,7 +970,7 @@ function updateReligiousTab(data) {
   let heirsHTML = "";
   let i = 0;
   
-  // ========== إصلاح: عرض جميع الورثة ==========
+  // ========== الإصلاح: عرض جميع الورثة ==========
   for (let key in data.heirs) {
     const heir = data.heirs[key];
     
@@ -969,7 +981,7 @@ function updateReligiousTab(data) {
     
     i++;
     
-    // ========== إصلاح: معالجة الحقول المتعددة ==========
+    // ========== الإصلاح: معالجة الحقول المتعددة ==========
     if (heir.isMultiple && heir.count > 1) {
       for (let j = 1; j <= heir.count; j++) {
         heirsHTML += `
@@ -998,7 +1010,7 @@ function updateReligiousTab(data) {
       }
       i--; // تصحيح العداد
     } else {
-      // ========== إصلاح: الحقول المفردة ==========
+      // ========== الإصلاح: الحقول المفردة ==========
       heirsHTML += `
             <tr>
                 <td class="counter">${formatNumber(i)}</td>
@@ -1055,7 +1067,7 @@ function handleReligiousSubmit(event) {
     data.heirs = {};
   }
 
-  // ========== إصلاح: جمع بيانات الأسماء والديانات ==========
+  // ========== الإصلاح: جمع بيانات الأسماء والديانات ==========
   document.querySelectorAll('.heir-name').forEach(input => {
     const heirId = input.getAttribute('data-heir-id');
     const religionSelect = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`);
@@ -1108,7 +1120,7 @@ function handleReligiousSubmit(event) {
     }
   });
 
-  // ========== إصلاح: الحفاظ على بيانات العنوان الأصلية ==========
+  // ========== الإصلاح: الحفاظ على بيانات العنوان الأصلية ==========
   // الحصول على البيانات الأصلية من الخطوة الأولى
   const originalFormData = collectFormData();
   
@@ -1136,7 +1148,7 @@ function handleReligiousSubmit(event) {
   const totalAmount = processTotalAmount(data.amount);
   const materialsAmount = parseNumber(data.materials) || 0;
 
-  // ========== إصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
+  // ========== الإصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
   const formattedHeirs = formatHeirsForCalculation(data.heirs);
   const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
   const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
@@ -1172,15 +1184,44 @@ function enrichResultsWithDisplayData(calculatedResults, formattedHeirs) {
   return merged;
 }
 
-// ========== دالة جديدة: تنسيق الورثة للحساب ==========
+// ========== دالة جديدة: تنسيق الورثة للحساب - الإصلاحات ==========
 function formatHeirsForCalculation(heirsData) {
   const formatted = {};
   
   for (let key in heirsData) {
     const heir = heirsData[key];
+    
+    // معالجة الزوج بشكل خاص
+    if (key === "husband" && heir) {
+      formatted["husband"] = {
+        title: heir.title || 'زوج',
+        name: heir.name || '',
+        religion: heir.religion || 'مسلم',
+        gender: 'male',
+        originalTitle: heir.title
+      };
+      continue;
+    }
+    
+    // معالجة الزوجة بشكل خاص
+    if (key === "wife" && heir) {
+      const wifeCount = heir.count || 1;
+      for (let i = 1; i <= wifeCount; i++) {
+        const wifeKey = `wife_${i}`;
+        formatted[wifeKey] = {
+          title: `${heir.title} ${numberToLocalizedWord(i, 'female')}`,
+          name: (heir.names && heir.names[i-1]) || heir.name || '',
+          religion: heir.religion || 'مسلم',
+          gender: 'female',
+          originalTitle: heir.title
+        };
+      }
+      continue;
+    }
+    
     const count = heir.isMultiple ? Math.max(parseInt(heir.count, 10) || 0, 1) : 1;
 
-    if (heir.isMultiple) {
+    if (heir.isMultiple && count > 1) {
       // تقسيم الحقول المتعددة إلى أفراد
       for (let i = 1; i <= count; i++) {
         const individualKey = `${key}_${i}`;
@@ -1199,7 +1240,7 @@ function formatHeirsForCalculation(heirsData) {
           name: individualName,
           religion: heir.religion || 'مسلم',
           gender: heir.gender || 'male',
-          originalTitle: heir.title // حفظ العنوان الأصلي للعرض
+          originalTitle: heir.title
         };
       }
     } else {
@@ -1209,7 +1250,7 @@ function formatHeirsForCalculation(heirsData) {
         name: heir.name || '',
         religion: heir.religion || 'مسلم',
         gender: heir.gender || 'male',
-        originalTitle: heir.title // حفظ العنوان الأصلي للعرض
+        originalTitle: heir.title
       };
     }
   }
@@ -1267,7 +1308,62 @@ function getHeirReligionDisplay(heir) {
   return heir.religion === 'مسلم' ? t('muslim') : t('nonMuslim');
 }
 
-// ========== تحديث تبويب النتائج ==========
+// ========== دالة لتنسيق الملاحظات حسب نوع وعدد الورثة ==========
+function formatHeirNote(key, heir, allHeirs) {
+    let note = heir.note || '';
+    
+    // إذا كانت الملاحظة فارغة، حاول توليدها حسب نوع الوريث
+    if (!note) {
+        if (key.includes('daughter')) {
+            const daughterCount = Object.keys(allHeirs).filter(k => k.includes('daughter')).length;
+            
+            if (daughterCount === 1) {
+                // بنت واحدة
+                note = t('remainderToSingleDaughter') || 'النصف فرض والباقي يرد على الابنة';
+            } else if (daughterCount > 1) {
+                // أكثر من بنت
+                note = t('remainderToMultipleDaughters') || 'الثلثين فرض والباقي يرد على البنات';
+            }
+        } else if (key.includes('son')) {
+            const sonCount = Object.keys(allHeirs).filter(k => k.includes('son')).length;
+            
+            if (sonCount === 1) {
+                // ابن واحد
+                note = t('remainderToSonNote') || 'والباقي كاملاً للابن';
+            } else if (sonCount > 1) {
+                // أكثر من ابن
+                note = t('remainderToSons') || 'الباقي تعصيب للأبناء';
+            }
+        }
+    }
+    
+    // ترجمة الملاحظات الموجودة
+    if (note.includes('الباقي يرد')) {
+        note = t('raddNote') || note;
+    }
+    if (note.includes('حسب سهامهما')) {
+        note = t('raddNote') || note;
+    }
+    if (note.includes('يرد على الابنة')) {
+        note = t('remainderToDaughterNote') || note;
+    }
+    if (note.includes('يرد على البنات')) {
+        note = t('raddToDaughtersNote') || note;
+    }
+    if (note.includes('للذكر مثل حظ الأنثيين')) {
+        note = t('maleFemaleRatioNote') || note;
+    }
+    if (note.includes('والباقي كاملاً للابن')) {
+        note = t('remainderToSonNote') || note;
+    }
+    if (note.includes('الباقي تعصيب')) {
+        note = t('remainderNote') || note;
+    }
+    
+    return note;
+}
+
+// ========== تحديث تبويب النتائج - الإصلاحات الكاملة ==========
 function updateSharesTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
@@ -1288,69 +1384,48 @@ function updateSharesTab(data) {
   
   const showAmounts = data.hasAmount;
   
-  // ========== إصلاح: عرض جميع الورثة مع الأسماء والعلاقات ==========
+  // ========== الإصلاح: عرض جميع الورثة مع الأسماء والعلاقات ==========
   for (let key in data.heirs) {
+    // تخطي بيت المال هنا، سنضيفه في النهاية
+    if (key === 'bayt_al_mal') continue;
+    
     i++;
     
     const heir = data.heirs[key];
     
-    // ========== إصلاح: عرض الاسم ==========
-    const heirName = heir.name || heir.title || '-';
-
-    // ========== إصلاح: عرض صلة القرابة ==========
+    // ========== الإصلاح: الحصول على صلة القرابة الصحيحة ==========
     let relationship = heir.title || '';
-
-    // محاولة الحصول على العلاقة من ترجمات البيانات الأصلية
-    if (!relationship || relationship === '-') {
-      // البحث في البيانات الأصلية المخزنة
-      const originalData = JSON.parse(appStorage.getItem("inheritanceData")) || {};
-      const originalHeirs = originalData.heirs || {};
-      
-      // محاولة الحصول على العلاقة من المفتاح
-      if (originalHeirs[key]) {
-        relationship = originalHeirs[key].title || key;
-      } else {
-        // إذا كان المفتاح يحتوي على _ مثل son_1، son_2
-        const baseKey = key.includes('_') ? key.split('_')[0] : key;
-        if (originalHeirs[baseKey]) {
-          relationship = originalHeirs[baseKey].title || baseKey;
-        } else {
-          relationship = key;
-        }
+    
+    // إذا كان العنوان يحتوي على رقم ترتيبي (ابن 1، ابن 2، إلخ)
+    // نحتاج لإزالة الرقم للعثور على الترجمة الصحيحة
+    const baseTitle = relationship.split(' ')[0]; // الحصول على الكلمة الأولى فقط
+    
+    // ترجمة العلاقة إذا كانت موجودة في نظام الترجمة
+    let translatedRelationship = t(baseTitle) || relationship;
+    
+    // إذا كانت هناك أرقام ترتيبية، إضافتها
+    if (relationship.includes(' ') && relationship.split(' ').length > 1) {
+      const titleParts = relationship.split(' ');
+      if (titleParts.length > 1) {
+        translatedRelationship = (t(titleParts[0]) || titleParts[0]) + ' ' + titleParts.slice(1).join(' ');
       }
     }
-
-    // ترجمة العلاقة إذا كانت موجودة في نظام الترجمة
-    const translatedRelationship = t(relationship) || relationship;
+    
     relationship = translatedRelationship || '-';
+    
+    // ========== الإصلاح: عرض اسم الوارث ==========
+    let heirName = heir.name || '';
+    
+    // إذا كان الاسم فارغاً، استخدام العنوان كبديل
+    if (!heirName || heirName.trim() === '') {
+      heirName = heir.originalTitle || heir.title || '-';
+    }
     
     // ديانة الوارث
     const heirReligion = getHeirReligionDisplay(heir);
     
-    let note = heir.note || '';
-    
-    // ترجمة الملاحظات
-    if (note.includes('الباقي يرد')) {
-      note = t('raddNote') || note;
-    }
-    if (note.includes('حسب سهامهما')) {
-      note = t('raddNote') || note;
-    }
-    if (note.includes('يرد على الابنة')) {
-      note = t('remainderToDaughterNote') || note;
-    }
-    if (note.includes('يرد على البنات')) {
-      note = t('raddToDaughtersNote') || note;
-    }
-    if (note.includes('للذكر مثل حظ الأنثيين')) {
-      note = t('maleFemaleRatioNote') || note;
-    }
-    if (note.includes('والباقي كاملاً للابن')) {
-      note = t('remainderToSonNote') || note;
-    }
-    if (note.includes('الباقي تعصيب')) {
-      note = t('remainderNote') || note;
-    }
+    // ========== الإصلاح: تنسيق الملاحظة حسب نوع الوريث ==========
+    const note = formatHeirNote(key, heir, data.heirs);
     
     const materialsData = data.materialsDistribution?.[key];
     const materialsAmount = materialsData?.materialsAmount || '0.000';
@@ -1359,12 +1434,15 @@ function updateSharesTab(data) {
     const moneyAmount = heir.amount ? Number(heir.amount).toFixed(3) : '-';
     const moneyDisplay = showAmounts ? formatMoneyWithCurrency(moneyAmount) : '-';
     
+    // إضافة فئة CSS حسب الديانة
+    const religionClass = heirReligion === t('muslim') ? 'heir-muslim' : 'heir-non-muslim';
+    
     sharesHTML += `
         <tr>
             <td class="counter">${formatNumber(i)}</td>
             <td>${relationship}</td>
             <td>${heirName}</td>
-            <td>${heirReligion}</td>
+            <td class="${religionClass}">${heirReligion}</td>
             <td>${moneyDisplay}</td>
             <td>${materialsDisplay}</td>
             <td>${formatNumber(heir.percentage) + '%' || '-'}</td>
@@ -1373,8 +1451,8 @@ function updateSharesTab(data) {
     `;
   }
   
-  // إضافة بيت المال إذا وجد
-  if (data.heirs.bayt_al_mal) {
+  // إضافة بيت المال فقط إذا كان موجوداً في النتائج
+  if (data.heirs.bayt_al_mal && Object.keys(data.heirs.bayt_al_mal).length > 0) {
     i++;
     const materialsData = data.materialsDistribution?.bayt_al_mal;
     const materialsAmount = materialsData?.materialsAmount || '0.000';
@@ -1383,10 +1461,7 @@ function updateSharesTab(data) {
     const baytMoneyAmount = data.heirs.bayt_al_mal.amount ? Number(data.heirs.bayt_al_mal.amount).toFixed(3) : '-';
     const baytMoneyDisplay = showAmounts ? formatMoneyWithCurrency(baytMoneyAmount) : '-';
     
-    let baytNote = data.heirs.bayt_al_mal.note || '';
-    if (baytNote.includes('الباقي يرد')) {
-      baytNote = t('baytAlMalNote') || baytNote;
-    }
+    let baytNote = data.heirs.bayt_al_mal.note || t('baytAlMalNote') || 'الباقي لبيت المال';
     
     sharesHTML += `
         <tr>
@@ -1415,7 +1490,10 @@ function hasSelectedHeirs() {
   const maleChecked = document.getElementById('male').checked;
   const femaleChecked = document.getElementById('female').checked;
   const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
-  const husbandSelected = deceasedGender === 'female' && document.getElementById('husband')?.value === 'yesOption';
+  const husbandSelected = deceasedGender === 'female' && 
+    (document.getElementById('husband')?.value === 'yesOption' || 
+     document.getElementById('husband')?.value === 'yes' || 
+     document.getElementById('husband')?.value === 'نعم');
   const wifeSelected = deceasedGender === 'male' && parseInt(document.getElementById('wife')?.value) > 0;
   
   return (hasOtherHeirs || husbandSelected || wifeSelected) && (maleChecked || femaleChecked);
@@ -1483,6 +1561,7 @@ window.updateHeirFieldStyle = updateHeirFieldStyle;
 window.updateReligionFieldStyle = updateReligionFieldStyle;
 window.updateHeirNameFieldStyle = updateHeirNameFieldStyle;
 window.updateHeirReligionFieldStyle = updateHeirReligionFieldStyle;
+window.formatMoneyWithCurrency = formatMoneyWithCurrency;
 
 // استدعاء الأنظمة عند التحميل
 document.addEventListener('DOMContentLoaded', function() {
