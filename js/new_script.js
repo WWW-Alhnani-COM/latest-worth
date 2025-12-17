@@ -1164,7 +1164,8 @@ function enrichResultsWithDisplayData(calculatedResults, formattedHeirs) {
       ...display,
       ...result,
       title: result.title || display.title || display.originalTitle || key,
-      name: result.name || display.name || ''
+      name: result.name || display.name || '',
+      religion: display.religion || 'مسلم'
     };
   }
 
@@ -1245,6 +1246,27 @@ function calculateMaterialsDistribution(moneyResults, materialsAmount) {
   return materialsDistribution;
 }
 
+// ========== دالة خاصة لتحويل الأرقام مع إضافة كلمة ريال ==========
+function formatMoneyWithCurrency(amount) {
+  if (amount === '-' || amount === '' || amount === undefined || amount === null) {
+    return '-';
+  }
+  
+  // تحويل الرقم إلى تنسيق اللغة مع إضافة كلمة ريال
+  const formattedNumber = formatNumber(amount);
+  return `${formattedNumber} ${t('riyal')}`;
+}
+
+// ========== دالة خاصة لعرض ديانة الوارث ==========
+function getHeirReligionDisplay(heir) {
+  if (!heir || !heir.religion) {
+    return '-';
+  }
+  
+  // عرض الديانة مع الترجمة
+  return heir.religion === 'مسلم' ? t('muslim') : t('nonMuslim');
+}
+
 // ========== تحديث تبويب النتائج ==========
 function updateSharesTab(data) {
   let deceasedInfoHTML = "";
@@ -1254,8 +1276,8 @@ function updateSharesTab(data) {
             <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
             <td>${data.deceased_religion}</td>
             <td>${data.deceased_name || '-'}</td>
-            <td>${data.amount || t('noAmount')}</td>
-            <td>${data.materials || t('noMaterials')}</td>
+            <td>${data.amount ? formatMoneyWithCurrency(data.amount) : t('noAmount')}</td>
+            <td>${data.materials ? `${formatNumber(data.materials)} ${t('meter')}` : t('noMaterials')}</td>
         </tr>
     `;
   }
@@ -1302,6 +1324,9 @@ function updateSharesTab(data) {
     const translatedRelationship = t(relationship) || relationship;
     relationship = translatedRelationship || '-';
     
+    // ديانة الوارث
+    const heirReligion = getHeirReligionDisplay(heir);
+    
     let note = heir.note || '';
     
     // ترجمة الملاحظات
@@ -1332,13 +1357,14 @@ function updateSharesTab(data) {
     const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
     
     const moneyAmount = heir.amount ? Number(heir.amount).toFixed(3) : '-';
-    const moneyDisplay = showAmounts ? formatNumber(moneyAmount) : '-';
+    const moneyDisplay = showAmounts ? formatMoneyWithCurrency(moneyAmount) : '-';
     
     sharesHTML += `
         <tr>
             <td class="counter">${formatNumber(i)}</td>
             <td>${relationship}</td>
             <td>${heirName}</td>
+            <td>${heirReligion}</td>
             <td>${moneyDisplay}</td>
             <td>${materialsDisplay}</td>
             <td>${formatNumber(heir.percentage) + '%' || '-'}</td>
@@ -1355,7 +1381,7 @@ function updateSharesTab(data) {
     const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
     
     const baytMoneyAmount = data.heirs.bayt_al_mal.amount ? Number(data.heirs.bayt_al_mal.amount).toFixed(3) : '-';
-    const baytMoneyDisplay = showAmounts ? formatNumber(baytMoneyAmount) : '-';
+    const baytMoneyDisplay = showAmounts ? formatMoneyWithCurrency(baytMoneyAmount) : '-';
     
     let baytNote = data.heirs.bayt_al_mal.note || '';
     if (baytNote.includes('الباقي يرد')) {
@@ -1366,6 +1392,7 @@ function updateSharesTab(data) {
         <tr>
             <td class="counter">${formatNumber(i)}</td>
             <td>${t('baytAlMal') || 'بيت المال'}</td>
+            <td>-</td>
             <td>-</td>
             <td>${baytMoneyDisplay}</td>
             <td>${materialsDisplay}</td>
