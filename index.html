@@ -1695,37 +1695,65 @@ gap: 5px;
     background: var(--bg-secondary);
     z-index: 5;
 }
- /* حل موثوق لتحريك زر التالي إلى اليسار */
-#calculator.active ~ .fixed-footer .footer-buttons {
-    flex-direction: row-reverse !important;
-    justify-content: flex-end !important;
+
+    /* ========== تنسيق أزرار المودال ========== */
+
+/* عكس ترتيب الأزرار في المودال */
+.sons-modal .btn-group {
+    display: flex;
+    flex-direction: row-reverse; /* هذا سيضع "التالي" على اليسار */
+    justify-content: flex-start; /* محاذاة لليسار */
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
-#calculator.active ~ .fixed-footer .footer-right-buttons {
-    margin-left: 0;
+/* أو استخدم هذا الحل إذا لم يعمل row-reverse */
+.sons-modal .btn-group {
+    display: flex;
+    justify-content: flex-start; /* محاذاة لليسار */
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.sons-modal .btn-group .btn-next {
+    order: 1; /* يجعل زر التالي أولاً */
     margin-right: auto;
 }
 
-#calculator.active ~ .fixed-footer #footer-next-btn {
-    order: 1;
+.sons-modal .btn-group .btn-previous {
+    order: 2; /* يجعل زر الإغلاق ثانياً */
 }
 
-#calculator.active ~ .fixed-footer #footer-prev-btn {
-    display: none !important;
+/* تنسيق عام للأزرار في المودال */
+.sons-modal .btn {
+    min-width: 120px;
+    padding: 0.875rem 1.5rem;
+    font-weight: 600;
 }
 
-/* إرجاع الترتيب الطبيعي للخطوتين 2 و 3 */
-#religious.active ~ .fixed-footer .footer-buttons,
-#shares.active ~ .fixed-footer .footer-buttons {
-    flex-direction: row !important;
-    justify-content: space-between !important;
+.sons-modal .btn-next {
+    background: var(--primary-color);
+    color: white;
+    border: none;
 }
 
-#religious.active ~ .fixed-footer .footer-right-buttons,
-#shares.active ~ .fixed-footer .footer-right-buttons {
-    margin-left: auto;
-    margin-right: 0;
+.sons-modal .btn-next:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
+
+.sons-modal .btn-previous {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.sons-modal .btn-previous:hover {
+    background: var(--border-medium);
+    transform: translateY(-2px);
+}
+ 
   </style>
 </head>
 <body>
@@ -1775,8 +1803,8 @@ gap: 5px;
         </select>
       </div>
       <div class="btn-group">
+      <button class="btn btn-next" id="sonsNextBtn" data-i18n="next" data-i18n-title="next">التالي</button>
         <button class="btn btn-previous" id="closeSonsPopup" data-i18n="close" data-i18n-title="close">إغلاق</button>
-        <button class="btn btn-next" id="sonsNextBtn" data-i18n="next" data-i18n-title="next">التالي</button>
       </div>
     </div>
   </div>
