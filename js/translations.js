@@ -1,4 +1,3 @@
-
 // Multi-language translations for Islamic Inheritance Calculator
 // Supported languages: Arabic (ar), English (en), Urdu (ur)
 
@@ -18,33 +17,32 @@ export const translations = {
     tab1Title: "البيانات الأساسية",
     tab2Title: "بيانات الورثة",
     tab3Title: "نتائج التوزيع",
-    decimalSeparator: "٫",  // فاصلة عربية
+    decimalSeparator: ",",  // فاصلة عربية
+    
+    // آلاف separator جديد
+    thousandsSeparator: ",",
 
     // التنبيهات
-alertTitle: "تنبيه",
-deceasedTypeRequired: "يجب تحديد نوع المتوفى للمتابعة",
-heirsRequired: "يجب اختيار وارث واحد على الأقل للمتابعة",
+    alertTitle: "تنبيه",
+    deceasedTypeRequired: "يجب تحديد نوع المتوفى للمتابعة",
+    heirsRequired: "يجب اختيار وارث واحد على الأقل للمتابعة",
 
-// أزرار التنبيهات
-ok: "حسناً",
-confirm: "تأكيد",
-cancel: "إلغاء",
-  
+    // أزرار التنبيهات
+    ok: "حسناً",
+    confirm: "تأكيد",
+    cancel: "إلغاء",
+    
     // Step numbers
     step: "الخطوة",
     noOption: "لا",
     yesOption: "نعم",
+    
     // Buttons
     next: "التالي",
     previous: "السابق",
     result: "النتيجة",
     print: "طباعة",
     close: "إغلاق",
-    ok: "حسناً",
-
-    noOption: "لا",
-yesOption: "نعم",
-
     
     // Deceased info
     deceasedType: "نوع المتوفى",
@@ -194,11 +192,11 @@ yesOption: "نعم",
     sixthSunnaNote: "السدس سنة",
     twoThirdsNote: "ثلثين فرض",
     remainderNote: "الباقي تعصيب",
-    raddNote: "الباقي يرد بالرحم حسب سهامهم", // تم التعديل
-    raddToDaughtersNote: "الباقي يرد بالرحم على البنات بالتساوي", // تم التعديل
+    raddNote: "الباقي يرد بالرحم حسب سهامهم",
+    raddToDaughtersNote: "الباقي يرد بالرحم على البنات بالتساوي",
     maleFemaleRatioNote: "للذكر مثل حظ الأنثيين",
     remainderToSonNote: "والباقي كاملاً للابن",
-    remainderToDaughterNote: "الباقي يرد بالرحم للابنة", // تم التعديل
+    remainderToDaughterNote: "الباقي يرد بالرحم للابنة",
     baytAlMalNote: "الباقي لبيت المال",
     wifeShareNote: "حصة الزوجة",
 
@@ -208,9 +206,14 @@ yesOption: "نعم",
     wifeThreeShare: "ثلث الثمن فرض لثلاث زوجات لوجود أبناء", 
     wifeFourShare: "ربع الثمن فرض لأربع زوجات لوجود أبناء",
 
+    // Missing keys - جديد
+    remainderToSingleDaughter: "النصف فرض والباقي يرد على الابنة",
+    remainderToMultipleDaughters: "الثلثين فرض والباقي يرد على البنات",
+    remainderToSons: "الباقي تعصيب للأبناء",
+    baytAlMal: "بيت المال",
+
     // Numbers
     numbers: ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"],
-    decimalSeparator: ".",
     
     // Ordinal numbers (masculine)
     ordinalMale: [
@@ -240,33 +243,31 @@ yesOption: "نعم",
     tab1Title: "Basic Information",
     tab2Title: "Heirs Information",
     tab3Title: "Distribution Results",
+    
     // Alerts
-alertTitle: "Alert",
-deceasedTypeRequired: "You must specify the deceased type to continue",
-heirsRequired: "You must select at least one heir to continue",
-        decimalSeparator: ".",  // نقطة إنجليزية
+    alertTitle: "Alert",
+    deceasedTypeRequired: "You must specify the deceased type to continue",
+    heirsRequired: "You must select at least one heir to continue",
+    decimalSeparator: ".",  // نقطة إنجليزية
+    thousandsSeparator: ",",
 
-
-// Alert buttons
-ok: "OK",
-confirm: "Confirm", 
-cancel: "Cancel",
+    // Alert buttons
+    ok: "OK",
+    confirm: "Confirm", 
+    cancel: "Cancel",
     
     // Step numbers
     step: "Step",
     noOption: "No",
     yesOption: "Yes",
+    
     // Buttons
     next: "Next",
     previous: "Previous",
     result: "Result",
     print: "Print",
     close: "Close",
-    ok: "OK",
-
-    noOption: "No",
-yesOption: "Yes",
-
+    
     // Deceased info
     deceasedType: "Deceased Type",
     male: "Male",
@@ -429,9 +430,14 @@ yesOption: "Yes",
     wifeThreeShare: "Third of eighth share for three wives due to presence of children",
     wifeFourShare: "Quarter of eighth share for four wives due to presence of children",
 
+    // Missing keys
+    remainderToSingleDaughter: "Half share and remainder returns to daughter",
+    remainderToMultipleDaughters: "Two-thirds share and remainder returns to daughters",
+    remainderToSons: "Remainder by agnation to sons",
+    baytAlMal: "Public Treasury",
+
     // Numbers
     numbers: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-    decimalSeparator: ".",
     
     // Ordinal numbers (masculine)
     ordinalMale: [
@@ -461,27 +467,30 @@ yesOption: "Yes",
     tab1Title: "بنیادی معلومات",
     tab2Title: "وارثوں کی معلومات",
     tab3Title: "تقسیم کے نتائج",
+    decimalSeparator: ",",  // فاصلة عربية
+    thousandsSeparator: ",",
+    
     // التنبيهات
-alertTitle: "تنبيه",
-deceasedTypeRequired: "جاری رکھنے کے لیے متوفی کی قسم متعین کرنا ضروری ہے",
-heirsRequired: "جاری رکھنے کے لیے کم از کم ایک وارث منتخب کرنا ضروری ہے",
+    alertTitle: "تنبيه",
+    deceasedTypeRequired: "جاری رکھنے کے لیے متوفی کی قسم متعین کرنا ضروری ہے",
+    heirsRequired: "جاری رکھنے کے لیے کم از کم ایک وارث منتخب کرنا ضروری ہے",
 
-// أزرار التنبيهات
-ok: "ٹھیک ہے",
-confirm: "تصدیق کریں",
-cancel: "منسوخ کریں",
+    // أزرار التنبيهات
+    ok: "ٹھیک ہے",
+    confirm: "تصدیق کریں",
+    cancel: "منسوخ کریں",
     
     // Step numbers
     step: "مرحلہ",
     noOption: "نہیں",
     yesOption: "جی ہاں",
+    
     // Buttons
     next: "اگلا",
     previous: "پچھلا",
     result: "نتیجہ",
     print: "پرنٹ",
     close: "بند کریں",
-    ok: "ٹھیک ہے",
     
     // Deceased info
     deceasedType: "متوفی کی قسم",
@@ -499,9 +508,7 @@ cancel: "منسوخ کریں",
     riyal: "ریال",
     meter: "میٹر",
     heir: "وارث",
-
-    noOption: "نہیں",
-yesOption: "جی ہاں",
+    
     // Spouse
     numberOfWives: "بیویوں کی تعداد",
     hasHusband: "کیا شوہر موجود ہے؟",
@@ -552,8 +559,7 @@ yesOption: "جی ہاں",
     category7: "زمرہ 7",
     category8: "زمرہ 8",
     category9: "زمرہ 9",
-        decimalSeparator: "٫",  // فاصلة عربية
-
+    
     // Heir relationships
     father: "والد",
     mother: "والدہ",
@@ -646,11 +652,16 @@ yesOption: "جی ہاں",
     wifeOneShare: "بیوی کا آٹھواں حصہ اولاد کی موجودگی میں",
     wifeTwoShare: "دو بیویوں کا آدھا آٹھواں حصہ اولاد کی موجودگی میں",
     wifeThreeShare: "تین بیویوں کا تیسرا آٹھواں حصہ اولاد کی موجودگی میں", 
-    wifeFourShare: "چار بیویوں کا چوتھا آٹھواں حصہ اولاد کی موجودگی میں",
+    wifeFourShare: "چار بیویوں کا چوتھا آٹھواں حصه اولاد کی موجودگی میں",
+
+    // Missing keys
+    remainderToSingleDaughter: "نصف فرض اور باقی لڑکی پر واپس آتا ہے",
+    remainderToMultipleDaughters: "دو تہائی فرض اور باقی لڑکیوں پر واپس آتا ہے",
+    remainderToSons: "باقی بیٹوں کے لیے تعصیب",
+    baytAlMal: "بيت المال",
 
     // Numbers
     numbers: ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"],
-    decimalSeparator: ".",
     
     // Ordinal numbers (masculine)
     ordinalMale: [
@@ -704,46 +715,76 @@ export function getOrdinalNumber(number, gender) {
   }
 }
 
-// Format number according to language
+// Format number according to language with thousands separator
 export function formatNumber(number, lang = null) {
   const currentLang = lang || getCurrentLanguage();
-  const numStr = number.toString();
   const translation = translations[currentLang];
   
-  if (!translation.numbers) return numStr;
+  if (!number && number !== 0) return '';
   
-  // Handle decimal numbers
+  let numStr = number.toString();
+  
+  // Check for NaN or Infinity
+  if (!isFinite(number)) return numStr;
+  
+  // Handle negative numbers
+  const isNegative = number < 0;
+  if (isNegative) {
+    numStr = numStr.substring(1);
+  }
+  
+  // Split into integer and decimal parts
   const parts = numStr.split('.');
-  const integerPart = parts[0];
-  const decimalPart = parts[1] || '';
+  let integerPart = parts[0];
+  let decimalPart = parts[1] || '';
   
+  // Add thousands separator
+  if (translation.thousandsSeparator) {
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, translation.thousandsSeparator);
+  }
+  
+  // Convert digits to local numerals
   let formattedInteger = '';
   for (let i = 0; i < integerPart.length; i++) {
-    const digit = integerPart[i];
-    if (translation.numbers[digit]) {
+    const char = integerPart[i];
+    const digit = parseInt(char);
+    
+    if (!isNaN(digit) && digit >= 0 && digit <= 9) {
       formattedInteger += translation.numbers[digit];
     } else {
-      formattedInteger += digit;
+      formattedInteger += char;
     }
   }
   
+  // Convert decimal part
+  let formattedDecimal = '';
   if (decimalPart) {
-    let formattedDecimal = '';
     for (let i = 0; i < decimalPart.length; i++) {
-      const digit = decimalPart[i];
-      if (translation.numbers[digit]) {
+      const char = decimalPart[i];
+      const digit = parseInt(char);
+      
+      if (!isNaN(digit) && digit >= 0 && digit <= 9) {
         formattedDecimal += translation.numbers[digit];
       } else {
-        formattedDecimal += digit;
+        formattedDecimal += char;
       }
     }
-    // استخدام الفاصلة أو النقطة حسب اللغة
-    const separator = translation.decimalSeparator || '.';
-    return formattedInteger + separator + formattedDecimal;
   }
   
-  return formattedInteger;
+  // Build the final result
+  let result = formattedInteger;
+  if (formattedDecimal) {
+    result += translation.decimalSeparator + formattedDecimal;
+  }
+  
+  // Add negative sign if needed
+  if (isNegative) {
+    result = '-' + result;
+  }
+  
+  return result;
 }
+
 // Convert Arabic/Urdu numbers to English for calculations
 export function parseNumber(numberStr) {
   if (!numberStr) return 0;
@@ -760,10 +801,37 @@ export function parseNumber(numberStr) {
       result += arabicIndex.toString();
     } else if (urduIndex !== -1) {
       result += urduIndex.toString();
+    } else if (char === ',' || char === '٫' || char === '،') {
+      // Handle different comma types
+      result += '.';
     } else {
-      result += char;
+      // Remove thousands separators
+      if (char !== ',') {
+        result += char;
+      }
     }
   }
   
   return parseFloat(result) || 0;
+}
+
+// New function to format currency with proper separators
+export function formatCurrency(amount, lang = null) {
+  const currentLang = lang || getCurrentLanguage();
+  
+  if (!amount && amount !== 0) return '';
+  
+  // Format the number
+  const formattedNumber = formatNumber(amount, currentLang);
+  
+  // Add currency symbol based on language
+  const translations = {
+    ar: 'ر.س',
+    en: 'SAR',
+    ur: 'ر.س'
+  };
+  
+  const currencySymbol = translations[currentLang] || 'ر.س';
+  
+  return `${formattedNumber} ${currencySymbol}`;
 }
