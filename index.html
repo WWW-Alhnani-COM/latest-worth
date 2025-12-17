@@ -198,160 +198,6 @@
       background: white;
       color: var(--text-primary);
     }
-    /* ========== تنسيق الفئات بشبكة عمودين - كل زوج في سطر ========== */
-.form-group-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-    padding: 2rem;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-md);
-    position: relative;
-    overflow: hidden;
-}
-
-.form-group-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
-}
-
-.group-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px dashed rgba(26, 115, 232, 0.2);
-}
-
-.group-header h3 {
-    color: var(--primary-dark);
-    font-size: 1.3rem;
-    font-weight: 700;
-    display: inline-block;
-    padding: 0.5rem 1.5rem;
-    background: white;
-    border-radius: var(--radius-full);
-    box-shadow: var(--shadow-sm);
-}
-
-/* === صفوف الحقول (كل صف يحوي حقلين) === */
-.field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
-}
-
-/* حقل فردي داخل الصف */
-.field-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    background: var(--bg-primary);
-    padding: 1.25rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-light);
-    transition: var(--transition);
-    height: 100%;
-}
-
-.field-item:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-light);
-}
-
-.field-item label {
-    font-weight: 700;
-    color: var(--text-primary);
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.field-item label::before {
-    content: "•";
-    color: var(--primary-color);
-    font-size: 1.5rem;
-}
-
-.field-item select {
-    padding: 0.875rem 1rem;
-    border: 2px solid var(--border-light);
-    border-radius: var(--radius-md);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-family: inherit;
-    transition: var(--transition);
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: left 1rem center;
-    padding-left: 3rem;
-}
-
-.field-item select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
-}
-
-/* === تخصيص لكل فئة حسب عدد الحقول === */
-
-/* الفئات ذات 4 حقول (2 صفوف) */
-.form-group-container:has(.field-item:nth-child(4)) {
-    /* لا حاجة لتعديل خاص */
-}
-
-/* الفئات ذات 6 حقول (3 صفوف) */
-.form-group-container:has(.field-item:nth-child(6)) {
-    /* لا حاجة لتعديل خاص */
-}
-
-/* الفئات ذات 12 حقول (6 صفوف) */
-.form-group-container:has(.field-item:nth-child(12)) {
-    /* لا حاجة لتعديل خاص */
-}
-
-/* === فواصل بين الصفوف === */
-.field-row:not(:last-child) {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
-}
-
-/* === نظام ترميز الألوان للحقول === */
-.field-item select.empty-field {
-    border-color: var(--primary-color) !important;
-    background-color: rgba(26, 115, 232, 0.05) !important;
-}
-
-.field-item select.filled-field {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-    font-weight: 600;
-}
-
-/* === تأثيرات التركيز === */
-.field-item select.filled-field:focus {
-    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-}
-
-/* === مؤشر عند الحقول المملوءة === */
-.field-item:has(.filled-field) {
-    border-left: 3px solid var(--success-color);
-    padding-left: calc(1.25rem - 3px);
-}
 
     .language-switcher option[value="ur"] {
       background: white;
@@ -1006,759 +852,691 @@
       }
     }
 
-/* ========== أنماط التفاعلية المضافة (تم التعديل لتعتمد على قيمة السمة المُحدثة بالجافاسكريبت) ========== */
-
-/* 1. النمط الافتراضي لحقول الفئات (الورثة) - الأزرق */
-/* يطبق إذا كانت القيمة الافتراضية "0" (القيمة قبل الاختيار) */
-#dynamic-fields .input-group select[value="0"] {
-    border-color: var(--primary-color) !important;
-    background-color: rgba(26, 115, 232, 0.05) !important;
-}
-
-/* 2. النمط الشرطي للحقول المملوءة (الأخضر) - يتجاوز النمط الأزرق */
-/* يطبق إذا كانت القيمة أي شيء آخر غير "0" */
-#dynamic-fields .input-group select:not([value="0"]),
-.filled-field {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-}
-
-/* 3. النمط الشرطي لحقل الديانة (#deceased_religion) */
-
-/* الحالة الحمراء: غير مسلم (الأعلى أولوية) */
-#deceased_religion[value="غير مسلم"] {
-    border-color: var(--danger-color) !important; /* أحمر */
-    background-color: rgba(234, 67, 53, 0.05) !important;
-}
-
-/* الحالة الخضراء: مسلم */
-/* يطبق على هذا الحقل إذا اختيرت "مسلم" لتجاوز أي نمط آخر */
-#deceased_religion[value="مسلم"] {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-}
-
-/* الأنماط العامة لـ :valid يمكن أن تظل (للعناصر التي تعمل معها بشكل طبيعي) */
-.input-group input:valid {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-}
-
-
-/* ========== أنماط تفاعلية أخرى (تم نقلها أو تعديلها) ========== */
-
-.input-group select:focus:valid,
-.input-group input:focus:valid {
-  box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-}
-
-/* تأثيرات على العناصر المحددة */
-.selected-item {
-  background: var(--success-color) !important;
-  color: white !important;
-}
-
-/* تأثيرات على أزرار الراديو */
-.radio-item:hover .radio-custom {
-  border-color: var(--success-color);
-}
-
-.radio-input:checked + .radio-custom {
-  border-color: var(--success-color);
-  background: rgba(52, 168, 83, 0.1);
-}
-
-/* أنماط تفاعلية إضافية */
-.focused-field {
-  position: relative;
-}
-
-.focused-field::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--primary-color);
-  border-radius: 2px;
-}
-
-.selected-group {
-  border-left: 3px solid var(--success-color);
-  padding-left: 10px;
-}
-
-.selected-radio {
-  background: rgba(52, 168, 83, 0.1) !important;
-  border-radius: var(--radius-md);
-}
-
-.selected-row {
-  background: rgba(52, 168, 83, 0.1) !important;
-  border-left: 3px solid var(--success-color);
-}
-
-.editing-row {
-  box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.3);
-  border-radius: var(--radius-sm);
-}
-
-/* تأثيرات على خطوات التبويب */
-.tab-button.completed {
-  background: rgba(52, 168, 83, 0.1);
-  color: var(--success-color);
-}
-
-.tab-button.completed .step-number {
-  background: var(--success-color);
-  color: white;
-}
-
-/* تأثيرات على العداد */
-.worth-count.has-heirs {
-  background: rgba(52, 168, 83, 0.1);
-  color: var(--success-color);
-  border: 1px solid var(--success-color);
-}
-
-.worth-count.has-heirs span {
-  background: var(--success-color);
-}
-
-/* تأثيرات على الحقول النشطة */
-.input-group.active {
-  transform: translateY(-2px);
-}
-
-.input-group.active label {
-  color: var(--success-color);
-}
-
-/* تأثيرات على الجداول التفاعلية */
-.heir-name:focus,
-.heir-religion:focus {
-  border-color: var(--success-color);
-  box-shadow: 0 0 0 2px rgba(52, 168, 83, 0.2);
-}
-
-.heir-name.filled-field,
-.heir-religion.filled-field {
-  background: rgba(52, 168, 83, 0.05);
-  border-color: var(--success-color);
-}
-.currency-icon {
-width: 35px;
-height: 20px;
-vertical-align: middle;
-margin-right: 5px;
-}
-
-.unit {
-display: flex;
-align-items: center;
-gap: 5px;
-}
-    /* ========== أنماط التنبيهات المحسنة ========== */
-.alert-system {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 3000;
-    opacity: 0;
-    pointer-events: none;
-    transition: var(--transition-slow);
-    backdrop-filter: blur(5px);
-}
-
-.alert-system.active {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.alert-container {
-    background: var(--bg-primary);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-xl);
-    max-width: 450px;
-    width: 90%;
-    padding: 0;
-    overflow: hidden;
-    transform: scale(0.9) translateY(-20px);
-    opacity: 0;
-    transition: var(--transition-slow);
-}
-
-.alert-system.active .alert-container {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-}
-
-.alert-header {
-    padding: 1.5rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    border-bottom: 1px solid var(--border-light);
-}
-
-.alert-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-full);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.alert-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-.alert-content {
-    padding: 2rem;
-    text-align: center;
-}
-
-.alert-message {
-    font-size: 1.1rem;
-    color: var(--text-primary);
-    margin: 0 0 2rem 0;
-    line-height: 1.6;
-}
-
-.alert-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-}
-
-.alert-button {
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 120px;
-}
-
-/* أنواع التنبيهات */
-.alert-error .alert-header {
-    background: rgba(234, 67, 53, 0.1);
-    border-left: 4px solid var(--danger-color);
-}
-
-.alert-error .alert-icon {
-    background: var(--danger-color);
-    color: white;
-}
-
-.alert-warning .alert-header {
-    background: rgba(249, 171, 0, 0.1);
-    border-left: 4px solid var(--warning-color);
-}
-
-.alert-warning .alert-icon {
-    background: var(--warning-color);
-    color: white;
-}
-
-.alert-success .alert-header {
-    background: rgba(52, 168, 83, 0.1);
-    border-left: 4px solid var(--success-color);
-}
-
-.alert-success .alert-icon {
-    background: var(--success-color);
-    color: white;
-}
-
-.alert-info .alert-header {
-    background: rgba(26, 115, 232, 0.1);
-    border-left: 4px solid var(--primary-color);
-}
-
-.alert-info .alert-icon {
-    background: var(--primary-color);
-    color: white;
-}
-
-/* أزرار التنبيهات */
-.alert-button-primary {
-    background: var(--primary-color);
-    color: white;
-}
-
-.alert-button-primary:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-}
-
-.alert-button-secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-}
-
-.alert-button-secondary:hover {
-    background: var(--border-medium);
-    transform: translateY(-2px);
-}
-
-/* تأثيرات للهواتف */
-@media (max-width: 768px) {
-    .alert-container {
-        width: 95%;
-        margin: 1rem;
-    }
-    
-    .alert-header {
-        padding: 1.25rem 1.5rem;
-    }
-    
-    .alert-content {
-        padding: 1.5rem;
-    }
-    
-    .alert-actions {
-        flex-direction: column;
-    }
-    
-    .alert-button {
-        width: 100%;
-    }
-}
-
-/* أنيميشن للظهور */
-@keyframes alertSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.alert-container {
-    animation: alertSlideIn 0.3s ease-out;
-}
-
-  /* ========== أنماط ترميز الألوان المطلوبة ========== */
-
-/* 1. النمط الافتراضي لحقول فئات الورثة - الأزرق */
-#dynamic-fields .input-group select.empty-field {
-    border-color: var(--primary-color) !important;
-    background-color: rgba(26, 115, 232, 0.05) !important;
-    border-width: 2px !important;
-}
-
-/* 2. النمط للحقول المملوءة (الأخضر) */
-#dynamic-fields .input-group select.filled-field {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-    border-width: 2px !important;
-}
-
-/* 3. الأنماط الخاصة بحقل الديانة */
-#deceased_religion.non-muslim-field {
-    border-color: var(--danger-color) !important;
-    background-color: rgba(234, 67, 53, 0.05) !important;
-    border-width: 2px !important;
-}
-
-#deceased_religion.muslim-field {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-    border-width: 2px !important;
-}
-
-/* تأثيرات انتقالية */
-#dynamic-fields select,
-#deceased_religion {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* تأثيرات التركيز */
-#dynamic-fields .input-group select.filled-field:focus {
-    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-}
-
-#deceased_religion.non-muslim-field:focus {
-    box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
-}
-
-#deceased_religion.muslim-field:focus {
-    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-}
-
-/* تحسين المظهر عند التمرير */
-#dynamic-fields .input-group select.filled-field:hover {
-    border-color: #2e7d32 !important;
-    background-color: rgba(52, 168, 83, 0.08) !important;
-}
-
-#deceased_religion.non-muslim-field:hover {
-    border-color: #d32f2f !important;
-    background-color: rgba(234, 67, 53, 0.08) !important;
-}
-
-#deceased_religion.muslim-field:hover {
-    border-color: #2e7d32 !important;
-    background-color: rgba(52, 168, 83, 0.08) !important;
-}
-
-/* شريط جانبي للإشارة */
-.input-group:has(.filled-field) {
-    padding-left: 5px;
-    border-left: 3px solid var(--success-color);
-}
-
-.input-group:has(.non-muslim-field) {
-    padding-left: 5px;
-    border-left: 3px solid var(--danger-color);
-}
-    /* ========== أنماط ترميز الألوان للتبويب الثاني ========== */
-
-/* 1. حقل الاسم (heir-name) */
-#resultTableBody .heir-name {
-    border: 2px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
-    width: 100%;
-    transition: all 0.3s ease;
-    font-family: inherit;
-    font-size: 1rem;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-}
-
-/* الحالة الفارغة - أزرق */
-#resultTableBody .heir-name.empty-field {
-    border-color: var(--primary-color) !important;
-    background-color: rgba(26, 115, 232, 0.05) !important;
-}
-
-/* الحالة المملوءة - أخضر */
-#resultTableBody .heir-name.filled-field {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-    font-weight: 600;
-}
-
-/* 2. حقل الديانة (heir-religion) */
-#resultTableBody .heir-religion {
-    border: 2px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 0.75rem 1rem;
-    width: 100%;
-    transition: all 0.3s ease;
-    font-family: inherit;
-    font-size: 1rem;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: left 1rem center;
-    padding-left: 3rem;
-}
-
-/* الحالة المسلمة - أخضر */
-#resultTableBody .heir-religion.muslim-field {
-    border-color: var(--success-color) !important;
-    background-color: rgba(52, 168, 83, 0.05) !important;
-}
-
-/* الحالة غير المسلمة - أحمر */
-#resultTableBody .heir-religion.non-muslim-field {
-    border-color: var(--danger-color) !important;
-    background-color: rgba(234, 67, 53, 0.05) !important;
-}
-
-/* تأثيرات التركيز */
-#resultTableBody .heir-name:focus,
-#resultTableBody .heir-religion:focus {
-    outline: none;
-    transform: translateY(-1px);
-}
-
-#resultTableBody .heir-name.filled-field:focus {
-    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-}
-
-#resultTableBody .heir-religion.muslim-field:focus {
-    box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
-}
-
-#resultTableBody .heir-religion.non-muslim-field:focus {
-    box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
-}
-
-/* تأثيرات التمرير */
-#resultTableBody .heir-name:hover,
-#resultTableBody .heir-religion:hover {
-    border-color: var(--border-medium);
-}
-
-#resultTableBody .heir-name.filled-field:hover {
-    border-color: #2e7d32 !important;
-    background-color: rgba(52, 168, 83, 0.08) !important;
-}
-
-#resultTableBody .heir-religion.muslim-field:hover {
-    border-color: #2e7d32 !important;
-    background-color: rgba(52, 168, 83, 0.08) !important;
-}
-
-#resultTableBody .heir-religion.non-muslim-field:hover {
-    border-color: #d32f2f !important;
-    background-color: rgba(234, 67, 53, 0.08) !important;
-}
-
-/* شريط جانبي للصفوف */
-#resultTableBody tr:has(.filled-field) td:first-child {
-    border-left: 3px solid var(--success-color);
-}
-
-#resultTableBody tr:has(.non-muslim-field) td:first-child {
-    border-left: 3px solid var(--danger-color);
-}
-
-/* أيقونات توضيحية */
-#resultTableBody .heir-name.filled-field::after {
-    content: '✓';
-    position: absolute;
-    left: 10px;
-    color: var(--success-color);
-    font-weight: bold;
-}
-
-/* رسالة توضيحية أسفل الجدول */
-.table-container:has(#resultTableBody)::after {
-    content: 'جميع الحقول المطلوبة';
-    display: block;
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: var(--text-tertiary);
-}
-    @media (max-width: 768px) {
+    /* ========== تنسيق الفئات بشبكة عمودين - كل زوج في سطر ========== */
     .form-group-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-group-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    }
+
+    .group-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px dashed rgba(26, 115, 232, 0.2);
+    }
+
+    .group-header h3 {
+      color: var(--primary-dark);
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      background: white;
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* === صفوف الحقول (كل صف يحوي حقلين) === */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* حقل فردي داخل الصف */
+    .field-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      background: var(--bg-primary);
+      padding: 1.25rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      transition: var(--transition);
+      height: 100%;
+    }
+
+    .field-item:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+    }
+
+    .field-item label {
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .field-item label::before {
+      content: "•";
+      color: var(--primary-color);
+      font-size: 1.5rem;
+    }
+
+    .field-item select {
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: left 1rem center;
+      padding-left: 3rem;
+    }
+
+    .field-item select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+    }
+
+    /* === نظام ترميز الألوان للحقول === */
+    .field-item select.empty-field {
+      border-color: var(--primary-color) !important;
+      background-color: rgba(26, 115, 232, 0.05) !important;
+    }
+
+    .field-item select.filled-field {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+      font-weight: 600;
+    }
+
+    /* === تأثيرات التركيز === */
+    .field-item select.filled-field:focus {
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+    }
+
+    /* === مؤشر عند الحقول المملوءة === */
+    .field-item:has(.filled-field) {
+      border-left: 3px solid var(--success-color);
+      padding-left: calc(1.25rem - 3px);
+    }
+
+    @media (max-width: 768px) {
+      .form-group-container {
         padding: 1.5rem;
         margin-bottom: 2rem;
-    }
-    
-    .field-row {
+      }
+      
+      .field-row {
         grid-template-columns: 1fr;
         gap: 1rem;
-    }
-    
-    .field-item {
+      }
+      
+      .field-item {
         padding: 1rem;
-    }
-    
-    .field-row:not(:last-child) {
+      }
+      
+      .field-row:not(:last-child) {
         margin-bottom: 1rem;
         padding-bottom: 1rem;
-    }
-    
-    .group-header h3 {
+      }
+      
+      .group-header h3 {
         font-size: 1.1rem;
         padding: 0.4rem 1rem;
+      }
     }
-}
 
-@media (max-width: 480px) {
-    .form-group-container {
+    @media (max-width: 480px) {
+      .form-group-container {
         padding: 1rem;
-    }
-    
-    .field-item {
+      }
+      
+      .field-item {
         padding: 0.875rem;
-    }
-    
-    .field-item select {
+      }
+      
+      .field-item select {
         padding: 0.75rem;
         padding-left: 2.5rem;
         font-size: 0.95rem;
+      }
     }
-}
-    /* أضف هذا CSS في نهاية الوسم <style> في index.html */
 
-/* ========== إصلاح مشكلة التمرير في الخطوة الثالثة ========== */
-#shares {
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
-    padding-right: 5px;
-}
+    /* ========== أنماط التفاعلية المضافة ========== */
+    #dynamic-fields .input-group select[value="0"] {
+      border-color: var(--primary-color) !important;
+      background-color: rgba(26, 115, 232, 0.05) !important;
+    }
 
-#shares::-webkit-scrollbar {
-    width: 8px;
-}
+    #dynamic-fields .input-group select:not([value="0"]),
+    .filled-field {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+    }
 
-#shares::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-    border-radius: 4px;
-}
+    #deceased_religion[value="غير مسلم"] {
+      border-color: var(--danger-color) !important;
+      background-color: rgba(234, 67, 53, 0.05) !important;
+    }
 
-#shares::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 4px;
-}
+    #deceased_religion[value="مسلم"] {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+    }
 
-#shares::-webkit-scrollbar-thumb:hover {
-    background: var(--primary-dark);
-}
+    .input-group input:valid {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+    }
 
-/* تأكد من أن الهيدر يبقى في الأعلى */
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-    background: rgba(26, 115, 232, 0.95);
-}
+    .input-group select:focus:valid,
+    .input-group input:focus:valid {
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+    }
 
-/* تنسيق عمود الملة في جدول النتائج */
-#sharesTableBody td:nth-child(4) {
-    font-weight: 600;
-    text-align: center;
-}
+    .currency-icon {
+      width: 35px;
+      height: 20px;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
 
-#sharesTableBody td:nth-child(4):contains("مسلم") {
-    color: var(--success-color);
-}
+    .unit {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
 
-#sharesTableBody td:nth-child(4):contains("غير مسلم") {
-    color: var(--danger-color);
-}
+    /* ========== أنماط التنبيهات المحسنة ========== */
+    .alert-system {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition-slow);
+      backdrop-filter: blur(5px);
+    }
 
-/* تنسيق كلمة ريال بجانب المبلغ */
-.money-with-currency {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    justify-content: flex-end;
-}
+    .alert-system.active {
+      opacity: 1;
+      pointer-events: all;
+    }
 
-.money-with-currency .currency-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 3px;
-}
+    .alert-container {
+      background: var(--bg-primary);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      max-width: 450px;
+      width: 90%;
+      padding: 0;
+      overflow: hidden;
+      transform: scale(0.9) translateY(-20px);
+      opacity: 0;
+      transition: var(--transition-slow);
+    }
+
+    .alert-system.active .alert-container {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .alert-header {
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .alert-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .alert-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .alert-content {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .alert-message {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      margin: 0 0 2rem 0;
+      line-height: 1.6;
+    }
+
+    .alert-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .alert-button {
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      min-width: 120px;
+    }
+
+    /* أنواع التنبيهات */
+    .alert-error .alert-header {
+      background: rgba(234, 67, 53, 0.1);
+      border-left: 4px solid var(--danger-color);
+    }
+
+    .alert-error .alert-icon {
+      background: var(--danger-color);
+      color: white;
+    }
+
+    .alert-warning .alert-header {
+      background: rgba(249, 171, 0, 0.1);
+      border-left: 4px solid var(--warning-color);
+    }
+
+    .alert-warning .alert-icon {
+      background: var(--warning-color);
+      color: white;
+    }
+
+    .alert-success .alert-header {
+      background: rgba(52, 168, 83, 0.1);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .alert-success .alert-icon {
+      background: var(--success-color);
+      color: white;
+    }
+
+    .alert-info .alert-header {
+      background: rgba(26, 115, 232, 0.1);
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .alert-info .alert-icon {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    /* أزرار التنبيهات */
+    .alert-button-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .alert-button-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .alert-button-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .alert-button-secondary:hover {
+      background: var(--border-medium);
+      transform: translateY(-2px);
+    }
+
+    /* تأثيرات للهواتف */
+    @media (max-width: 768px) {
+      .alert-container {
+        width: 95%;
+        margin: 1rem;
+      }
+      
+      .alert-header {
+        padding: 1.25rem 1.5rem;
+      }
+      
+      .alert-content {
+        padding: 1.5rem;
+      }
+      
+      .alert-actions {
+        flex-direction: column;
+      }
+      
+      .alert-button {
+        width: 100%;
+      }
+    }
+
+    /* أنيميشن للظهور */
+    @keyframes alertSlideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .alert-container {
+      animation: alertSlideIn 0.3s ease-out;
+    }
+
+    /* ========== إصلاح مشكلة التمرير في الخطوة الثالثة ========== */
+    #shares {
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    #shares::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #shares::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+
+    #shares::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 4px;
+    }
+
+    #shares::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+
+    /* تنسيق كلمة ريال بجانب المبلغ */
+    .money-with-currency {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      justify-content: flex-end;
+    }
+
+    .money-with-currency .currency-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 3px;
+    }
+
     /* الحل النهائي: جعل الهيدر داخل تبويب النتائج يتصرف بشكل طبيعي */
-#shares > .header.print-hide {
-    position: relative !important;
-    top: auto !important;
-    margin: 0 0 2rem 0 !important;
-    padding: 1.2rem !important;
-    background: linear-gradient(135deg, #f0f7ff 0%, #e1eeff 100%) !important;
-    color: var(--primary-dark) !important;
-    border-radius: var(--radius-lg) !important;
-    border: 1px solid rgba(26, 115, 232, 0.2) !important;
-    text-align: center !important;
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-    box-shadow: var(--shadow-sm) !important;
-}
+    #shares > .header.print-hide {
+      position: relative !important;
+      top: auto !important;
+      margin: 0 0 2rem 0 !important;
+      padding: 1.2rem !important;
+      background: linear-gradient(135deg, #f0f7ff 0%, #e1eeff 100%) !important;
+      color: var(--primary-dark) !important;
+      border-radius: var(--radius-lg) !important;
+      border: 1px solid rgba(26, 115, 232, 0.2) !important;
+      text-align: center !important;
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      box-shadow: var(--shadow-sm) !important;
+    }
 
-/* تأكد أن التبويب بأكمله لديه مساحة للتمرير */
-#shares {
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-    padding: 1rem 0.5rem 2rem 0;
-}
+    /* تأكد أن التبويب بأكمله لديه مساحة للتمرير */
+    #shares {
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      padding: 1rem 0.5rem 2rem 0;
+    }
 
-/* إزالة أي تأثيرات sticky غير مرغوبة */
-#shares * {
-    position: static !important;
-}
+    /* ========== تنسيق خاص لزر التالي على اليسار ========== */
+    .next-btn-left {
+      margin-right: auto !important;
+      margin-left: 0 !important;
+      order: -1 !important;
+    }
 
-/* تعديل لرؤوس الجداول */
-#shares table thead {
-    position: sticky;
-    top: 0;
-    background: var(--bg-secondary);
-    z-index: 5;
-}
-/* ========== تنسيق مودال الأبناء بالكامل ========== */
+    .footer-right-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-direction: row-reverse;
+      justify-content: flex-start;
+      width: 100%;
+    }
 
-/* ========== تنسيق خاص لزر التالي على اليسار ========== */
-/* كلاس جديد لزر التالي */
-.next-btn-left {
-  /* إزالة أي margins تدفع الزر لليمين */
-  margin-right: auto !important;
-  margin-left: 0 !important;
-  
-  /* تأكيد أنه أول عنصر في الحاوية */
-  order: -1 !important;
-}
+    .footer-right-buttons .next-btn-left {
+      order: 1 !important;
+    }
 
-/* تعديل حاوية الأزرار اليمنى */
-.footer-right-buttons {
-  display: flex;
-  gap: 1rem;
-  flex-direction: row-reverse; /* يعكس الترتيب داخلياً */
-  justify-content: flex-start; /* يبدأ من اليسار */
-  width: 100%;
-}
+    .footer-right-buttons .btn-print {
+      order: 2 !important;
+    }
 
-/* لجعل زر التالي يأتي أولاً (على أقصى اليسار) */
-.footer-right-buttons .next-btn-left {
-  order: 1 !important; /* الأول */
-}
+    #footer-next-btn.next-btn-left {
+      margin-left: 0 !important;
+      margin-right: 10px !important;
+    }
 
-.footer-right-buttons .btn-print {
-  order: 2 !important; /* الثاني */
-}
+    @media (max-width: 768px) {
+      .footer-right-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .next-btn-left,
+      .btn-print {
+        order: 0 !important;
+        width: 100%;
+        margin: 5px 0 !important;
+      }
+      
+      .footer-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
 
-/* تعديل الفوتر بالكامل */
-.footer-buttons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
+    /* ========== التعديلات الجديدة ========== */
+    
+    /* سطر جديد لاسم المتوفى والمبلغ والأمتار */
+    .form-group-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr; /* اسم المتوفى أكبر */
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
 
-/* تحسين التباعد */
-#footer-next-btn.next-btn-left {
-  margin-left: 0 !important;
-  margin-right: 10px !important;
-}
+    /* حقل اسم المتوفى (أكبر) */
+    .form-group-row .name-field {
+      grid-column: span 1;
+    }
 
-/* للأجهزة الصغيرة */
-@media (max-width: 768px) {
-  .footer-right-buttons {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .next-btn-left,
-  .btn-print {
-    order: 0 !important;
-    width: 100%;
-    margin: 5px 0 !important;
-  }
-  
-  .footer-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
+    .form-group-row .name-field input {
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 1.1rem 1.3rem;
+    }
+
+    /* حقول المبلغ والأمتار */
+    .form-group-row .input-with-unit {
+      position: relative;
+    }
+
+    /* تحسين المظهر العام */
+    .form-group-row .input-group {
+      margin-bottom: 0;
+    }
+
+    .form-group-row label {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      display: block;
+      color: var(--text-primary);
+    }
+
+    .form-group-row input {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-group-row input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* حاوية نوع المتوفى مع حقلي الزوج/الزوجة */
+    .flex-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* تحسين أزرار الراديو */
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* حقول الزوج/الزوجة */
+    .spouse-fields-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .flex-container .input-group {
+      margin-bottom: 0;
+      width: 100%;
+    }
+
+    .flex-container .input-group label {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .flex-container .input-group select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+
+    /* تعديلات للاستجابة على الجوال */
+    @media (max-width: 768px) {
+      .form-group-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .form-group-row .name-field input {
+        font-size: 1rem;
+        padding: 1rem;
+      }
+      
+      .flex-container {
+        gap: 1rem;
+      }
+      
+      .radio-group {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .radio-item {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      
+      .spouse-fields-container {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+    }
+
+    /* ========== إصلاح لحقول ترميز الألوان ========== */
+    #dynamic-fields .input-group select.empty-field {
+      border-color: var(--primary-color) !important;
+      background-color: rgba(26, 115, 232, 0.05) !important;
+      border-width: 2px !important;
+    }
+
+    #dynamic-fields .input-group select.filled-field {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+      border-width: 2px !important;
+    }
+
+    #deceased_religion.non-muslim-field {
+      border-color: var(--danger-color) !important;
+      background-color: rgba(234, 67, 53, 0.05) !important;
+      border-width: 2px !important;
+    }
+
+    #deceased_religion.muslim-field {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+      border-width: 2px !important;
+    }
   </style>
 </head>
 <body>
@@ -1808,7 +1586,7 @@ gap: 5px;
         </select>
       </div>
       <div class="btn-group">
-      <button class="btn btn-next" id="sonsNextBtn" data-i18n="next" data-i18n-title="next">التالي</button>
+        <button class="btn btn-next" id="sonsNextBtn" data-i18n="next" data-i18n-title="next">التالي</button>
         <button class="btn btn-previous" id="closeSonsPopup" data-i18n="close" data-i18n-title="close">إغلاق</button>
       </div>
     </div>
@@ -1842,19 +1620,42 @@ gap: 5px;
             <div class="form-group-inline">
               <div class="flex-container">
                 <label data-i18n="deceasedType">نوع المتوفى</label>
-            <div class="radio-group">
-    <label class="radio-item" for="male">
-        <input type="radio" id="male" name="deceased_gender" value="male" data-i18n-title="male" class="radio-input">
-        <span class="radio-custom"></span>
-        <span class="radio-label" data-i18n="male">ذكر</span>
-    </label>
-    <label class="radio-item" for="female">
-        <input type="radio" id="female" name="deceased_gender" value="female" data-i18n-title="female" class="radio-input">
-        <span class="radio-custom"></span>
-        <span class="radio-label" data-i18n="female">أنثى</span>
-    </label>
-</div>
+                <div class="radio-group">
+                  <label class="radio-item" for="male">
+                    <input type="radio" id="male" name="deceased_gender" value="male" data-i18n-title="male" class="radio-input">
+                    <span class="radio-custom"></span>
+                    <span class="radio-label" data-i18n="male">ذكر</span>
+                  </label>
+                  <label class="radio-item" for="female">
+                    <input type="radio" id="female" name="deceased_gender" value="female" data-i18n-title="female" class="radio-input">
+                    <span class="radio-custom"></span>
+                    <span class="radio-label" data-i18n="female">أنثى</span>
+                  </label>
+                </div>
+                
+                <!-- حقلي الزوج/الزوجة هنا -->
+                <div class="spouse-fields-container">
+                  <div class="input-group hidden" id="spouse_female">
+                    <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
+                    <select id="wife" name="wife" data-i18n-title="numberOfWives">
+                      <option value="0" data-i18n="noOption">لا</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                    </select>
+                  </div>
+
+                  <div class="input-group hidden" id="spouse_male">
+                    <label for="husband" data-i18n="hasHusband">هل يوجد زوج؟</label>
+                    <select id="husband" name="husband" data-i18n-title="hasHusband">
+                      <option value="no" data-i18n="noOption">لا</option>
+                      <option value="yes" data-i18n="yesOption">نعم</option>
+                    </select>
+                  </div>
+                </div>
               </div>
+              
               <div class="deceased_religion">
                 <div class="input-group">
                   <label for="deceased_religion" data-i18n="religion">الديانة</label>
@@ -1870,42 +1671,26 @@ gap: 5px;
               </div>
             </div>
 
-            <div class="input-group">
-              <label for="deceased_name" data-i18n="deceasedName">اسم المتوفى</label>
-              <input type="text" id="deceased_name" name="deceased_name" data-i18n-placeholder="enterDeceasedName" data-i18n-title="deceasedName" />
-            </div>
-
-            <div class="input-group input-with-unit">
-    <label for="amount" data-i18n="estateAmount">مبلغ التركة</label>
-    <input type="number" id="amount" data-i18n-placeholder="enterAmount" data-i18n-title="estateAmount" />
-    <span class="unit">
-        <img src="SRE.png" alt="ريال" class="currency-icon" />
-    </span>
-</div>
-
-            <div class="input-group input-with-unit">
-              <label for="materials" data-i18n="materials">الأمتار المراد توزيعها</label>
-              <input type="number" id="materials" data-i18n-placeholder="enterMaterials" data-i18n-title="materials" />
-              <span class="unit" data-i18n="meter">متر</span>
-            </div>
-
-            <div class="input-group hidden" id="spouse_female">
-              <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
-              <select id="wife" name="wife" data-i18n-title="numberOfWives">
-                <option value="0" data-i18n="noOption">لا</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-              </select>
-            </div>
-
-            <div class="input-group hidden" id="spouse_male">
-              <label for="husband" data-i18n="hasHusband">هل يوجد زوج؟</label>
-              <select id="husband" name="husband" data-i18n-title="hasHusband">
-                <option value="no" data-i18n="noOption">لا</option>
-                <option value="yes" data-i18n="yesOption">نعم</option>
-              </select>
+            <!-- سطر جديد: اسم المتوفى + مبلغ التركة + الأمتار -->
+            <div class="form-group-row">
+              <div class="input-group name-field">
+                <label for="deceased_name" data-i18n="deceasedName">اسم المتوفى</label>
+                <input type="text" id="deceased_name" name="deceased_name" data-i18n-placeholder="enterDeceasedName" data-i18n-title="deceasedName" />
+              </div>
+              
+              <div class="input-group input-with-unit">
+                <label for="amount" data-i18n="estateAmount">مبلغ التركة</label>
+                <input type="number" id="amount" data-i18n-placeholder="enterAmount" data-i18n-title="estateAmount" />
+                <span class="unit">
+                  <img src="SRE.png" alt="ريال" class="currency-icon" />
+                </span>
+              </div>
+              
+              <div class="input-group input-with-unit">
+                <label for="materials" data-i18n="materials">الأمتار المراد توزيعها</label>
+                <input type="number" id="materials" data-i18n-placeholder="enterMaterials" data-i18n-title="materials" />
+                <span class="unit" data-i18n="meter">متر</span>
+              </div>
             </div>
 
             <hr />
@@ -2012,55 +1797,56 @@ gap: 5px;
       </div>
     </div>
   </div>
+  
   <div id="alertSystem" class="alert-system hidden">
     <div class="alert-container">
-        <div class="alert-header">
-            <div class="alert-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h3 class="alert-title" data-i18n="alertTitle">تنبيه</h3>
+      <div class="alert-header">
+        <div class="alert-icon">
+          <i class="fas fa-exclamation-triangle"></i>
         </div>
-        <div class="alert-content">
-            <p class="alert-message" id="alertMessage">هنا سيظهر نص التنبيه</p>
-            <div class="alert-actions">
-                <button class="alert-button alert-button-primary" id="alertConfirm">
-                    <span data-i18n="ok">حسناً</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script id="field-template" type="text/x-handlebars-template">
-  {{#each groups}}
-    <div class="form-group-container">
-      <div class="group-header">
-        <h3 data-i18n="category{{@index}}">الفئة {{groupTitle}}</h3>
+        <h3 class="alert-title" data-i18n="alertTitle">تنبيه</h3>
       </div>
-      
-      {{#each (groupFields fields) as |row|}}
-        <div class="field-row">
-          {{#each row as |field|}}
-            <div class="field-item">
-              <label for="{{field.id}}" data-i18n="{{field.id}}">{{field.title}}</label>
-              <select id="{{field.id}}" name="{{field.id}}" data-i18n-title="{{field.id}}">
-                {{#each field.options}}
-                  <option value="{{this}}" data-i18n="{{this}}">
-                    {{#if (isTranslatable this)}}
-                      {{t this}}
-                    {{else}}
-                      {{this}}
-                    {{/if}}
-                  </option>
-                {{/each}}
-              </select>
-            </div>
-          {{/each}}
+      <div class="alert-content">
+        <p class="alert-message" id="alertMessage">هنا سيظهر نص التنبيه</p>
+        <div class="alert-actions">
+          <button class="alert-button alert-button-primary" id="alertConfirm">
+            <span data-i18n="ok">حسناً</span>
+          </button>
         </div>
-      {{/each}}
+      </div>
     </div>
-  {{/each}}
-</script>
+  </div>
+
+  <script id="field-template" type="text/x-handlebars-template">
+    {{#each groups}}
+      <div class="form-group-container">
+        <div class="group-header">
+          <h3 data-i18n="category{{@index}}">الفئة {{groupTitle}}</h3>
+        </div>
+        
+        {{#each (groupFields fields) as |row|}}
+          <div class="field-row">
+            {{#each row as |field|}}
+              <div class="field-item">
+                <label for="{{field.id}}" data-i18n="{{field.id}}">{{field.title}}</label>
+                <select id="{{field.id}}" name="{{field.id}}" data-i18n-title="{{field.id}}">
+                  {{#each field.options}}
+                    <option value="{{this}}" data-i18n="{{this}}">
+                      {{#if (isTranslatable this)}}
+                        {{t this}}
+                      {{else}}
+                        {{this}}
+                      {{/if}}
+                    </option>
+                  {{/each}}
+                </select>
+              </div>
+            {{/each}}
+          </div>
+        {{/each}}
+      </div>
+    {{/each}}
+  </script>
 
   <div class="modal-overlay hidden" id="modalOverlay">
     <div class="modal" id="validationModal">
@@ -2071,16 +1857,13 @@ gap: 5px;
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const selects = document.querySelectorAll('select');
-        selects.forEach(select => {
-            // 1. تعيين السمة "value" الأولية عند التحميل
-            select.setAttribute('value', select.value);
-
-            select.addEventListener('change', function() {
-                // 2. تحديث السمة "value" عند تغيير القيمة
-                this.setAttribute('value', this.value);
-            });
+      const selects = document.querySelectorAll('select');
+      selects.forEach(select => {
+        select.setAttribute('value', select.value);
+        select.addEventListener('change', function() {
+          this.setAttribute('value', this.value);
         });
+      });
     });
   </script>
 
@@ -2097,12 +1880,10 @@ gap: 5px;
       document.body.className = isRTL(lang) ? '' : 'ltr';
       if (lang === 'ur') document.body.classList.add('lang-ur');
       
-      // تحديث مبدل اللغة - التصحيح هنا
+      // تحديث مبدل اللغة
       const languageSelect = document.getElementById('languageSelect');
       if (languageSelect) {
         languageSelect.value = lang;
-        
-        // استخدام نصوص ثابتة للغات (الحل السريع)
         const options = languageSelect.querySelectorAll('option');
         options[0].textContent = 'العربية';
         options[1].textContent = 'English';
@@ -2148,5 +1929,42 @@ gap: 5px;
   </script>
 
   <script type="module" src="js/new_script.js"></script>
+  
+  <!-- إصلاح JavaScript لمنع الخطأ -->
+  <script>
+    // حل للخطأ في new_script.js السطر 796
+    document.addEventListener('DOMContentLoaded', function() {
+      // تأكد من وجود العنصر قبل تعيين innerHTML
+      function safeSetInnerHTML(elementId, html) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.innerHTML = html;
+        } else {
+          console.warn(`العنصر ${elementId} غير موجود`);
+        }
+      }
+      
+      // إذا كان هناك دالة initCalculatorForm في new_script.js، يمكننا تعديلها
+      if (typeof initCalculatorForm === 'function') {
+        // حفظ الدالة الأصلية
+        const originalInitCalculatorForm = initCalculatorForm;
+        
+        // استبدال الدالة بنسخة آمنة
+        window.initCalculatorForm = function() {
+          try {
+            return originalInitCalculatorForm.apply(this, arguments);
+          } catch (error) {
+            console.error('خطأ في initCalculatorForm:', error);
+            // محاولة إصلاح العناصر المفقودة
+            const dynamicFields = document.getElementById('dynamic-fields');
+            if (!dynamicFields) {
+              console.error('العنصر dynamic-fields غير موجود');
+              return;
+            }
+          }
+        };
+      }
+    });
+  </script>
 </body>
 </html>
