@@ -1,3 +1,4 @@
+
 // Multi-language translations for Islamic Inheritance Calculator
 // Supported languages: Arabic (ar), English (en), Urdu (ur)
 
@@ -17,6 +18,7 @@ export const translations = {
     tab1Title: "البيانات الأساسية",
     tab2Title: "بيانات الورثة",
     tab3Title: "نتائج التوزيع",
+    decimalSeparator: "٫",  // فاصلة عربية
 
     // التنبيهات
 alertTitle: "تنبيه",
@@ -242,6 +244,8 @@ yesOption: "نعم",
 alertTitle: "Alert",
 deceasedTypeRequired: "You must specify the deceased type to continue",
 heirsRequired: "You must select at least one heir to continue",
+        decimalSeparator: ".",  // نقطة إنجليزية
+
 
 // Alert buttons
 ok: "OK",
@@ -298,7 +302,7 @@ yesOption: "Yes",
     religiousStatus: "Religious Status",
     relationship: "Relationship",
     heirName: "Heir Name",
-    enterHeirName: "Enter heir name",
+    enterHeirName: "Enter name",
     moneyShare: "Money Share",
     materialsShare: "Materials Share",
     percentageShare: "Percentage Share",
@@ -548,7 +552,8 @@ yesOption: "جی ہاں",
     category7: "زمرہ 7",
     category8: "زمرہ 8",
     category9: "زمرہ 9",
-    
+        decimalSeparator: "٫",  // فاصلة عربية
+
     // Heir relationships
     father: "والد",
     mother: "والدہ",
@@ -732,12 +737,13 @@ export function formatNumber(number, lang = null) {
         formattedDecimal += digit;
       }
     }
-    return formattedInteger + translation.decimalSeparator + formattedDecimal;
+    // استخدام الفاصلة أو النقطة حسب اللغة
+    const separator = translation.decimalSeparator || '.';
+    return formattedInteger + separator + formattedDecimal;
   }
   
   return formattedInteger;
 }
-
 // Convert Arabic/Urdu numbers to English for calculations
 export function parseNumber(numberStr) {
   if (!numberStr) return 0;
