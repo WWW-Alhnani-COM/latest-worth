@@ -35,28 +35,74 @@ export const CONDITIONS = {
   hasSister: 'HAS_SISTER'
 }
 
+// دالة مساعدة للتحقق من وجود ابن
+function hasSonKey(key) {
+  return key === 'son' || key.startsWith('son_');
+}
+
+// دالة مساعدة للتحقق من وجود بنت
+function hasDaughterKey(key) {
+  return key === 'daughter' || key.startsWith('daughter_');
+}
+
+// دالة مساعدة للتحقق من وجود أخت
+function hasSisterKey(key) {
+  return key === 'sister' || key.startsWith('sister_');
+}
+
+// دالة مساعدة للتحقق من وجود زوجة
+function hasWifeKey(key) {
+  return key === 'wife' || key.startsWith('wife_');
+}
+
 export function checkHeirs(heirs, condition) {
+  if (!heirs || typeof heirs !== 'object') return false;
+  
+  const keys = Object.keys(heirs);
+  
   switch (condition) {
     case CONDITIONS.hasSon:
-      return Object.keys(heirs).some(key => key.startsWith('son_'));
+      // ✅ التصحيح: يشمل son و son_1, son_2, إلخ
+      return keys.some(key => hasSonKey(key));
+      
     case CONDITIONS.hasDaughter:
-      return Object.keys(heirs).some(key => key.startsWith('daughter_'));
+      // ✅ التصحيح: يشمل daughter و daughter_1, daughter_2, إلخ
+      return keys.some(key => hasDaughterKey(key));
+      
     case CONDITIONS.hasMultipleDaughters:
-      const daughterCount = Object.keys(heirs).filter(key => key.startsWith('daughter_')).length;
-      return daughterCount >= 2;
+      // ✅ التصحيح: يشمل جميع أشكال البنات
+      const daughterKeys = keys.filter(key => hasDaughterKey(key));
+      return daughterKeys.length >= 2;
+      
     case CONDITIONS.hasFather:
-      return heirs.father && heirs.father.title !== undefined;
+      // ✅ التصحيح: تحقق من وجود أب
+      return keys.includes('father') && heirs.father && 
+             (heirs.father.title !== undefined || heirs.father.count > 0);
+      
     case CONDITIONS.hasMother:
-      return heirs.mother && heirs.mother.title !== undefined;
+      // ✅ التصحيح: تحقق من وجود أم
+      return keys.includes('mother') && heirs.mother && 
+             (heirs.mother.title !== undefined || heirs.mother.count > 0);
+      
     case CONDITIONS.hasGrandmother:
-      return (heirs.FR_grandmother && heirs.FR_grandmother.title !== undefined) || 
-             (heirs.MR_grandmother && heirs.MR_grandmother.title !== undefined);
+      // ✅ التصحيح: تحقق من وجود جدة (أي نوع)
+      return keys.some(key => key.includes('grandmother')) ||
+             (heirs.FR_grandmother && (heirs.FR_grandmother.title !== undefined || heirs.FR_grandmother.count > 0)) || 
+             (heirs.MR_grandmother && (heirs.MR_grandmother.title !== undefined || heirs.MR_grandmother.count > 0));
+      
     case CONDITIONS.hasHusband:
-      return heirs.husband && heirs.husband.title !== undefined;
+      // ✅ التصحيح: تحقق من وجود زوج
+      return keys.includes('husband') && heirs.husband && 
+             (heirs.husband.title !== undefined || heirs.husband.count > 0);
+      
     case CONDITIONS.hasWife:
-      return Object.keys(heirs).some(key => key.startsWith('wife_'));
+      // ✅ التصحيح: تحقق من وجود زوجة/زوجات
+      return keys.some(key => hasWifeKey(key));
+      
     case CONDITIONS.hasSister:
-      return Object.keys(heirs).some(key => key.startsWith('sister_'));
+      // ✅ التصحيح: تحقق من وجود أخت
+      return keys.some(key => hasSisterKey(key));
+      
     default:
       return false;
   }
@@ -75,18 +121,52 @@ export function getDeceasedType() {
 // دالة مساعدة للحصول على عدد كل نوع من الورثة
 export function getHeirCounts(heirs) {
   const counts = {};
+  
+  if (!heirs || typeof heirs !== 'object') return counts;
+  
   for (const key of Object.keys(heirs)) {
-    if (key.startsWith('son_')) {
+    if (hasSonKey(key)) {
       counts[HEIR_TYPES.SON] = (counts[HEIR_TYPES.SON] || 0) + 1;
-    } else if (key.startsWith('daughter_')) {
+    } else if (hasDaughterKey(key)) {
       counts[HEIR_TYPES.DAUGHTER] = (counts[HEIR_TYPES.DAUGHTER] || 0) + 1;
-    } else if (key.startsWith('wife_')) {
+    } else if (hasWifeKey(key)) {
       counts[HEIR_TYPES.WIFE] = (counts[HEIR_TYPES.WIFE] || 0) + 1;
-    } else if (key.startsWith('sister_')) {
+    } else if (hasSisterKey(key)) {
       counts[HEIR_TYPES.SISTER] = (counts[HEIR_TYPES.SISTER] || 0) + 1;
-    } else if (Object.values(HEIR_TYPES).includes(key)) {
-      counts[key] = 1;
+    } else if (key === 'father') {
+      counts[HEIR_TYPES.FATHER] = 1;
+    } else if (key === 'mother') {
+      counts[HEIR_TYPES.MOTHER] = 1;
+    } else if (key === 'husband') {
+      counts[HEIR_TYPES.HUSBAND] = 1;
+    } else if (key.includes('grandmother')) {
+      counts[HEIR_TYPES.GRANDMOTHER] = (counts[HEIR_TYPES.GRANDMOTHER] || 0) + 1;
     }
   }
+  
   return counts;
+}
+
+// دالة مساعدة جديدة: الحصول على قائمة مفاتيح الأبناء
+export function getSonKeys(heirs) {
+  if (!heirs) return [];
+  return Object.keys(heirs).filter(key => hasSonKey(key));
+}
+
+// دالة مساعدة جديدة: الحصول على قائمة مفاتيح البنات
+export function getDaughterKeys(heirs) {
+  if (!heirs) return [];
+  return Object.keys(heirs).filter(key => hasDaughterKey(key));
+}
+
+// دالة مساعدة جديدة: الحصول على قائمة مفاتيح الأخوات
+export function getSisterKeys(heirs) {
+  if (!heirs) return [];
+  return Object.keys(heirs).filter(key => hasSisterKey(key));
+}
+
+// دالة مساعدة جديدة: الحصول على قائمة مفاتيح الزوجات
+export function getWifeKeys(heirs) {
+  if (!heirs) return [];
+  return Object.keys(heirs).filter(key => hasWifeKey(key));
 }
