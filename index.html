@@ -1695,6 +1695,57 @@ gap: 5px;
     background: var(--bg-secondary);
     z-index: 5;
 }
+    /* ========== تحريك زر التالي إلى اليسار في الخطوة الأولى ========== */
+
+/* عندما يكون تبويب البيانات الأساسية نشطاً */
+#calculator.active ~ .fixed-footer .footer-buttons {
+    justify-content: flex-start !important;
+}
+
+#calculator.active ~ .fixed-footer .footer-right-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+#calculator.active ~ .fixed-footer #footer-next-btn {
+    margin-right: auto;
+    margin-left: 0;
+    order: -1;
+}
+
+/* إخفاء زر السابق في الخطوة الأولى */
+#calculator.active ~ .fixed-footer #footer-prev-btn {
+    display: none !important;
+}
+
+/* إعادة ضبط التخطيط للخطوتين 2 و 3 */
+#religious.active ~ .fixed-footer .footer-buttons,
+#shares.active ~ .fixed-footer .footer-buttons {
+    justify-content: space-between !important;
+}
+
+#religious.active ~ .fixed-footer .footer-right-buttons,
+#shares.active ~ .fixed-footer .footer-right-buttons {
+    width: auto;
+    justify-content: flex-end;
+}
+
+/* إظهار زر السابق في الخطوتين 2 و 3 */
+#religious.active ~ .fixed-footer #footer-prev-btn,
+#shares.active ~ .fixed-footer #footer-prev-btn {
+    display: inline-flex !important;
+}
+
+/* إخفاء زر التالي في الخطوة الثالثة */
+#shares.active ~ .fixed-footer #footer-next-btn {
+    display: none !important;
+}
+
+/* إظهار زر الطباعة في الخطوة الثالثة */
+#shares.active ~ .fixed-footer #footer-print-btn {
+    display: inline-flex !important;
+}
   </style>
 </head>
 <body>
