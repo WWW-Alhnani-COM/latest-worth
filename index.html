@@ -1537,8 +1537,213 @@
       background-color: rgba(52, 168, 83, 0.05) !important;
       border-width: 2px !important;
     }
+    /* ========== التعديلات المطلوبة ========== */
+
+/* 1. تغيير لون حقول الزوج/الزوجة عند الاختيار */
+.spouse-field {
+  border: 2px solid var(--border-light) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* حقل الزوجات عند الاختيار */
+#wife[value="1"],
+#wife[value="2"], 
+#wife[value="3"],
+#wife[value="4"],
+#wife.filled-field {
+  border-color: var(--success-color) !important;
+  background-color: rgba(52, 168, 83, 0.05) !important;
+  border-width: 2px !important;
+}
+
+/* حقل الزوج عند الاختيار */
+#husband[value="yes"],
+#husband.filled-field {
+  border-color: var(--success-color) !important;
+  background-color: rgba(52, 168, 83, 0.05) !important;
+  border-width: 2px !important;
+}
+
+/* الحالة الفارغة (لا) - أزرق */
+#wife[value="0"],
+#husband[value="no"] {
+  border-color: var(--primary-color) !important;
+  background-color: rgba(26, 115, 232, 0.05) !important;
+}
+
+/* 2. تقليل المسافات بين حقول الفئات */
+.form-group-container {
+  padding: 1.5rem !important; /* كان 2rem */
+  margin-bottom: 2rem !important; /* كان 3rem */
+  gap: 1rem !important; /* كان 1.5rem */
+}
+
+.field-row {
+  gap: 1rem !important; /* كان 1.5rem */
+}
+
+.field-item {
+  padding: 1rem !important; /* كان 1.25rem */
+  gap: 0.5rem !important; /* كان 0.75rem */
+}
+
+.field-row:not(:last-child) {
+  margin-bottom: 1rem !important; /* كان 1.5rem */
+  padding-bottom: 1rem !important; /* كان 1.5rem */
+}
+
+/* 3. جعل حقل اسم المتوفى بنفس لون حقل الديانة */
+#deceased_name.filled-field {
+  border-color: var(--success-color) !important;
+  background-color: rgba(52, 168, 83, 0.05) !important;
+  border-width: 2px !important;
+}
+
+/* 4. في تبويب بيانات الورثة: جعل حقل الاسم بنفس لون حقل الحالة الدينية */
+#resultTableBody .heir-name.filled-field {
+  border-color: var(--success-color) !important;
+  background-color: rgba(52, 168, 83, 0.05) !important;
+  border-width: 2px !important;
+}
+
+/* 5. تحسين ألوان حقول الحالة الدينية في تبويب الورثة */
+#resultTableBody .heir-religion.muslim-field {
+  border-color: var(--success-color) !important;
+  background-color: rgba(52, 168, 83, 0.05) !important;
+  border-width: 2px !important;
+}
+
+#resultTableBody .heir-religion.non-muslim-field {
+  border-color: var(--danger-color) !important;
+  background-color: rgba(234, 67, 53, 0.05) !important;
+  border-width: 2px !important;
+}
+
+/* 6. تحسين تأثيرات التركيز */
+.spouse-field:focus,
+#deceased_name:focus,
+#resultTableBody .heir-name:focus,
+#resultTableBody .heir-religion:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 7. تحسين تأثيرات التمرير */
+.spouse-field:hover,
+#deceased_name:hover,
+#resultTableBody .heir-name:hover,
+#resultTableBody .heir-religion:hover {
+  border-color: var(--border-medium) !important;
+}
+
+/* 8. تحسين خاص للحقول المملوءة عند التمرير */
+#wife.filled-field:hover,
+#husband.filled-field:hover,
+#deceased_name.filled-field:hover,
+#resultTableBody .heir-name.filled-field:hover,
+#resultTableBody .heir-religion.muslim-field:hover {
+  border-color: #2e7d32 !important;
+  background-color: rgba(52, 168, 83, 0.08) !important;
+}
+
+#resultTableBody .heir-religion.non-muslim-field:hover {
+  border-color: #d32f2f !important;
+  background-color: rgba(234, 67, 53, 0.08) !important;
+}
+
+/* 9. تعديلات استجابة إضافية */
+@media (max-width: 768px) {
+  .form-group-container {
+    padding: 1rem !important;
+  }
+  
+  .field-item {
+    padding: 0.875rem !important;
+  }
+  
+  .spouse-fields-container {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* 10. تحسين وضوح التمييز بين الحقول */
+.input-group:has(.filled-field) {
+  position: relative;
+}
+
+.input-group:has(.filled-field)::after {
+  content: '✓';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--success-color);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* استثناء للحقول الحمراء */
+.input-group:has(.non-muslim-field)::after {
+  content: '✗';
+  color: var(--danger-color);
+}
+
+/* 11. تنسيق شريط جانبي للإشارة */
+.input-group:has(.filled-field):not(:has(.non-muslim-field)) {
+  padding-left: 5px;
+  border-left: 3px solid var(--success-color);
+}
+
+.input-group:has(.non-muslim-field) {
+  padding-left: 5px;
+  border-left: 3px solid var(--danger-color);
+}
+
+/* 12. تحسين للجداول في تبويب الورثة */
+#resultTableBody tr:has(.filled-field):not(:has(.non-muslim-field)) td:first-child {
+  border-left: 3px solid var(--success-color);
+}
+
+#resultTableBody tr:has(.non-muslim-field) td:first-child {
+  border-left: 3px solid var(--danger-color);
+}
+
+/* 13. تحسين عرض الأيقونات في حقول الوحدات */
+.unit {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.currency-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+/* 14. تحسين مظهر العداد */
+.worth-count {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-light);
+  transition: var(--transition);
+}
+
+.worth-count.has-heirs {
+  background: rgba(52, 168, 83, 0.1);
+  border-color: var(--success-color);
+  color: var(--success-color);
+}
+
+.worth-count.has-heirs span {
+  background: var(--success-color);
+}
   </style>
 </head>
+  
 <body>
   <header class="header">
     <div class="header-container">
@@ -1634,27 +1839,27 @@
                 </div>
                 
                 <!-- حقلي الزوج/الزوجة هنا -->
-                <div class="spouse-fields-container">
-                  <div class="input-group hidden" id="spouse_female">
-                    <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
-                    <select id="wife" name="wife" data-i18n-title="numberOfWives">
-                      <option value="no" data-i18n="noOption">لا</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                    </select>
-                  </div>
+           <!-- داخل div class="flex-container" -->
+<div class="spouse-fields-container">
+  <div class="input-group hidden" id="spouse_female">
+    <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
+    <select id="wife" name="wife" class="spouse-field" data-i18n-title="numberOfWives">
+      <option value="no" data-i18n="noOption">لا</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+  </div>
 
-                  <div class="input-group hidden" id="spouse_male">
-                    <label for="husband" data-i18n="hasHusband">هل يوجد زوج؟</label>
-                    <select id="husband" name="husband" data-i18n-title="hasHusband">
-                      <option value="no" data-i18n="noOption">لا</option>
-                      <option value="yes" data-i18n="yesOption">نعم</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+  <div class="input-group hidden" id="spouse_male">
+    <label for="husband" data-i18n="hasHusband">هل يوجد زوج؟</label>
+    <select id="husband" name="husband" class="spouse-field" data-i18n-title="hasHusband">
+      <option value="no" data-i18n="noOption">لا</option>
+      <option value="yes" data-i18n="yesOption">نعم</option>
+    </select>
+  </div>
+</div>
               
               <div class="deceased_religion">
                 <div class="input-group">
@@ -1965,6 +2170,119 @@
         };
       }
     });
+    document.addEventListener('DOMContentLoaded', function() {
+  // 1. معالجة حقول الزوج/الزوجة
+  function updateSpouseFieldColors() {
+    const wifeField = document.getElementById('wife');
+    const husbandField = document.getElementById('husband');
+    
+    if (wifeField) {
+      const wifeValue = wifeField.value;
+      wifeField.classList.remove('filled-field');
+      if (wifeValue !== '0') {
+        wifeField.classList.add('filled-field');
+      }
+    }
+    
+    if (husbandField) {
+      const husbandValue = husbandField.value;
+      husbandField.classList.remove('filled-field');
+      if (husbandValue === 'yes') {
+        husbandField.classList.add('filled-field');
+      }
+    }
+  }
+  
+  // 2. معالجة حقل اسم المتوفى
+  function updateDeceasedNameColor() {
+    const deceasedNameField = document.getElementById('deceased_name');
+    if (deceasedNameField) {
+      const nameValue = deceasedNameField.value.trim();
+      deceasedNameField.classList.remove('filled-field');
+      if (nameValue.length > 0) {
+        deceasedNameField.classList.add('filled-field');
+      }
+    }
+  }
+  
+  // 3. تحديث ألوان حقول الفئات تلقائياً
+  function updateAllFieldColors() {
+    updateSpouseFieldColors();
+    updateDeceasedNameColor();
+    
+    // تحديث حقول الورثة في التبويب الثاني
+    updateHeirFieldsColors();
+  }
+  
+  // 4. تحديث حقول الورثة في تبويب بيانات الورثة
+  function updateHeirFieldsColors() {
+    const heirNames = document.querySelectorAll('#resultTableBody .heir-name');
+    heirNames.forEach(field => {
+      const value = field.value.trim();
+      field.classList.remove('filled-field');
+      if (value.length > 0) {
+        field.classList.add('filled-field');
+      }
+    });
+  }
+  
+  // 5. إضافة مستمعي الأحداث
+  const wifeField = document.getElementById('wife');
+  const husbandField = document.getElementById('husband');
+  const deceasedNameField = document.getElementById('deceased_name');
+  
+  if (wifeField) {
+    wifeField.addEventListener('change', updateSpouseFieldColors);
+  }
+  
+  if (husbandField) {
+    husbandField.addEventListener('change', updateSpouseFieldColors);
+  }
+  
+  if (deceasedNameField) {
+    deceasedNameField.addEventListener('input', updateDeceasedNameColor);
+    // تحديث عند تحميل الصفحة
+    setTimeout(updateDeceasedNameColor, 100);
+  }
+  
+  // 6. تحديث ألوان حقول الفئات الدينية
+  function updateReligionFieldColors() {
+    const religionField = document.getElementById('deceased_religion');
+    if (religionField) {
+      const value = religionField.value;
+      religionField.classList.remove('muslim-field', 'non-muslim-field');
+      if (value === 'مسلم') {
+        religionField.classList.add('muslim-field');
+      } else if (value === 'غير مسلم') {
+        religionField.classList.add('non-muslim-field');
+      }
+    }
+  }
+  
+  const religionField = document.getElementById('deceased_religion');
+  if (religionField) {
+    religionField.addEventListener('change', updateReligionFieldColors);
+    // تحديث عند تحميل الصفحة
+    setTimeout(updateReligionFieldColors, 100);
+  }
+  
+  // 7. تحديث حقول الورثة في التبويب الثاني عند التغيير
+  document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('heir-name') || 
+        e.target.classList.contains('heir-religion')) {
+      updateHeirFieldsColors();
+    }
+  });
+  
+  // 8. تحديث تلقائي عند تغيير التبويب
+  document.addEventListener('tabChanged', function() {
+    setTimeout(updateAllFieldColors, 300);
+  });
+  
+  // 9. تحديث أولي عند تحميل الصفحة
+  setTimeout(updateAllFieldColors, 500);
+});
   </script>
+  
 </body>
 </html>
