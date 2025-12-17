@@ -17,6 +17,10 @@ export class InheritanceCalculator {
     this.results = {};
     this.remainingAmount = this.totalAmount;
     this.specialCaseHandled = false;
+    
+    // تسجيل جميع الورثة المدخلين
+    this.allHeirKeys = Object.keys(heirs);
+    console.log('📋 جميع الورثة المسجلين:', this.allHeirKeys);
   }
 
   // ========== الدوال الأساسية المحسنة ==========
@@ -61,6 +65,27 @@ export class InheritanceCalculator {
     
     this.remainingAmount -= shareAmount;
     return shareAmount;
+  }
+
+  // إضافة وارث بدون حصة (صفر)
+  addZeroShareHeir(heirType, note = '') {
+    const heirData = this.heirs[heirType] || {};
+    
+    if (!this.results[heirType]) {
+      this.results[heirType] = {
+        ...heirData,
+        title: heirData.title || this.getHeirTitle(heirType),
+        name: heirData.name || '',
+        religion: heirData.religion || 'مسلم',
+        gender: heirData.gender || this.getHeirGender(heirType),
+        amount: '0.000',
+        percentage: '0.000',
+        note: note || 'لا حصة',
+        originalTitle: heirData.originalTitle || heirData.title
+      };
+    }
+    
+    return this.results[heirType];
   }
 
   // الحصول على عنوان الوريث من البيانات الأصلية
@@ -215,7 +240,7 @@ export class InheritanceCalculator {
   // ========== نظام "للذكر مثل حظ الانثيين" المحسن ==========
   
   applyMaleFemaleRatio() {
-    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_') || key === 'son');
+    const sonHeirs = Object.keys(this.heirs).filter(key => key.startsWith('son_'));
     const daughterHeirs = Object.keys(this.heirs).filter(key => key.startsWith('daughter_'));
 
     // إذا لم يكن هناك أبناء أو بنات، لا تفعل شيئاً
@@ -843,16 +868,51 @@ export class InheritanceCalculator {
     }
   }
 
+  // ========== التأكد من ظهور جميع الورثة ==========
+  
+  ensureAllHeirsAreIncluded() {
+    console.log('🔍 التأكد من ظهور جميع الورثة...');
+    console.log('الورثة المسجلون:', this.allHeirKeys);
+    console.log('الورثة في النتائج:', Object.keys(this.results));
+    
+    // إضافة أي وارث مفقود مع حصة صفرية
+    for (const heirKey of this.allHeirKeys) {
+      if (!this.results[heirKey]) {
+        console.log(`➕ إضافة وارث مفقود: ${heirKey}`);
+        this.addZeroShareHeir(heirKey, 'لا حصة');
+      }
+    }
+    
+    // معالجة الحقول المتعددة (مثل son_1, son_2, etc.)
+    const processedKeys = new Set(Object.keys(this.results));
+    
+    for (const resultKey of Object.keys(this.results)) {
+      // إذا كان المفتاح يحتوي على رقم (مثل son_1)
+      if (resultKey.includes('_') && !resultKey.includes('wife_') && !resultKey.includes('daughter_')) {
+        const baseKey = resultKey.split('_')[0];
+        const index = resultKey.split('_')[1];
+        
+        // تأكد من أن المفتاح الأساسي موجود في القائمة الأصلية
+        if (!processedKeys.has(baseKey) && this.heirs[baseKey]) {
+          this.addZeroShareHeir(baseKey, 'تم توزيع الحصص على الأفراد');
+        }
+      }
+    }
+    
+    console.log('✅ جميع الورثة ظاهرون الآن:', Object.keys(this.results));
+  }
+
   // ========== الدالة الرئيسية للحساب ==========
   
   calculate() {
     console.log('🧮 === بدء الحسابات ===');
     console.log('نوع المتوفى:', this.deceasedType === DECEASED_TYPE.FATHER ? 'أب' : 'أم');
-    console.log('الورثة:', Object.keys(this.heirs));
+    console.log('الورثة المدخلون:', this.allHeirKeys);
     
     // حالة خاصة: أب + أم + ابنة واحدة
     if (this.handleFatherMotherDaughterCase()) {
       console.log('✅ تمت معالجة الحالة الخاصة: أب + أم + ابنة واحدة');
+      this.ensureAllHeirsAreIncluded();
       return this.ensureAllData(this.results);
     }
 
@@ -868,6 +928,7 @@ export class InheritanceCalculator {
     if (hasSon && hasDaughter) {
       console.log('⚖️ تطبيق قاعدة: للذكر مثل حظ الأنثيين');
       this.applyMaleFemaleRatio();
+      this.ensureAllHeirsAreIncluded();
       return this.ensureAllData(this.results);
     }
 
@@ -909,6 +970,9 @@ export class InheritanceCalculator {
         note: t('baytAlMalNote') || 'الباقي لبيت المال'
       };
     }
+
+    // التأكد من ظهور جميع الورثة
+    this.ensureAllHeirsAreIncluded();
 
     console.log('📊 النتائج النهائية:', this.results);
     console.log('🏁 === انتهاء الحسابات ===');
