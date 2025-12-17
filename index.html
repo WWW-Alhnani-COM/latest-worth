@@ -1696,88 +1696,17 @@ gap: 5px;
     z-index: 5;
 }
 /* ========== تنسيق مودال الأبناء بالكامل ========== */
-
-#sons_numbers .sons-modal-content {
-    text-align: right;
-    padding: 2rem;
-}
-
-#sons_numbers .input-group {
-    margin-bottom: 1.5rem;
-}
-
-#sons_numbers .input-group label {
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-#sons_numbers .input-group select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--border-light);
-    border-radius: var(--radius-md);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: var(--transition);
-}
-
-#sons_numbers .input-group select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
-}
-
-/* الحل النهائي لأزرار المودال */
-#sons_numbers .btn-group {
-    display: flex;
-    flex-direction: row; /* اتجاه عادي */
-    justify-content: flex-start; /* ابدأ من اليسار */
-    align-items: center;
-    gap: 1rem;
-    margin-top: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-light);
-}
-
-#sons_numbers .btn-group .btn-next {
-    margin-left: 0;
-    margin-right: auto;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 0.875rem 2rem;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 120px;
-}
-
-#sons_numbers .btn-group .btn-next:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-#sons_numbers .btn-group .btn-previous {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-light);
-    padding: 0.875rem 2rem;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition);
-    min-width: 120px;
-}
-
-#sons_numbers .btn-group .btn-previous:hover {
-    background: var(--border-medium);
-    transform: translateY(-2px);
-}
+.next-btn-right {
+  /* الحفاظ على جميع تنسيقات btn-next الأساسية */
+  /* وإضافة تعديلات الموقع فقط */
+  
+  /* لجعل الزر يلتصق باليمين داخل حاويته */
+  margin-right: 0 !important;
+  margin-left: auto !important;
+  
+  /* أو باستخدام order إذا كان داخل flex container */
+  order: 2 !important;
+  }
   </style>
 </head>
 <body>
@@ -2025,9 +1954,9 @@ gap: 5px;
           <i class="fas fa-print"></i>
           <span data-i18n="print">طباعة</span>
         </button>
-        <button id="footer-next-btn" class="btn btn-next" data-i18n="next" data-i18n-title="next">
-          التالي
-        </button>
+      <button id="footer-next-btn" class="btn btn-next next-btn-right" data-i18n="next">
+  التالي
+</button>
       </div>
     </div>
   </div>
