@@ -938,10 +938,9 @@
       box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
     }
 
-    /* إزالة البوردر الأيسر للحقول */
     .field-item:has(.filled-field) {
-      border-left: none !important;
-      padding-left: 1rem !important;
+      border-left: 3px solid var(--success-color);
+      padding-left: calc(1rem - 3px);
     }
 
     .field-row:not(:last-child) {
@@ -978,6 +977,8 @@
 
     /* ========== أنماط ترميز الألوان ========== */
     #dynamic-fields .input-group select.empty-field,
+    #wife[value="0"],
+    #husband[value="no"],
     #resultTableBody .heir-name.empty-field {
       border-color: var(--primary-color) !important;
       background-color: rgba(26, 115, 232, 0.05) !important;
@@ -985,6 +986,8 @@
     }
 
     #dynamic-fields .input-group select.filled-field,
+    #wife.filled-field,
+    #husband.filled-field,
     #deceased_name.filled-field,
     #resultTableBody .heir-name.filled-field {
       border-color: var(--success-color) !important;
@@ -1006,27 +1009,25 @@
       border-width: 2px !important;
     }
 
-    /* إزالة التنسيقات الخاصة بحقول الزوج/الزوجة */
+    /* حقول الزوج/الزوجة */
     .spouse-field {
       border: 2px solid var(--border-light) !important;
       transition: all 0.3s ease !important;
     }
 
-    /* إزالة التنسيقات الخضراء لحقول الزوج/الزوجة */
     #wife[value="1"],
     #wife[value="2"], 
     #wife[value="3"],
-    #wife[value="4"],
-    #husband[value="yes"] {
-      border-color: var(--border-light) !important;
-      background-color: var(--bg-primary) !important;
+    #wife[value="4"] {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+      border-width: 2px !important;
     }
 
-    /* إزالة التنسيقات الخاصة */
-    #wife.filled-field,
-    #husband.filled-field {
-      border-color: var(--border-light) !important;
-      background-color: var(--bg-primary) !important;
+    #husband[value="yes"] {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+      border-width: 2px !important;
     }
 
     /* تأثيرات التركيز */
@@ -1035,7 +1036,7 @@
     #resultTableBody .heir-name:focus,
     #resultTableBody .heir-religion:focus {
       outline: none !important;
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2) !important;
+      box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
       transform: translateY(-1px) !important;
     }
 
@@ -1461,48 +1462,39 @@
       background: var(--success-color);
     }
 
-    /* إزالة أيقونات الصح والخطأ */
-    .input-group:has(.filled-field)::after,
-    .input-group:has(.non-muslim-field)::after {
-      content: none !important;
+    .input-group:has(.filled-field):not(:has(.non-muslim-field)) {
+      padding-left: 5px;
+      border-left: 3px solid var(--success-color);
     }
 
-    /* إزالة البوردر الأيسر للحقول */
-    .input-group:has(.filled-field):not(:has(.non-muslim-field)),
-    .input-group:has(.non-muslim-field),
-    #resultTableBody tr:has(.filled-field):not(:has(.non-muslim-field)) td:first-child,
+    .input-group:has(.non-muslim-field) {
+      padding-left: 5px;
+      border-left: 3px solid var(--danger-color);
+    }
+
+    #resultTableBody tr:has(.filled-field):not(:has(.non-muslim-field)) td:first-child {
+      border-left: 3px solid var(--success-color);
+    }
+
     #resultTableBody tr:has(.non-muslim-field) td:first-child {
-      border-left: none !important;
-      padding-left: 0 !important;
+      border-left: 3px solid var(--danger-color);
     }
 
-    /* إزالة الفئات الخضراء للحقول */
-    .field-item select.filled-field,
-    #wife.filled-field,
-    #husband.filled-field,
-    #deceased_name.filled-field,
-    #resultTableBody .heir-name.filled-field {
-      border-color: var(--border-light) !important;
-      background-color: var(--bg-primary) !important;
+    .input-group:has(.filled-field)::after {
+      content: '✓';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--success-color);
+      font-weight: bold;
+      font-size: 1.1rem;
+      opacity: 0.8;
     }
 
-    /* الحفاظ على الألوان للحقول الدينية فقط */
-    #deceased_religion.muslim-field,
-    #resultTableBody .heir-religion.muslim-field {
-      border-color: var(--success-color) !important;
-      background-color: rgba(52, 168, 83, 0.05) !important;
-    }
-
-    #deceased_religion.non-muslim-field,
-    #resultTableBody .heir-religion.non-muslim-field {
-      border-color: var(--danger-color) !important;
-      background-color: rgba(234, 67, 53, 0.05) !important;
-    }
-
-    /* الحفاظ على ألوان حقول الفئات الدينية فقط */
-    #dynamic-fields .input-group select.filled-field {
-      border-color: var(--success-color) !important;
-      background-color: rgba(52, 168, 83, 0.05) !important;
+    .input-group:has(.non-muslim-field)::after {
+      content: '✗';
+      color: var(--danger-color);
     }
   </style>
 </head>
@@ -1605,7 +1597,7 @@
                   <div class="input-group hidden" id="spouse_female">
                     <label for="wife" data-i18n="numberOfWives">عدد الزوجات</label>
                     <select id="wife" name="wife" class="spouse-field" data-i18n-title="numberOfWives">
-                      <option value="0" data-i18n="noOption">لا</option>
+                      <option value="no" data-i18n="noOption">لا</option>
                       <option value="1">1</option>
                       <option value="2">2</option>
                       <option value="3">3</option>
@@ -1826,27 +1818,40 @@
     document.addEventListener('DOMContentLoaded', function() {
       // تحديث ألوان الحقول عند التغيير
       function updateFieldColors() {
-        // حقول الزوج/الزوجة - إزالة التنسيقات
+        // حقول الزوج/الزوجة
         const wifeField = document.getElementById('wife');
         const husbandField = document.getElementById('husband');
         const deceasedNameField = document.getElementById('deceased_name');
         const religionField = document.getElementById('deceased_religion');
         
-        // إزالة الفئات الخضراء من حقول الزوج/الزوجة
+        // تحديث حقل الزوجات
         if (wifeField) {
+          const wifeValue = wifeField.value;
           wifeField.classList.remove('filled-field');
+          if (wifeValue !== '0') {
+            wifeField.classList.add('filled-field');
+          }
         }
         
+        // تحديث حقل الزوج
         if (husbandField) {
+          const husbandValue = husbandField.value;
           husbandField.classList.remove('filled-field');
+          if (husbandValue === 'yes') {
+            husbandField.classList.add('filled-field');
+          }
         }
         
-        // إزالة الفئات الخضراء من حقل اسم المتوفى
+        // تحديث حقل اسم المتوفى
         if (deceasedNameField) {
+          const nameValue = deceasedNameField.value.trim();
           deceasedNameField.classList.remove('filled-field');
+          if (nameValue.length > 0) {
+            deceasedNameField.classList.add('filled-field');
+          }
         }
         
-        // الحفاظ على ألوان حقل الديانة
+        // تحديث حقل الديانة
         if (religionField) {
           const religionValue = religionField.value;
           religionField.classList.remove('muslim-field', 'non-muslim-field');
@@ -1869,25 +1874,31 @@
           }
         });
         
-        // إزالة الفئات الخضراء من حقول أسماء الورثة
+        // تحديث حقول أسماء الورثة
         const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
         heirNameFields.forEach(field => {
+          const value = field.value.trim();
           field.classList.remove('filled-field');
+          if (value.length > 0) {
+            field.classList.add('filled-field');
+          }
         });
       }
       
       // إضافة مستمعي الأحداث
       const wifeField = document.getElementById('wife');
       const husbandField = document.getElementById('husband');
+      const deceasedNameField = document.getElementById('deceased_name');
       const religionField = document.getElementById('deceased_religion');
       
       if (wifeField) wifeField.addEventListener('change', updateFieldColors);
       if (husbandField) husbandField.addEventListener('change', updateFieldColors);
+      if (deceasedNameField) deceasedNameField.addEventListener('input', updateFieldColors);
       if (religionField) religionField.addEventListener('change', updateFieldColors);
       
       // تحديث حقول الورثة في التبويب الثاني
       document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('heir-religion')) {
+        if (e.target.classList.contains('heir-name') || e.target.classList.contains('heir-religion')) {
           updateFieldColors();
         }
       });
