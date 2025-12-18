@@ -454,6 +454,7 @@
       color: white;
     }
 
+    /* ========== إصلاح حقلي المبلغ والأمتار ========== */
     .input-with-unit-container {
       position: relative;
       width: 100%;
@@ -485,6 +486,7 @@
       border-color: var(--border-medium);
     }
 
+    /* تصغير حجم صورة العملة */
     .unit-overlay {
       position: absolute;
       left: 1rem;
@@ -494,28 +496,28 @@
       align-items: center;
       gap: 0.5rem;
       background: var(--bg-secondary);
-      padding: 0.5rem 0.75rem;
+      padding: 0.4rem 0.6rem;
       border-radius: var(--radius-sm);
       font-weight: 500;
       color: var(--text-tertiary);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       pointer-events: none;
       z-index: 2;
       border: 1px solid var(--border-light);
     }
 
     .unit-overlay .currency-icon {
-      width: 20px;
-      height: 20px;
+      width: 18px; /* تم تصغير الحجم */
+      height: 18px; /* تم تصغير الحجم */
       object-fit: contain;
     }
 
     .input-with-unit-container.meter-input input {
-      padding-left: 4.5rem;
+      padding-left: 4rem; /* تم تقليص المساحة */
     }
 
     .input-with-unit-container.currency-input input {
-      padding-left: 4rem;
+      padding-left: 3.8rem; /* تم تقليص المساحة */
     }
 
     .input-with-unit-container input::-webkit-outer-spin-button,
@@ -657,6 +659,79 @@
       text-align: center;
     }
 
+    /* ========== تنسيق حقول الورثة في التبويب الثاني ========== */
+    #resultTableBody td {
+      position: relative;
+    }
+
+    #resultTableBody .heir-name,
+    #resultTableBody .heir-religion {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      transition: var(--transition);
+      background: var(--bg-primary);
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    #resultTableBody .heir-name:focus,
+    #resultTableBody .heir-religion:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+      transform: translateY(-1px);
+    }
+
+    #resultTableBody .heir-name.filled-field,
+    #resultTableBody .heir-religion.filled-field {
+      border-color: var(--success-color);
+      background-color: rgba(52, 168, 83, 0.05);
+    }
+
+    #resultTableBody .heir-name.empty-field,
+    #resultTableBody .heir-religion.empty-field {
+      border-color: var(--primary-color);
+      background-color: rgba(26, 115, 232, 0.05);
+    }
+
+    #resultTableBody .heir-religion.muslim-field {
+      border-color: var(--success-color);
+      background-color: rgba(52, 168, 83, 0.05);
+      color: var(--success-color);
+      font-weight: 600;
+    }
+
+    #resultTableBody .heir-religion.non-muslim-field {
+      border-color: var(--danger-color);
+      background-color: rgba(234, 67, 53, 0.05);
+      color: var(--danger-color);
+      font-weight: 600;
+    }
+
+    /* ========== تنسيق خاص لحقول الاسم المرتبطة بالدين ========== */
+    .border-red-linked {
+      border-color: var(--danger-color) !important;
+      background-color: rgba(234, 67, 53, 0.05) !important;
+    }
+
+    .border-green-linked {
+      border-color: var(--success-color) !important;
+      background-color: rgba(52, 168, 83, 0.05) !important;
+    }
+
+    /* تأثيرات للصفوف */
+    #resultTableBody tr:has(.filled-field) td:first-child {
+      border-left: 3px solid var(--success-color);
+    }
+
+    #resultTableBody tr:has(.non-muslim-field) td:first-child {
+      border-left: 3px solid var(--danger-color);
+    }
+
+    /* ========== باقي الأنماط ========== */
     .sons-modal {
       position: fixed;
       top: 0;
@@ -876,16 +951,23 @@
       }
       
       .unit-overlay .currency-icon {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
       }
       
       .input-with-unit-container.meter-input input {
-        padding-left: 4rem;
+        padding-left: 3.5rem;
       }
       
       .input-with-unit-container.currency-input input {
-        padding-left: 3.5rem;
+        padding-left: 3.2rem;
+      }
+      
+      /* تنسيق حقول الورثة في الجوال */
+      #resultTableBody .heir-name,
+      #resultTableBody .heir-religion {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.9rem;
       }
     }
 
@@ -1498,19 +1580,6 @@
     }
 
     /* أيقونات */
-    .currency-icon {
-      width: 35px;
-      height: 20px;
-      vertical-align: middle;
-      margin-right: 5px;
-    }
-
-    .unit {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
     .money-with-currency {
       display: flex;
       align-items: center;
@@ -1535,54 +1604,6 @@
       background: var(--success-color);
     }
 
-    .input-group:has(.filled-field):not(:has(.non-muslim-field)) {
-      padding-left: 5px;
-    }
-
-    .input-group:has(.non-muslim-field) {
-      padding-left: 5px;
-    }
-
-    #resultTableBody tr:has(.filled-field):not(:has(.non-muslim-field)) td:first-child {
-    }
-
-    #resultTableBody tr:has(.non-muslim-field) td:first-child {
-    }
-
-    .input-group:has(.filled-field)::after {
-      content: '✓';
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--success-color);
-      font-weight: bold;
-      font-size: 1.1rem;
-      opacity: 0.8;
-    }
-
-    .input-group:has(.non-muslim-field)::after {
-      content: '✗';
-      color: var(--danger-color);
-    }
-    
-    /* تنسيق خاص لحقول الاسم بناءً على الدين */
-    .name-field-linked {
-      transition: all 0.3s ease;
-    }
-    
-    .border-red-linked {
-      border-color: var(--danger-color) !important;
-      background-color: rgba(234, 67, 53, 0.05) !important;
-      border-width: 2px !important;
-    }
-    
-    .border-green-linked {
-      border-color: var(--success-color) !important;
-      background-color: rgba(52, 168, 83, 0.05) !important;
-      border-width: 2px !important;
-    }
-    
     /* تحديثات إضافية للاستجابة */
     @media (max-width: 480px) {
       .input-with-unit-container input {
@@ -1598,6 +1619,24 @@
         width: 16px;
         height: 16px;
       }
+    }
+    
+    /* تنسيقات إضافية للوحدات */
+    .filled-overlay {
+      background: rgba(52, 168, 83, 0.15) !important;
+      color: var(--success-color) !important;
+      border-color: var(--success-color) !important;
+      font-weight: 600;
+    }
+    
+    .empty-overlay {
+      background: rgba(26, 115, 232, 0.15) !important;
+      color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+    }
+    
+    .filled-overlay .currency-icon {
+      filter: brightness(0.9) sepia(1) hue-rotate(90deg) saturate(5);
     }
   </style>
 </head>
@@ -1947,21 +1986,92 @@
       const amountField = document.getElementById('amount');
       const materialsField = document.getElementById('materials');
       
-      // دالة لتحديث لون حقل الاسم بناءً على الحالة الدينية
+      // ========== إصلاح مشكلة اختفاء القيم ==========
+      // دالة مبسطة لتنسيق الأرقام بدون أحداث focus/blur المزعجة
+      function setupNumberInputs() {
+        if (amountField) {
+          amountField.addEventListener('change', function() {
+            formatNumberValue(this);
+            updateFieldColors();
+          });
+          
+          // حفظ القيمة الأصلية
+          let originalAmountValue = amountField.value;
+          amountField.addEventListener('focus', function() {
+            originalAmountValue = this.value;
+          });
+          
+          amountField.addEventListener('blur', function() {
+            if (this.value !== originalAmountValue) {
+              formatNumberValue(this);
+              updateFieldColors();
+            }
+          });
+        }
+        
+        if (materialsField) {
+          materialsField.addEventListener('change', function() {
+            formatNumberValue(this);
+            updateFieldColors();
+          });
+          
+          // حفظ القيمة الأصلية
+          let originalMaterialsValue = materialsField.value;
+          materialsField.addEventListener('focus', function() {
+            originalMaterialsValue = this.value;
+          });
+          
+          materialsField.addEventListener('blur', function() {
+            if (this.value !== originalMaterialsValue) {
+              formatNumberValue(this);
+              updateFieldColors();
+            }
+          });
+        }
+      }
+      
+      // دالة لتنسيق قيمة الرقم
+      function formatNumberValue(input) {
+        if (!input || !input.value) return;
+        
+        let value = input.value.toString().trim().replace(/,/g, '');
+        
+        if (value && !isNaN(parseFloat(value))) {
+          const num = parseFloat(value);
+          if (!isNaN(num)) {
+            // تنسيق الرقم
+            if (input.id === 'amount') {
+              // للمبلغ: كسور عشرية
+              input.value = num.toLocaleString('ar-SA', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              });
+            } else {
+              // للأمتار: بدون كسور
+              input.value = num.toLocaleString('ar-SA', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+              });
+            }
+          }
+        }
+      }
+      
+      // ========== دالة لتحديث لون حقل الاسم بناءً على الحالة الدينية ==========
       function updateNameFieldColorBasedOnReligion(nameField, religionField) {
         if (!nameField || !religionField) return;
         
         // إزالة الألوان القديمة
         nameField.classList.remove('border-red-linked', 'border-green-linked');
-        religionField.classList.remove('border-red', 'border-green');
+        religionField.classList.remove('muslim-field', 'non-muslim-field');
         
         // تحديد اللون بناءً على القيمة
         if (religionField.value === 'غير مسلم') {
           nameField.classList.add('border-red-linked');
-          religionField.classList.add('border-red');
+          religionField.classList.add('non-muslim-field');
         } else if (religionField.value === 'مسلم') {
           nameField.classList.add('border-green-linked');
-          religionField.classList.add('border-green');
+          religionField.classList.add('muslim-field');
         }
       }
       
@@ -1973,56 +2083,25 @@
         // تحديث عند تغيير الحالة الدينية
         religionField.addEventListener('change', function() {
           updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
-        });
-        
-        // تحديث عند تغيير اسم المتوفى (للتوحيد)
-        deceasedNameField.addEventListener('input', function() {
-          updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
-        });
-      }
-      
-      // دالة لتنسيق الأرقام بفواصل
-      function formatNumberInput(input) {
-        if (!input) return;
-        
-        input.addEventListener('blur', function(e) {
-          let value = e.target.value.replace(/,/g, '');
-          
-          if (value && !isNaN(value)) {
-            // تحويل إلى عدد وتنسيقه
-            const num = parseFloat(value);
-            if (!isNaN(num)) {
-              e.target.value = num.toLocaleString('ar-SA', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              });
-            }
-          }
-          
-          // تحديث تلوين الحقل
           updateFieldColors();
         });
         
-        input.addEventListener('focus', function(e) {
-          let value = e.target.value.replace(/,/g, '');
-          e.target.value = value;
+        // تحديث عند تغيير اسم المتوفى
+        deceasedNameField.addEventListener('input', function() {
+          updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+          updateFieldColors();
         });
       }
       
-      // تطبيق تنسيق الأرقام
-      if (amountField) formatNumberInput(amountField);
-      if (materialsField) formatNumberInput(materialsField);
-      
-      // دالة لتحديث ألوان جميع الحقول
+      // ========== دالة لتحديث ألوان جميع الحقول ==========
       function updateFieldColors() {
         // تحديث حقول المبلغ والأمتار
         const fieldsToUpdate = [
-          {field: amountField, id: 'amount'},
-          {field: materialsField, id: 'materials'},
+          {field: amountField, id: 'amount', isNumber: true},
+          {field: materialsField, id: 'materials', isNumber: true},
           {field: document.getElementById('wife'), id: 'wife'},
           {field: document.getElementById('husband'), id: 'husband'},
-          {field: deceasedNameField, id: 'deceased_name'},
-          {field: religionField, id: 'deceased_religion'}
+          {field: deceasedNameField, id: 'deceased_name'}
         ];
         
         fieldsToUpdate.forEach(item => {
@@ -2030,7 +2109,12 @@
             // إزالة الفئات القديمة
             item.field.classList.remove('filled-field', 'empty-field');
             
-            const value = item.field.value ? item.field.value.toString().trim() : '';
+            let value = item.field.value ? item.field.value.toString().trim() : '';
+            
+            // تنظيف القيمة من الفواصل للأرقام
+            if (item.isNumber) {
+              value = value.replace(/,/g, '');
+            }
             
             if (value && value !== '0' && value !== '0.00' && 
                 value !== 'no' && value !== '') {
@@ -2043,11 +2127,16 @@
         
         // تحديث ألوان حقل الديانة
         if (religionField) {
-          religionField.classList.remove('muslim-field', 'non-muslim-field');
-          if (religionField.value === 'مسلم') {
-            religionField.classList.add('muslim-field');
-          } else if (religionField.value === 'غير مسلم') {
-            religionField.classList.add('non-muslim-field');
+          religionField.classList.remove('muslim-field', 'non-muslim-field', 'filled-field', 'empty-field');
+          if (religionField.value) {
+            religionField.classList.add('filled-field');
+            if (religionField.value === 'مسلم') {
+              religionField.classList.add('muslim-field');
+            } else if (religionField.value === 'غير مسلم') {
+              religionField.classList.add('non-muslim-field');
+            }
+          } else {
+            religionField.classList.add('empty-field');
           }
         }
         
@@ -2060,7 +2149,7 @@
         updateUnitOverlays();
       }
       
-      // دالة لتحديث وحدات القياس
+      // ========== دالة لتحديث وحدات القياس ==========
       function updateUnitOverlays() {
         const overlays = document.querySelectorAll('.unit-overlay');
         overlays.forEach(overlay => {
@@ -2070,7 +2159,7 @@
             if (input) {
               overlay.classList.remove('filled-overlay', 'empty-overlay');
               
-              const value = input.value ? input.value.toString().trim().replace(/,/g, '') : '';
+              let value = input.value ? input.value.toString().trim().replace(/,/g, '') : '';
               
               if (value && value !== '0' && value !== '0.00') {
                 overlay.classList.add('filled-overlay');
@@ -2082,66 +2171,145 @@
         });
       }
       
-      // إضافة CSS للوحدات
-      const unitStyle = document.createElement('style');
-      unitStyle.textContent = `
-        .filled-overlay {
-          background: rgba(52, 168, 83, 0.15) !important;
-          color: var(--success-color) !important;
-          border-color: var(--success-color) !important;
-          font-weight: 600;
-        }
+      // ========== إعداد حقول الورثة في التبويب الثاني ==========
+      function setupHeirFields() {
+        // هذه الدالة ستستدعى عند إنشاء حقول الورثة
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+              // عندما تضاف حقول جديدة، نضيف لها الأحداث
+              const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
+              const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
+              
+              heirNameFields.forEach(nameField => {
+                if (!nameField.hasAttribute('data-events-bound')) {
+                  nameField.setAttribute('data-events-bound', 'true');
+                  nameField.addEventListener('input', updateHeirFieldColors);
+                }
+              });
+              
+              heirReligionFields.forEach(religionField => {
+                if (!religionField.hasAttribute('data-events-bound')) {
+                  religionField.setAttribute('data-events-bound', 'true');
+                  religionField.addEventListener('change', updateHeirFieldColors);
+                }
+              });
+              
+              // تحديث الألوان مباشرة
+              updateHeirFieldColors();
+            }
+          });
+        });
         
-        .empty-overlay {
-          background: rgba(26, 115, 232, 0.15) !important;
-          color: var(--primary-color) !important;
-          border-color: var(--primary-color) !important;
+        // مراقبة جدول الورثة للتغييرات
+        const resultTableBody = document.getElementById('resultTableBody');
+        if (resultTableBody) {
+          observer.observe(resultTableBody, { childList: true, subtree: true });
         }
-        
-        .filled-overlay .currency-icon {
-          filter: brightness(0.9) sepia(1) hue-rotate(90deg) saturate(5);
-        }
-        
-        .border-red {
-          border-color: var(--danger-color) !important;
-          background-color: rgba(234, 67, 53, 0.05) !important;
-        }
-        
-        .border-green {
-          border-color: var(--success-color) !important;
-          background-color: rgba(52, 168, 83, 0.05) !important;
-        }
-      `;
-      document.head.appendChild(unitStyle);
+      }
       
-      // تحديث أولي
+      // ========== دالة لتحديث ألوان حقول الورثة ==========
+      function updateHeirFieldColors() {
+        const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
+        const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
+        
+        heirNameFields.forEach((nameField, index) => {
+          const religionField = heirReligionFields[index];
+          
+          if (nameField && religionField) {
+            // تحديث حالة التعبئة للاسم
+            nameField.classList.remove('filled-field', 'empty-field');
+            if (nameField.value && nameField.value.trim()) {
+              nameField.classList.add('filled-field');
+            } else {
+              nameField.classList.add('empty-field');
+            }
+            
+            // تحديث حالة التعبئة للدين
+            religionField.classList.remove('filled-field', 'empty-field', 'muslim-field', 'non-muslim-field');
+            if (religionField.value) {
+              religionField.classList.add('filled-field');
+              if (religionField.value === 'مسلم') {
+                religionField.classList.add('muslim-field');
+              } else if (religionField.value === 'غير مسلم') {
+                religionField.classList.add('non-muslim-field');
+              }
+            } else {
+              religionField.classList.add('empty-field');
+            }
+            
+            // ربط لون الاسم بالدين
+            nameField.classList.remove('border-red-linked', 'border-green-linked');
+            if (religionField.value === 'غير مسلم') {
+              nameField.classList.add('border-red-linked');
+            } else if (religionField.value === 'مسلم') {
+              nameField.classList.add('border-green-linked');
+            }
+          }
+        });
+      }
+      
+      // ========== إعداد التبويب الثاني عند النقر عليه ==========
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('tab-button') && 
+            e.target.getAttribute('data-tab') === 'religious') {
+          setTimeout(function() {
+            updateHeirFieldColors();
+            setupHeirFields();
+          }, 100);
+        }
+      });
+      
+      // ========== تهيئة الصفحة ==========
+      setupNumberInputs();
       updateFieldColors();
+      setupHeirFields();
       
       // إضافة مستمعي الأحداث
       const allInputs = document.querySelectorAll('input, select');
       allInputs.forEach(input => {
         input.addEventListener('change', updateFieldColors);
-        input.addEventListener('input', function() {
-          // تحديث سريع للحقول النصية
-          if (this.type === 'text' || this.type === 'number') {
-            updateFieldColors();
-          }
-        });
       });
       
-      // تحديث وحدات القياس عند التغيير
-      if (amountField) {
-        amountField.addEventListener('input', updateUnitOverlays);
-      }
-      if (materialsField) {
-        materialsField.addEventListener('input', updateUnitOverlays);
+      // إضافة CSS للوحدات (إذا لم تكن موجودة)
+      if (!document.querySelector('#unit-styles')) {
+        const unitStyle = document.createElement('style');
+        unitStyle.id = 'unit-styles';
+        unitStyle.textContent = `
+          .filled-overlay {
+            background: rgba(52, 168, 83, 0.15) !important;
+            color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            font-weight: 600;
+          }
+          
+          .empty-overlay {
+            background: rgba(26, 115, 232, 0.15) !important;
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+          }
+          
+          .filled-overlay .currency-icon {
+            filter: brightness(0.9) sepia(1) hue-rotate(90deg) saturate(5);
+          }
+          
+          .border-red {
+            border-color: var(--danger-color) !important;
+            background-color: rgba(234, 67, 53, 0.05) !important;
+          }
+          
+          .border-green {
+            border-color: var(--success-color) !important;
+            background-color: rgba(52, 168, 83, 0.05) !important;
+          }
+        `;
+        document.head.appendChild(unitStyle);
       }
       
-      // دالة لتحميل الصورة افتراضياً إذا لم تكن موجودة
+      // تحميل الصورة الافتراضية للعملة
       function checkCurrencyImage() {
         const currencyImg = document.querySelector('.currency-icon');
-        if (currencyImg && currencyImg.src.includes('SRE.png')) {
-          // إنشاء صورة افتراضية إذا لم تكن موجودة
+        if (currencyImg) {
           const img = new Image();
           img.onerror = function() {
             // إذا فشل تحميل الصورة، استبدلها بنص
@@ -2150,8 +2318,7 @@
               currencyImg.style.display = 'none';
               const textSpan = parent.querySelector('span');
               if (textSpan) {
-                textSpan.textContent = '﷼'; // رمز الريال
-                textSpan.style.fontFamily = 'Arial, sans-serif';
+                textSpan.innerHTML = '﷼';
                 textSpan.style.fontSize = '14px';
               }
             }
@@ -2160,65 +2327,14 @@
         }
       }
       
-      // التحقق من صورة العملة
-      setTimeout(checkCurrencyImage, 1000);
+      setTimeout(checkCurrencyImage, 500);
       
-      // دالة لتعطيل أزرار السحب والنسخ للأرقام
-      function disableNumberDrag() {
-        const numberInputs = document.querySelectorAll('input[type="number"]');
-        numberInputs.forEach(input => {
-          input.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-          });
-          
-          input.addEventListener('selectstart', function(e) {
-            // السماح بالتحديد ولكن منع السحب
-            return true;
-          });
-        });
+      // تحديث تلقائي للوحدات
+      if (amountField) {
+        amountField.addEventListener('input', updateUnitOverlays);
       }
-      
-      disableNumberDrag();
-    });
-    
-    // دالة لتحديث ألوان حقول الورثة في التبويب الثاني
-    function updateHeirFieldsColors() {
-      const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
-      const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
-      
-      heirNameFields.forEach((nameField, index) => {
-        const religionField = heirReligionFields[index];
-        if (nameField && religionField) {
-          // إزالة الألوان القديمة
-          nameField.classList.remove('border-red-linked', 'border-green-linked');
-          religionField.classList.remove('muslim-field', 'non-muslim-field');
-          
-          // تطبيق الألوان الجديدة
-          if (religionField.value === 'غير مسلم') {
-            nameField.classList.add('border-red-linked');
-            religionField.classList.add('non-muslim-field');
-          } else if (religionField.value === 'مسلم') {
-            nameField.classList.add('border-green-linked');
-            religionField.classList.add('muslim-field');
-          }
-          
-          // تحديث حالة التعبئة
-          const nameValue = nameField.value.trim();
-          nameField.classList.remove('filled-field', 'empty-field');
-          if (nameValue.length > 0) {
-            nameField.classList.add('filled-field');
-          } else {
-            nameField.classList.add('empty-field');
-          }
-        }
-      });
-    }
-    
-    // استدعاء الدالة عند تحميل التبويب الثاني
-    document.addEventListener('click', function(e) {
-      if (e.target.classList.contains('tab-button') && 
-          e.target.getAttribute('data-tab') === 'religious') {
-        setTimeout(updateHeirFieldsColors, 300);
+      if (materialsField) {
+        materialsField.addEventListener('input', updateUnitOverlays);
       }
     });
   </script>
