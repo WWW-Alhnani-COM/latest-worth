@@ -1844,315 +1844,54 @@
       <button class="modal-button" id="closeModal" data-i18n="ok" data-i18n-title="ok">حسناً</button>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // ========== التعديل الثالث: ربط لون حقل الاسم بالحالة الدينية ==========
-      function linkNameToReligionColor(nameField, religionField) {
-        if (!nameField || !religionField) return;
-        
-        // تحديث اللون عند تغيير الحالة الدينية
-        religionField.addEventListener('change', function() {
-          updateNameFieldColor(nameField, this.value);
-        });
-        
-        // تطبيق اللون الأولي
-        updateNameFieldColor(nameField, religionField.value);
-      }
-      
-      function updateNameFieldColor(nameField, religionValue) {
-        nameField.classList.remove('border-red-linked', 'border-green-linked');
-        if (religionValue === 'غير مسلم') {
-          nameField.classList.add('border-red-linked');
-        } else if (religionValue === 'مسلم') {
-          nameField.classList.add('border-green-linked');
-        }
-      }
-      
-      // ربط حقل اسم المتوفى بالحالة الدينية
-      const deceasedNameField = document.getElementById('deceased_name');
-      const religionField = document.getElementById('deceased_religion');
-      if (deceasedNameField && religionField) {
-        linkNameToReligionColor(deceasedNameField, religionField);
-      }
-      
-      // دالة لربط حقول الورثة في التبويب الثاني
-      function setupHeirFieldsLinking() {
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList') {
-              setTimeout(linkAllHeirFields, 100);
-            }
-          });
-        });
-        
-        const resultTableBody = document.getElementById('resultTableBody');
-        if (resultTableBody) {
-          observer.observe(resultTableBody, { childList: true, subtree: true });
-          linkAllHeirFields();
-        }
-      }
-      
-      function linkAllHeirFields() {
-        const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
-        const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
-        
-        heirNameFields.forEach((nameField, index) => {
-          const religionField = heirReligionFields[index];
-          if (nameField && religionField) {
-            linkNameToReligionColor(nameField, religionField);
-          }
-        });
-      }
-      
-      // عند النقر على تبويب الورثة، نربط الحقول
-      document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('tab-button') && 
-            e.target.getAttribute('data-tab') === 'religious') {
-          setTimeout(setupHeirFieldsLinking, 300);
-        }
-      });
-      
-      // تحديث ألوان الحقول الأساسية
-      function updateFieldColors() {
-        // حقول الزوج/الزوجة
-        const wifeField = document.getElementById('wife');
-        const husbandField = document.getElementById('husband');
-        const deceasedNameField = document.getElementById('deceased_name');
-        const religionField = document.getElementById('deceased_religion');
-        
-        // تحديث حقل الزوجات
-        if (wifeField) {
-          const wifeValue = wifeField.value;
-          wifeField.classList.remove('filled-field');
-          if (wifeValue !== 'no') {
-            wifeField.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل الزوج
-        if (husbandField) {
-          const husbandValue = husbandField.value;
-          husbandField.classList.remove('filled-field');
-          if (husbandValue === 'yes') {
-            husbandField.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل اسم المتوفى
-        if (deceasedNameField) {
-          const nameValue = deceasedNameField.value.trim();
-          deceasedNameField.classList.remove('filled-field');
-          if (nameValue.length > 0) {
-            deceasedNameField.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل الديانة
-        if (religionField) {
-          const religionValue = religionField.value;
-          religionField.classList.remove('muslim-field', 'non-muslim-field');
-          if (religionValue === 'مسلم') {
-            religionField.classList.add('muslim-field');
-          } else if (religionValue === 'غير مسلم') {
-            religionField.classList.add('non-muslim-field');
-          }
-        }
-      }
-      
-      // إضافة مستمعي الأحداث
-      const wifeField = document.getElementById('wife');
-      const husbandField = document.getElementById('husband');
-      const deceasedNameField = document.getElementById('deceased_name');
-      const religionField = document.getElementById('deceased_religion');
-      
-      if (wifeField) wifeField.addEventListener('change', updateFieldColors);
-      if (husbandField) husbandField.addEventListener('change', updateFieldColors);
-      if (deceasedNameField) deceasedNameField.addEventListener('input', updateFieldColors);
-      if (religionField) religionField.addEventListener('change', updateFieldColors);
-      
-      // تحديث أولي
-      updateFieldColors();
-    });
-  </script>
-
-  <script type="module">
-    import { translations, getCurrentLanguage, setLanguage, t, isRTL } from './js/translations.js';
+<script src="./js/translations.js"></script>
+<script>
+  // استخدم الكائنات العاملة مباشرة
+  function applyTranslations() {
+    const lang = translations.getCurrentLanguage();
     
-    function applyTranslations() {
-      const lang = getCurrentLanguage();
-      
-      document.documentElement.dir = isRTL(lang) ? 'rtl' : 'ltr';
-      document.documentElement.lang = lang;
-      document.body.className = isRTL(lang) ? '' : 'ltr';
-      if (lang === 'ur') document.body.classList.add('lang-ur');
-      
-      const languageSelect = document.getElementById('languageSelect');
-      if (languageSelect) {
-        languageSelect.value = lang;
-        const options = languageSelect.querySelectorAll('option');
-        options[0].textContent = 'العربية';
-        options[1].textContent = 'English';
-        options[2].textContent = 'اردو';
-      }
-      
-      document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-          element.textContent = translations[lang][key];
-        }
-      });
-      
-      document.querySelectorAll('[data-i18n-title]').forEach(element => {
-        const key = element.getAttribute('data-i18n-title');
-        if (translations[lang] && translations[lang][key]) {
-          element.title = translations[lang][key];
-        }
-      });
-      
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-        const key = element.getAttribute('data-i18n-placeholder');
-        if (translations[lang] && translations[lang][key]) {
-          element.placeholder = translations[lang][key];
-        }
-      });
+    document.documentElement.dir = translations.isRTL(lang) ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+    document.body.className = translations.isRTL(lang) ? '' : 'ltr';
+    if (lang === 'ur') document.body.classList.add('lang-ur');
+    
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect) {
+      languageSelect.value = lang;
     }
     
-    document.getElementById('languageSelect').addEventListener('change', function(e) {
-      const lang = e.target.value;
-      setLanguage(lang);
-      applyTranslations();
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = translations.t(key);
+      if (translation !== key) {
+        element.textContent = translation;
+      }
     });
     
-    document.addEventListener('DOMContentLoaded', function() {
-      applyTranslations();
+    document.querySelectorAll('[data-i18n-title]').forEach(element => {
+      const key = element.getAttribute('data-i18n-title');
+      const translation = translations.t(key);
+      if (translation !== key) {
+        element.title = translation;
+      }
     });
-  </script>
+    
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+      const key = element.getAttribute('data-i18n-placeholder');
+      const translation = translations.t(key);
+      if (translation !== key) {
+        element.placeholder = translation;
+      }
+    });
+  }
   
-
-  <script type="module" src="js/new_script.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // ========== التعديل الثالث: ربط لون حقل الاسم بالحالة الدينية ==========
-      function linkNameToReligionColor(nameField, religionField) {
-        if (!nameField || !religionField) return;
-        
-        // تحديث اللون عند تغيير الحالة الدينية
-        religionField.addEventListener('change', function() {
-          updateNameFieldColor(nameField, this.value);
-        });
-        
-        // تطبيق اللون الأولي
-        updateNameFieldColor(nameField, religionField.value);
-      }
-      
-      function updateNameFieldColor(nameField, religionValue) {
-        nameField.classList.remove('border-red-linked', 'border-green-linked');
-        if (religionValue === 'غير مسلم') {
-          nameField.classList.add('border-red-linked');
-        } else if (religionValue === 'مسلم') {
-          nameField.classList.add('border-green-linked');
-        }
-      }
-      
-      // الحصول على العناصر مرة واحدة لتجنب التعارض
-      const deceasedNameInput = document.getElementById('deceased_name');
-      const religionSelect = document.getElementById('deceased_religion');
-      const wifeSelect = document.getElementById('wife');
-      const husbandSelect = document.getElementById('husband');
-      
-      // ربط حقل اسم المتوفى بالحالة الدينية
-      if (deceasedNameInput && religionSelect) {
-        linkNameToReligionColor(deceasedNameInput, religionSelect);
-      }
-      
-      // دالة لربط حقول الورثة في التبويب الثاني
-      function setupHeirFieldsLinking() {
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList') {
-              setTimeout(linkAllHeirFields, 100);
-            }
-          });
-        });
-        
-        const resultTableBody = document.getElementById('resultTableBody');
-        if (resultTableBody) {
-          observer.observe(resultTableBody, { childList: true, subtree: true });
-          linkAllHeirFields();
-        }
-      }
-      
-      function linkAllHeirFields() {
-        const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
-        const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
-        
-        heirNameFields.forEach((nameField, index) => {
-          const religionField = heirReligionFields[index];
-          if (nameField && religionField) {
-            linkNameToReligionColor(nameField, religionField);
-          }
-        });
-      }
-      
-      // عند النقر على تبويب الورثة، نربط الحقول
-      document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('tab-button') && 
-            e.target.getAttribute('data-tab') === 'religious') {
-          setTimeout(setupHeirFieldsLinking, 300);
-        }
-      });
-      
-      // تحديث ألوان الحقول الأساسية
-      function updateFieldColors() {
-        // تحديث حقل الزوجات
-        if (wifeSelect) {
-          const wifeValue = wifeSelect.value;
-          wifeSelect.classList.remove('filled-field');
-          if (wifeValue !== 'no') {
-            wifeSelect.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل الزوج
-        if (husbandSelect) {
-          const husbandValue = husbandSelect.value;
-          husbandSelect.classList.remove('filled-field');
-          if (husbandValue === 'yes') {
-            husbandSelect.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل اسم المتوفى
-        if (deceasedNameInput) {
-          const nameValue = deceasedNameInput.value.trim();
-          deceasedNameInput.classList.remove('filled-field');
-          if (nameValue.length > 0) {
-            deceasedNameInput.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل الديانة
-        if (religionSelect) {
-          const religionValue = religionSelect.value;
-          religionSelect.classList.remove('muslim-field', 'non-muslim-field');
-          if (religionValue === 'مسلم') {
-            religionSelect.classList.add('muslim-field');
-          } else if (religionValue === 'غير مسلم') {
-            religionSelect.classList.add('non-muslim-field');
-          }
-        }
-      }
-      
-      // إضافة مستمعي الأحداث
-      if (wifeSelect) wifeSelect.addEventListener('change', updateFieldColors);
-      if (husbandSelect) husbandSelect.addEventListener('change', updateFieldColors);
-      if (deceasedNameInput) deceasedNameInput.addEventListener('input', updateFieldColors);
-      if (religionSelect) religionSelect.addEventListener('change', updateFieldColors);
-      
-      // تحديث أولي
-      updateFieldColors();
-    });
+  document.getElementById('languageSelect').addEventListener('change', function(e) {
+    const lang = e.target.value;
+    translations.setLanguage(lang);
+    applyTranslations();
+  });
+  
+  document.addEventListener('DOMContentLoaded', applyTranslations);
 </script>
 </body>
 </html>
