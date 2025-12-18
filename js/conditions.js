@@ -170,3 +170,13 @@ export function getWifeKeys(heirs) {
   if (!heirs) return [];
   return Object.keys(heirs).filter(key => hasWifeKey(key));
 }
+// في نهاية conditions.js، أضف:
+if (typeof window !== 'undefined') {
+  window.SHARES = SHARES;
+  window.DECEASED_TYPE = DECEASED_TYPE;
+  window.HEIR_TYPES = HEIR_TYPES;
+  window.CONDITIONS = CONDITIONS;
+  window.checkHeirs = checkHeirs;
+  window.getHeirCounts = getHeirCounts;
+  console.log('📋 conditions.js محمل وجاهز للاستخدام');
+}
