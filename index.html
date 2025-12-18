@@ -1844,8 +1844,147 @@
       <button class="modal-button" id="closeModal" data-i18n="ok" data-i18n-title="ok">حسناً</button>
     </div>
   </div>
-<script type="module" src="./js/translations.js"></script>
-  // استخدم الكائنات العاملة مباشرة
- 
+<!-- استبدل هذه السطور (آخر سطرين في ملفك) بالكود التالي: -->
+<script src="./js/translations.js"></script>
+<script src="./js/conditions.js"></script>
+<script src="./js/keysCalculator.js"></script>
+<script>
+  // الانتظار حتى يتم تحميل جميع الملفات
+  function waitForAllScripts(callback, maxAttempts = 15, interval = 100) {
+    let attempts = 0;
+    const requiredScripts = ['translations', 'CONDITIONS', 'InheritanceCalculator'];
+    
+    function check() {
+      attempts++;
+      
+      // التحقق من تحميل جميع الملفات المطلوبة
+      const translationsLoaded = window.translations && typeof window.translations.getCurrentLanguage === 'function';
+      const conditionsLoaded = window.CONDITIONS || window.checkHeirs;
+      const calculatorLoaded = window.InheritanceCalculator || window.distribute;
+      
+      if (translationsLoaded && conditionsLoaded && calculatorLoaded) {
+        console.log('✅ جميع الملفات تم تحميلها بنجاح');
+        callback();
+      } else if (attempts < maxAttempts) {
+        console.log(`🔄 انتظار تحميل الملفات... (المحاولة ${attempts})`);
+        setTimeout(check, interval);
+      } else {
+        console.error('❌ فشل تحميل بعض الملفات بعد عدة محاولات');
+        console.log('- translations:', translationsLoaded);
+        console.log('- conditions:', conditionsLoaded);
+        console.log('- calculator:', calculatorLoaded);
+        // حاول المتابعة على أي حال
+        callback();
+      }
+    }
+    
+    check();
+  }
+  
+  function applyTranslations() {
+    if (!window.translations) {
+      console.error('❌ translations لم يتم تحميله بعد');
+      setTimeout(applyTranslations, 100);
+      return;
+    }
+    
+    console.log('🔧 تطبيق الترجمات...');
+    
+    const lang = window.translations.getCurrentLanguage();
+    console.log('🌍 اللغة المحددة:', lang);
+    
+    document.documentElement.dir = window.translations.isRTL(lang) ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang;
+    document.body.className = window.translations.isRTL(lang) ? '' : 'ltr';
+    if (lang === 'ur') document.body.classList.add('lang-ur');
+    
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect) {
+      languageSelect.value = lang;
+    }
+    
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = window.translations.t(key);
+      if (translation !== key) {
+        element.textContent = translation;
+      }
+    });
+    
+    document.querySelectorAll('[data-i18n-title]').forEach(element => {
+      const key = element.getAttribute('data-i18n-title');
+      const translation = window.translations.t(key);
+      if (translation !== key) {
+        element.title = translation;
+      }
+    });
+    
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+      const key = element.getAttribute('data-i18n-placeholder');
+      const translation = window.translations.t(key);
+      if (translation !== key) {
+        element.placeholder = translation;
+      }
+    });
+    
+    console.log('✅ تم تطبيق الترجمات بنجاح');
+  }
+  
+  // تهيئة التطبيق بعد تحميل جميع الملفات
+  waitForAllScripts(function() {
+    console.log('🚀 بدء تهيئة التطبيق...');
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('📄 تم تحميل DOM');
+        applyTranslations();
+        initializeApp();
+      });
+    } else {
+      console.log('📄 DOM محمل بالفعل');
+      applyTranslations();
+      initializeApp();
+    }
+  });
+  
+  // حدث تغيير اللغة
+  document.getElementById('languageSelect').addEventListener('change', function(e) {
+    const lang = e.target.value;
+    if (window.translations) {
+      window.translations.setLanguage(lang);
+      applyTranslations();
+    }
+  });
+  
+  // دالة تهيئة التطبيق الأساسية
+  function initializeApp() {
+    console.log('🔨 تهيئة التطبيق...');
+    
+    // التحقق من وجود الملفات المطلوبة
+    if (!window.translations) {
+      console.error('❌ ملف الترجمات غير محمل');
+    }
+    
+    if (!window.CONDITIONS && !window.checkHeirs) {
+      console.error('❌ ملف الشروط غير محمل');
+    }
+    
+    if (!window.InheritanceCalculator && !window.distribute) {
+      console.error('❌ ملف الحاسبة غير محمل');
+    }
+    
+    // هنا يمكنك إضافة كود التهيئة الخاص بالتطبيق
+    // مثل تعيين الأحداث، تهيئة الجداول، إلخ.
+    
+    console.log('✅ تم تهيئة التطبيق بنجاح');
+  }
+  
+  // إضافة دالة لمعالجة الأخطاء
+  window.addEventListener('error', function(event) {
+    console.error('💥 خطأ في الصفحة:', event.error);
+    console.error('📄 في الملف:', event.filename);
+    console.error('📍 في السطر:', event.lineno);
+  });
+</script>
 </body>
 </html>
