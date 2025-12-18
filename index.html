@@ -1976,6 +1976,388 @@
     document.addEventListener('DOMContentLoaded', function() {
       applyTranslations();
     });
+    // في جزء JavaScript نضيف هذه الوظائف
+
+document.addEventListener('DOMContentLoaded', function() {
+    // الحصول على العناصر المطلوبة
+    const deceasedNameField = document.getElementById('deceased_name');
+    const religionField = document.getElementById('deceased_religion');
+    const heirNameFields = document.querySelectorAll('.heir-name');
+    const heirReligionFields = document.querySelectorAll('.heir-religion');
+    
+    // دالة لتحديث لون حقل الاسم بناءً على الحالة الدينية
+    function updateNameFieldColorBasedOnReligion(nameField, religionField) {
+        if (!nameField || !religionField) return;
+        
+        // إزالة الألوان القديمة
+        nameField.classList.remove('border-red', 'border-green');
+        religionField.classList.remove('border-red', 'border-green');
+        
+        // تحديد اللون بناءً على القيمة
+        if (religionField.value === 'غير مسلم') {
+            nameField.classList.add('border-red');
+            religionField.classList.add('border-red');
+        } else if (religionField.value === 'مسلم') {
+            nameField.classList.add('border-green');
+            religionField.classList.add('border-green');
+        }
+    }
+    
+    // تحديث ألوان الحقول الأساسية (المتوفى)
+    if (deceasedNameField && religionField) {
+        // تحديث أولي
+        updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+        
+        // تحديث عند تغيير الحالة الدينية
+        religionField.addEventListener('change', function() {
+            updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+        });
+        
+        // تحديث عند تغيير اسم المتوفى (للتوحيد)
+        deceasedNameField.addEventListener('input', function() {
+            updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+        });
+    }
+    
+    // تحديث ألوان حقول الورثة في التبويب الثاني
+    function updateHeirFieldsColors() {
+        heirNameFields.forEach((nameField, index) => {
+            const religionField = heirReligionFields[index];
+            if (nameField && religionField) {
+                updateNameFieldColorBasedOnReligion(nameField, religionField);
+            }
+        });
+    }
+    
+    // تحديث أولي للورثة
+    updateHeirFieldsColors();
+    
+    // إضافة مستمعي الأحداث لحقول الورثة
+    heirReligionFields.forEach(religionField => {
+        religionField.addEventListener('change', function() {
+            updateHeirFieldsColors();
+        });
+    });
+    
+    heirNameFields.forEach(nameField => {
+        nameField.addEventListener('input', function() {
+            // إيجاد الحقل الديني المقابل
+            const row = this.closest('tr');
+            if (row) {
+                const religionField = row.querySelector('.heir-religion');
+                if (religionField) {
+                    updateNameFieldColorBasedOnReligion(this, religionField);
+                }
+            }
+        });
+    });
+    
+    // دالة لإنشاء تنسيق خطوة بيانات الورثة
+    function setupHeirDataStep() {
+        const religiousTab = document.querySelector('[data-tab="religious"]');
+        const religiousContent = document.getElementById('religious');
+        
+        if (religiousTab && religiousContent) {
+            // تحسين مظهر التبويب
+            religiousTab.innerHTML = `
+                <span class="step-number">2</span>
+                <span class="step-title" data-i18n="tab2Title">
+                    <i class="fas fa-users"></i>
+                    بيانات الورثة
+                </span>
+            `;
+            
+            // تحسين محتوى التبويب
+            const alertElement = religiousContent.querySelector('.alert');
+            if (alertElement) {
+                alertElement.innerHTML = `
+                    <i class="fas fa-info-circle"></i>
+                    <strong>خطوة بيانات الورثة:</strong> 
+                    اكتب أسماء الورثة واختر ديانة كل وارث ثم اضغط على التالي
+                `;
+                alertElement.classList.add('alert-info');
+            }
+        }
+    }
+    
+    // استدعاء الدالة عند تحميل الصفحة
+    setTimeout(setupHeirDataStep, 100);
+    
+    // دالة لتنسيق الحقول
+    function formatFields() {
+        // حقل اسم المتوفى
+        const deceasedNameContainer = document.querySelector('.name-field');
+        if (deceasedNameContainer) {
+            deceasedNameContainer.innerHTML = `
+                <div class="input-group">
+                    <label for="deceased_name" class="field-label">
+                        <i class="fas fa-user"></i>
+                        اسم المتوفى
+                    </label>
+                    <div class="input-wrapper">
+                        <input type="text" 
+                               id="deceased_name" 
+                               name="deceased_name" 
+                               class="form-control name-input"
+                               placeholder="أدخل اسم المتوفى..."
+                               data-i18n-placeholder="enterDeceasedName" 
+                               data-i18n-title="deceasedName" />
+                        <div class="input-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                    </div>
+                    <small class="field-hint">اسم المتوفى الكامل</small>
+                </div>
+            `;
+        }
+        
+        // حقل الحالة الدينية
+        const religionContainer = document.querySelector('.deceased_religion .input-group');
+        if (religionContainer) {
+            religionContainer.innerHTML = `
+                <label for="deceased_religion" class="field-label">
+                    <i class="fas fa-star-and-crescent"></i>
+                    الحالة الدينية
+                </label>
+                <div class="select-wrapper">
+                    <select id="deceased_religion" 
+                            name="deceased_religion" 
+                            class="form-control religion-select"
+                            data-i18n-title="religion">
+                        <option value="مسلم" class="option-muslim">
+                            <i class="fas fa-mosque"></i> مسلم
+                        </option>
+                        <option value="غير مسلم" class="option-non-muslim">
+                            <i class="fas fa-church"></i> غير مسلم
+                        </option>
+                    </select>
+                    <div class="select-arrow">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <small class="field-hint">اختر ديانة المتوفى</small>
+            `;
+        }
+    }
+    
+    // استدعاء دالة تنسيق الحقول
+    setTimeout(formatFields, 150);
+});
+
+// في جزء CSS نضيف الأنماط الجديدة
+const style = document.createElement('style');
+style.textContent = `
+    /* تنسيق خطوة بيانات الورثة */
+    .tab-button[data-tab="religious"] .step-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .alert-info {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border: 2px solid #2196f3;
+        border-right: 6px solid #2196f3;
+        padding: 1.5rem;
+    }
+    
+    .alert-info i {
+        color: #2196f3;
+        font-size: 1.3rem;
+    }
+    
+    .alert-info strong {
+        color: #1565c0;
+    }
+    
+    /* تنسيق الحقول */
+    .field-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+        font-size: 1rem;
+    }
+    
+    .field-label i {
+        color: #1a73e8;
+    }
+    
+    .input-wrapper, .select-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    
+    .input-wrapper .input-icon,
+    .select-wrapper .select-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+        pointer-events: none;
+    }
+    
+    .input-wrapper .input-icon {
+        left: 15px;
+    }
+    
+    .select-wrapper .select-arrow {
+        left: 15px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 45px 12px 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+        border-color: #1a73e8;
+    }
+    
+    .field-hint {
+        display: block;
+        margin-top: 5px;
+        font-size: 0.85rem;
+        color: #666;
+        font-style: italic;
+    }
+    
+    /* تخصيص خيارات الحالة الدينية */
+    .option-muslim {
+        background-color: rgba(52, 168, 83, 0.1);
+        color: #2e7d32;
+        font-weight: 600;
+    }
+    
+    .option-non-muslim {
+        background-color: rgba(234, 67, 53, 0.1);
+        color: #c62828;
+        font-weight: 600;
+    }
+    
+    /* ألوان البوردر المطلوبة */
+    .border-red {
+        border-color: #ea4335 !important;
+        border-width: 2px !important;
+        background-color: rgba(234, 67, 53, 0.05) !important;
+    }
+    
+    .border-green {
+        border-color: #34a853 !important;
+        border-width: 2px !important;
+        background-color: rgba(52, 168, 83, 0.05) !important;
+    }
+    
+    /* تأثيرات إضافية عند التركيز */
+    .border-red:focus {
+        box-shadow: 0 0 0 3px rgba(234, 67, 53, 0.2) !important;
+    }
+    
+    .border-green:focus {
+        box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
+    }
+    
+    /* تحسين عرض حقول الورثة في الجدول */
+    #resultTableBody .heir-name,
+    #resultTableBody .heir-religion {
+        transition: all 0.3s ease;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        padding: 8px 12px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    #resultTableBody .heir-name:focus,
+    #resultTableBody .heir-religion:focus {
+        outline: none;
+        transform: translateY(-1px);
+    }
+    
+    /* تنسيق خاص لخطوة البيانات */
+    #religious .table-container {
+        border: 2px solid #e3f2fd;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 20px;
+    }
+    
+    #religious table thead {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    }
+    
+    #religious table th {
+        font-weight: 700;
+        color: #1565c0;
+        border-bottom: 3px solid #2196f3;
+    }
+    
+    /* رسائل توضيحية */
+    .field-instruction {
+        background: #f8f9fa;
+        border-right: 4px solid #1a73e8;
+        padding: 10px 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    /* تحسين عام للتجربة */
+    .form-group-container {
+        transition: all 0.3s ease;
+    }
+    
+    .form-group-container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* مؤشرات بصرية */
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-left: 8px;
+    }
+    
+    .status-muslim {
+        background-color: #34a853;
+    }
+    
+    .status-non-muslim {
+        background-color: #ea4335;
+    }
+    
+    /* استجابة للشاشات الصغيرة */
+    @media (max-width: 768px) {
+        .field-label {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        
+        .form-control {
+            padding: 10px 35px 10px 10px;
+        }
+        
+        .input-wrapper .input-icon,
+        .select-wrapper .select-arrow {
+            left: 10px;
+        }
+    }
+`;
+document.head.appendChild(style);
   </script>
 
   <script type="module" src="js/new_script.js"></script>
