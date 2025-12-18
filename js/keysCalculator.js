@@ -670,6 +670,162 @@ export class InheritanceCalculator {
     const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
 
     console.log('👦 له ابن؟:', hasSon);
+    // ======== أضف هذا بعد applyRaddToDaughtersOnly ========
+  
+  // 🔑 المفتاح السابع: حالة عدم وجود أبناء أو بنات
+  applyKey7() {
+    console.log('🔑 تطبيق المفتاح 7: حالة عدم وجود أبناء أو بنات');
+    
+    const hasFather = checkHeirs(this.heirs, CONDITIONS.hasFather);
+    const hasMother = checkHeirs(this.heirs, CONDITIONS.hasMother);
+    const hasHusband = checkHeirs(this.heirs, CONDITIONS.hasHusband);
+    const hasWife = checkHeirs(this.heirs, CONDITIONS.hasWife);
+    const hasBrother = checkHeirs(this.heirs, CONDITIONS.hasBrother);
+    const hasSister = checkHeirs(this.heirs, CONDITIONS.hasSister);
+    const hasGrandfather = checkHeirs(this.heirs, CONDITIONS.hasGrandfather);
+    const hasGrandmother = checkHeirs(this.heirs, CONDITIONS.hasGrandmother);
+
+    // الحالة 1: زوج فقط
+    if (hasHusband && this.allHeirKeys.length === 1) {
+      this.addHeirWithShare('husband', this.totalAmount, 'كل التركة للزوج', false);
+      return true;
+    }
+
+    // الحالة 2: زوجة فقط
+    if (hasWife && this.allHeirKeys.length === 1) {
+      const wifeHeirs = Object.keys(this.heirs).filter(key => key.startsWith('wife_'));
+      const sharePerWife = this.totalAmount / wifeHeirs.length;
+      
+      for (const wife of wifeHeirs) {
+        this.addHeirWithShare(wife, sharePerWife, 'كل التركة للزوجة', false);
+      }
+      return true;
+    }
+
+    // الحالة 3: أب فقط
+    if (hasFather && this.allHeirKeys.length === 1) {
+      this.addHeirWithShare('father', this.totalAmount, 'كل التركة للأب', false);
+      return true;
+    }
+
+    // الحالة 4: أم فقط
+    if (hasMother && this.allHeirKeys.length === 1) {
+      this.addHeirWithShare('mother', this.totalAmount, 'كل التركة للأم', false);
+      return true;
+    }
+
+    // الحالة 5: زوج + أب + أم
+    if (hasHusband && hasFather && hasMother) {
+      this.assignFixedShare('husband', SHARES.half, 'halfNote');
+      this.assignFixedShare('father', SHARES.sixth, 'sixthNote');
+      this.assignFixedShare('mother', SHARES.third, 'thirdNote');
+      
+      this.applyRaddToEligibleHeirs(['husband', 'father', 'mother'], 'raddNote');
+      return true;
+    }
+
+    // الحالة 6: زوجة + أب + أم
+    if (hasWife && hasFather && hasMother) {
+      const wifeHeirs = Object.keys(this.heirs).filter(key => key.startsWith('wife_'));
+      const wifeCount = wifeHeirs.length;
+      const totalWifeShare = this.calculateShare(SHARES.quarter);
+      const sharePerWife = totalWifeShare / wifeCount;
+      
+      for (const wife of wifeHeirs) {
+        this.addHeirWithShare(wife, sharePerWife, this.generateWifeNote(wifeCount), true);
+      }
+      
+      this.assignFixedShare('father', SHARES.sixth, 'sixthNote');
+      this.assignFixedShare('mother', SHARES.third, 'thirdNote');
+      
+      this.applyRaddToEligibleHeirs(['father', 'mother', ...wifeHeirs], 'raddNote');
+      return true;
+    }
+
+    // الحالة 7: زوج + أب
+    if (hasHusband && hasFather) {
+      this.assignFixedShare('husband', SHARES.half, 'halfNote');
+      this.addHeirWithShare('father', this.remainingAmount, 'الباقي للأب', true);
+      return true;
+    }
+
+    // الحالة 8: زوج + أم
+    if (hasHusband && hasMother) {
+      this.assignFixedShare('husband', SHARES.half, 'halfNote');
+      this.assignFixedShare('mother', SHARES.third, 'thirdNote');
+      
+      this.applyRaddToEligibleHeirs(['husband', 'mother'], 'raddNote');
+      return true;
+    }
+
+    // الحالة 9: زوجة + أب
+    if (hasWife && hasFather) {
+      const wifeHeirs = Object.keys(this.heirs).filter(key => key.startsWith('wife_'));
+      const wifeCount = wifeHeirs.length;
+      const totalWifeShare = this.calculateShare(SHARES.quarter);
+      const sharePerWife = totalWifeShare / wifeCount;
+      
+      for (const wife of wifeHeirs) {
+        this.addHeirWithShare(wife, sharePerWife, this.generateWifeNote(wifeCount), true);
+      }
+      
+      this.addHeirWithShare('father', this.remainingAmount, 'الباقي للأب', true);
+      return true;
+    }
+
+    // الحالة 10: زوجة + أم
+    if (hasWife && hasMother) {
+      const wifeHeirs = Object.keys(this.heirs).filter(key => key.startsWith('wife_'));
+      const wifeCount = wifeHeirs.length;
+      const totalWifeShare = this.calculateShare(SHARES.quarter);
+      const sharePerWife = totalWifeShare / wifeCount;
+      
+      for (const wife of wifeHeirs) {
+        this.addHeirWithShare(wife, sharePerWife, this.generateWifeNote(wifeCount), true);
+      }
+      
+      this.assignFixedShare('mother', SHARES.third, 'thirdNote');
+      
+      this.applyRaddToEligibleHeirs(['mother', ...wifeHeirs], 'raddNote');
+      return true;
+    }
+
+    // الحالة 11: أب + أم
+    if (hasFather && hasMother) {
+      this.assignFixedShare('mother', SHARES.third, 'thirdNote');
+      this.addHeirWithShare('father', this.remainingAmount, 'الباقي للأب', true);
+      return true;
+    }
+
+    // الحالة 12: إخوة وأخوات (عصبة)
+    if ((hasBrother || hasSister) && !hasFather && !hasMother) {
+      this.applyMaleFemaleRatioToRemaining();
+      return true;
+    }
+
+    // الحالة 13: جد + جدة
+    if (hasGrandfather && hasGrandmother) {
+      this.assignFixedShare('grandmother', SHARES.sixth, 'sixthNote');
+      this.addHeirWithShare('grandfather', this.remainingAmount, 'الباقي للجد', true);
+      return true;
+    }
+
+    return false;
+  }
+
+// ======== وأضف هذا في دالة calculate() ========
+
+    // 🔴 التعديل الجديد: إذا لم يكن هناك ابن أو ابنة، جرب المفتاح السابع
+    if (!hasSon && !hasDaughter) {
+      console.log('🔑 لا يوجد أبناء أو بنات، جرب المفتاح السابع');
+      const key7Applied = this.applyKey7();
+      
+      if (key7Applied) {
+        console.log('✅ تم تطبيق المفتاح السابع بنجاح');
+        this.ensureAllHeirsAreIncluded();
+        return this.ensureAllData(this.results);
+      }
+    }
     console.log('👧 له بنت؟:', hasDaughter);
     console.log('👧👧 له أكثر من بنت؟:', hasMultipleDaughters);
 
