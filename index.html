@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com">  <title data-i18n="pageTitle">الفتح السليماني الطيبي - حاسبة الميراث</title> -->
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <title data-i18n="pageTitle">الفتح السليماني الطيبي - حاسبة الميراث</title>
   <link rel="stylesheet" href="css/worth.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -453,35 +454,102 @@
       color: white;
     }
 
-    /* ========== التعديل الأول: تصغير حجم صورة العملة ========== */
-    .input-with-unit {
+    /* ========== إصلاح حقلي المبلغ والأمتار ========== */
+    .input-with-unit-container {
       position: relative;
+      width: 100%;
     }
 
-    .unit {
+    .input-with-unit-container input {
+      width: 100%;
+      padding: 1rem 3.5rem 1rem 1.2rem;
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      direction: ltr;
+      text-align: right;
+      font-family: 'Roboto', 'Segoe UI', monospace;
+    }
+
+    .input-with-unit-container input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .input-with-unit-container input:hover {
+      border-color: var(--border-medium);
+    }
+
+    /* تصغير حجم صورة العملة */
+    .unit-overlay {
       position: absolute;
       left: 1rem;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--text-tertiary);
-      font-weight: 500;
-      background: var(--bg-secondary);
-      padding: 0.5rem 0.75rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 0.5rem;
+      background: var(--bg-secondary);
+      padding: 0.4rem 0.6rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      color: var(--text-tertiary);
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 2;
+      border: 1px solid var(--border-light);
     }
 
-    .unit .currency-icon {
-      width: 18px; /* تم التصغير من 20px */
-      height: 18px; /* تم التصغير من 20px */
+    .unit-overlay .currency-icon {
+      width: 18px; /* تم تصغير الحجم */
+      height: 18px; /* تم تصغير الحجم */
       object-fit: contain;
     }
 
-    .input-group input {
-      padding-left: 4rem;
+    .input-with-unit-container.meter-input input {
+      padding-left: 4rem; /* تم تقليص المساحة */
+    }
+
+    .input-with-unit-container.currency-input input {
+      padding-left: 3.8rem; /* تم تقليص المساحة */
+    }
+
+    .input-with-unit-container input::-webkit-outer-spin-button,
+    .input-with-unit-container input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .input-with-unit-container input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .input-with-unit-container input.filled-field {
+      border-color: var(--success-color);
+      background-color: rgba(52, 168, 83, 0.05);
+    }
+
+    .input-with-unit-container:has(input.filled-field) .unit-overlay {
+      background: rgba(52, 168, 83, 0.1);
+      color: var(--success-color);
+      border-color: var(--success-color);
+    }
+
+    .input-with-unit-container input.empty-field {
+      border-color: var(--primary-color);
+      background-color: rgba(26, 115, 232, 0.05);
+    }
+
+    .input-with-unit-container:has(input.empty-field) .unit-overlay {
+      background: rgba(26, 115, 232, 0.1);
+      color: var(--primary-color);
+      border-color: var(--primary-color);
     }
 
     .radio-group {
@@ -591,7 +659,11 @@
       text-align: center;
     }
 
-    /* ========== التعديل الثاني: تنسيق حقول بيانات الورثة ========== */
+    /* ========== تنسيق حقول الورثة في التبويب الثاني ========== */
+    #resultTableBody td {
+      position: relative;
+    }
+
     #resultTableBody .heir-name,
     #resultTableBody .heir-religion {
       width: 100%;
@@ -650,6 +722,16 @@
       background-color: rgba(52, 168, 83, 0.05) !important;
     }
 
+    /* تأثيرات للصفوف */
+    #resultTableBody tr:has(.filled-field) td:first-child {
+      border-left: 3px solid var(--success-color);
+    }
+
+    #resultTableBody tr:has(.non-muslim-field) td:first-child {
+      border-left: 3px solid var(--danger-color);
+    }
+
+    /* ========== باقي الأنماط ========== */
     .sons-modal {
       position: fixed;
       top: 0;
@@ -857,6 +939,31 @@
         min-width: 120px;
       }
       
+      .input-with-unit-container input {
+        padding: 0.875rem 3rem 0.875rem 1rem;
+        font-size: 0.95rem;
+      }
+      
+      .unit-overlay {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+        left: 0.75rem;
+      }
+      
+      .unit-overlay .currency-icon {
+        width: 16px;
+        height: 16px;
+      }
+      
+      .input-with-unit-container.meter-input input {
+        padding-left: 3.5rem;
+      }
+      
+      .input-with-unit-container.currency-input input {
+        padding-left: 3.2rem;
+      }
+      
+      /* تنسيق حقول الورثة في الجوال */
       #resultTableBody .heir-name,
       #resultTableBody .heir-religion {
         padding: 0.6rem 0.8rem;
@@ -1497,35 +1604,39 @@
       background: var(--success-color);
     }
 
-    .input-group:has(.filled-field):not(:has(.non-muslim-field)) {
-      padding-left: 5px;
+    /* تحديثات إضافية للاستجابة */
+    @media (max-width: 480px) {
+      .input-with-unit-container input {
+        padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+      }
+      
+      .unit-overlay {
+        left: 0.5rem;
+        padding: 0.3rem 0.5rem;
+      }
+      
+      .unit-overlay .currency-icon {
+        width: 16px;
+        height: 16px;
+      }
     }
-
-    .input-group:has(.non-muslim-field) {
-      padding-left: 5px;
+    
+    /* تنسيقات إضافية للوحدات */
+    .filled-overlay {
+      background: rgba(52, 168, 83, 0.15) !important;
+      color: var(--success-color) !important;
+      border-color: var(--success-color) !important;
+      font-weight: 600;
     }
-
-    #resultTableBody tr:has(.filled-field):not(:has(.non-muslim-field)) td:first-child {
+    
+    .empty-overlay {
+      background: rgba(26, 115, 232, 0.15) !important;
+      color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
     }
-
-    #resultTableBody tr:has(.non-muslim-field) td:first-child {
-    }
-
-    .input-group:has(.filled-field)::after {
-      content: '✓';
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--success-color);
-      font-weight: bold;
-      font-size: 1.1rem;
-      opacity: 0.8;
-    }
-
-    .input-group:has(.non-muslim-field)::after {
-      content: '✗';
-      color: var(--danger-color);
+    
+    .filled-overlay .currency-icon {
+      filter: brightness(0.9) sepia(1) hue-rotate(90deg) saturate(5);
     }
   </style>
 </head>
@@ -1661,25 +1772,47 @@
               </div>
             </div>
 
-            <!-- سطر اسم المتوفى والمبلغ والأمتار -->
+            <!-- سطر اسم المتوفى والمبلغ والأمتار - النسخة المعدلة -->
             <div class="form-group-row">
               <div class="input-group name-field">
                 <label for="deceased_name" data-i18n="deceasedName">اسم المتوفى</label>
-                <input type="text" id="deceased_name" name="deceased_name" data-i18n-placeholder="enterDeceasedName" data-i18n-title="deceasedName" />
+                <input type="text" id="deceased_name" name="deceased_name" 
+                       placeholder="أدخل اسم المتوفى" 
+                       data-i18n-placeholder="enterDeceasedName" 
+                       data-i18n-title="deceasedName" />
               </div>
               
-              <div class="input-group input-with-unit">
+              <!-- حقل المبلغ المعدل -->
+              <div class="input-group">
                 <label for="amount" data-i18n="estateAmount">مبلغ التركة</label>
-                <input type="number" id="amount" data-i18n-placeholder="enterAmount" data-i18n-title="estateAmount" />
-                <span class="unit">
-                  <img src="SRE.png" alt="ريال" class="currency-icon" />
-                </span>
+                <div class="input-with-unit-container currency-input">
+                  <input type="number" id="amount" name="amount"
+                         placeholder="0.00"
+                         min="0"
+                         step="0.01"
+                         data-i18n-placeholder="enterAmount" 
+                         data-i18n-title="estateAmount" />
+                  <div class="unit-overlay">
+                    <img src="SRE.png" alt="ريال" class="currency-icon" />
+                    <span>ريال</span>
+                  </div>
+                </div>
               </div>
               
-              <div class="input-group input-with-unit">
+              <!-- حقل الأمتار المعدل -->
+              <div class="input-group">
                 <label for="materials" data-i18n="materials">الأمتار المراد توزيعها</label>
-                <input type="number" id="materials" data-i18n-placeholder="enterMaterials" data-i18n-title="materials" />
-                <span class="unit" data-i18n="meter">متر</span>
+                <div class="input-with-unit-container meter-input">
+                  <input type="number" id="materials" name="materials"
+                         placeholder="0"
+                         min="0"
+                         step="0.01"
+                         data-i18n-placeholder="enterMaterials" 
+                         data-i18n-title="materials" />
+                  <div class="unit-overlay">
+                    <span data-i18n="meter">متر</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1845,7 +1978,368 @@
     </div>
   </div>
 
- <script type="module">
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // الحصول على العناصر المطلوبة
+      const deceasedNameField = document.getElementById('deceased_name');
+      const religionField = document.getElementById('deceased_religion');
+      const amountField = document.getElementById('amount');
+      const materialsField = document.getElementById('materials');
+      
+      // ========== إصلاح مشكلة اختفاء القيم ==========
+      // دالة مبسطة لتنسيق الأرقام بدون أحداث focus/blur المزعجة
+      function setupNumberInputs() {
+        if (amountField) {
+          amountField.addEventListener('change', function() {
+            formatNumberValue(this);
+            updateFieldColors();
+          });
+          
+          // حفظ القيمة الأصلية
+          let originalAmountValue = amountField.value;
+          amountField.addEventListener('focus', function() {
+            originalAmountValue = this.value;
+          });
+          
+          amountField.addEventListener('blur', function() {
+            if (this.value !== originalAmountValue) {
+              formatNumberValue(this);
+              updateFieldColors();
+            }
+          });
+        }
+        
+        if (materialsField) {
+          materialsField.addEventListener('change', function() {
+            formatNumberValue(this);
+            updateFieldColors();
+          });
+          
+          // حفظ القيمة الأصلية
+          let originalMaterialsValue = materialsField.value;
+          materialsField.addEventListener('focus', function() {
+            originalMaterialsValue = this.value;
+          });
+          
+          materialsField.addEventListener('blur', function() {
+            if (this.value !== originalMaterialsValue) {
+              formatNumberValue(this);
+              updateFieldColors();
+            }
+          });
+        }
+      }
+      
+      // دالة لتنسيق قيمة الرقم
+      function formatNumberValue(input) {
+        if (!input || !input.value) return;
+        
+        let value = input.value.toString().trim().replace(/,/g, '');
+        
+        if (value && !isNaN(parseFloat(value))) {
+          const num = parseFloat(value);
+          if (!isNaN(num)) {
+            // تنسيق الرقم
+            if (input.id === 'amount') {
+              // للمبلغ: كسور عشرية
+              input.value = num.toLocaleString('ar-SA', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              });
+            } else {
+              // للأمتار: بدون كسور
+              input.value = num.toLocaleString('ar-SA', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+              });
+            }
+          }
+        }
+      }
+      
+      // ========== دالة لتحديث لون حقل الاسم بناءً على الحالة الدينية ==========
+      function updateNameFieldColorBasedOnReligion(nameField, religionField) {
+        if (!nameField || !religionField) return;
+        
+        // إزالة الألوان القديمة
+        nameField.classList.remove('border-red-linked', 'border-green-linked');
+        religionField.classList.remove('muslim-field', 'non-muslim-field');
+        
+        // تحديد اللون بناءً على القيمة
+        if (religionField.value === 'غير مسلم') {
+          nameField.classList.add('border-red-linked');
+          religionField.classList.add('non-muslim-field');
+        } else if (religionField.value === 'مسلم') {
+          nameField.classList.add('border-green-linked');
+          religionField.classList.add('muslim-field');
+        }
+      }
+      
+      // تحديث ألوان الحقول الأساسية (المتوفى)
+      if (deceasedNameField && religionField) {
+        // تحديث أولي
+        updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+        
+        // تحديث عند تغيير الحالة الدينية
+        religionField.addEventListener('change', function() {
+          updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+          updateFieldColors();
+        });
+        
+        // تحديث عند تغيير اسم المتوفى
+        deceasedNameField.addEventListener('input', function() {
+          updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+          updateFieldColors();
+        });
+      }
+      
+      // ========== دالة لتحديث ألوان جميع الحقول ==========
+      function updateFieldColors() {
+        // تحديث حقول المبلغ والأمتار
+        const fieldsToUpdate = [
+          {field: amountField, id: 'amount', isNumber: true},
+          {field: materialsField, id: 'materials', isNumber: true},
+          {field: document.getElementById('wife'), id: 'wife'},
+          {field: document.getElementById('husband'), id: 'husband'},
+          {field: deceasedNameField, id: 'deceased_name'}
+        ];
+        
+        fieldsToUpdate.forEach(item => {
+          if (item.field) {
+            // إزالة الفئات القديمة
+            item.field.classList.remove('filled-field', 'empty-field');
+            
+            let value = item.field.value ? item.field.value.toString().trim() : '';
+            
+            // تنظيف القيمة من الفواصل للأرقام
+            if (item.isNumber) {
+              value = value.replace(/,/g, '');
+            }
+            
+            if (value && value !== '0' && value !== '0.00' && 
+                value !== 'no' && value !== '') {
+              item.field.classList.add('filled-field');
+            } else {
+              item.field.classList.add('empty-field');
+            }
+          }
+        });
+        
+        // تحديث ألوان حقل الديانة
+        if (religionField) {
+          religionField.classList.remove('muslim-field', 'non-muslim-field', 'filled-field', 'empty-field');
+          if (religionField.value) {
+            religionField.classList.add('filled-field');
+            if (religionField.value === 'مسلم') {
+              religionField.classList.add('muslim-field');
+            } else if (religionField.value === 'غير مسلم') {
+              religionField.classList.add('non-muslim-field');
+            }
+          } else {
+            religionField.classList.add('empty-field');
+          }
+        }
+        
+        // تحديث ألوان الحقول المرتبطة
+        if (deceasedNameField && religionField) {
+          updateNameFieldColorBasedOnReligion(deceasedNameField, religionField);
+        }
+        
+        // تحديث وحدات القياس
+        updateUnitOverlays();
+      }
+      
+      // ========== دالة لتحديث وحدات القياس ==========
+      function updateUnitOverlays() {
+        const overlays = document.querySelectorAll('.unit-overlay');
+        overlays.forEach(overlay => {
+          const container = overlay.closest('.input-with-unit-container');
+          if (container) {
+            const input = container.querySelector('input');
+            if (input) {
+              overlay.classList.remove('filled-overlay', 'empty-overlay');
+              
+              let value = input.value ? input.value.toString().trim().replace(/,/g, '') : '';
+              
+              if (value && value !== '0' && value !== '0.00') {
+                overlay.classList.add('filled-overlay');
+              } else {
+                overlay.classList.add('empty-overlay');
+              }
+            }
+          }
+        });
+      }
+      
+      // ========== إعداد حقول الورثة في التبويب الثاني ==========
+      function setupHeirFields() {
+        // هذه الدالة ستستدعى عند إنشاء حقول الورثة
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+              // عندما تضاف حقول جديدة، نضيف لها الأحداث
+              const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
+              const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
+              
+              heirNameFields.forEach(nameField => {
+                if (!nameField.hasAttribute('data-events-bound')) {
+                  nameField.setAttribute('data-events-bound', 'true');
+                  nameField.addEventListener('input', updateHeirFieldColors);
+                }
+              });
+              
+              heirReligionFields.forEach(religionField => {
+                if (!religionField.hasAttribute('data-events-bound')) {
+                  religionField.setAttribute('data-events-bound', 'true');
+                  religionField.addEventListener('change', updateHeirFieldColors);
+                }
+              });
+              
+              // تحديث الألوان مباشرة
+              updateHeirFieldColors();
+            }
+          });
+        });
+        
+        // مراقبة جدول الورثة للتغييرات
+        const resultTableBody = document.getElementById('resultTableBody');
+        if (resultTableBody) {
+          observer.observe(resultTableBody, { childList: true, subtree: true });
+        }
+      }
+      
+      // ========== دالة لتحديث ألوان حقول الورثة ==========
+      function updateHeirFieldColors() {
+        const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
+        const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
+        
+        heirNameFields.forEach((nameField, index) => {
+          const religionField = heirReligionFields[index];
+          
+          if (nameField && religionField) {
+            // تحديث حالة التعبئة للاسم
+            nameField.classList.remove('filled-field', 'empty-field');
+            if (nameField.value && nameField.value.trim()) {
+              nameField.classList.add('filled-field');
+            } else {
+              nameField.classList.add('empty-field');
+            }
+            
+            // تحديث حالة التعبئة للدين
+            religionField.classList.remove('filled-field', 'empty-field', 'muslim-field', 'non-muslim-field');
+            if (religionField.value) {
+              religionField.classList.add('filled-field');
+              if (religionField.value === 'مسلم') {
+                religionField.classList.add('muslim-field');
+              } else if (religionField.value === 'غير مسلم') {
+                religionField.classList.add('non-muslim-field');
+              }
+            } else {
+              religionField.classList.add('empty-field');
+            }
+            
+            // ربط لون الاسم بالدين
+            nameField.classList.remove('border-red-linked', 'border-green-linked');
+            if (religionField.value === 'غير مسلم') {
+              nameField.classList.add('border-red-linked');
+            } else if (religionField.value === 'مسلم') {
+              nameField.classList.add('border-green-linked');
+            }
+          }
+        });
+      }
+      
+      // ========== إعداد التبويب الثاني عند النقر عليه ==========
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('tab-button') && 
+            e.target.getAttribute('data-tab') === 'religious') {
+          setTimeout(function() {
+            updateHeirFieldColors();
+            setupHeirFields();
+          }, 100);
+        }
+      });
+      
+      // ========== تهيئة الصفحة ==========
+      setupNumberInputs();
+      updateFieldColors();
+      setupHeirFields();
+      
+      // إضافة مستمعي الأحداث
+      const allInputs = document.querySelectorAll('input, select');
+      allInputs.forEach(input => {
+        input.addEventListener('change', updateFieldColors);
+      });
+      
+      // إضافة CSS للوحدات (إذا لم تكن موجودة)
+      if (!document.querySelector('#unit-styles')) {
+        const unitStyle = document.createElement('style');
+        unitStyle.id = 'unit-styles';
+        unitStyle.textContent = `
+          .filled-overlay {
+            background: rgba(52, 168, 83, 0.15) !important;
+            color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            font-weight: 600;
+          }
+          
+          .empty-overlay {
+            background: rgba(26, 115, 232, 0.15) !important;
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+          }
+          
+          .filled-overlay .currency-icon {
+            filter: brightness(0.9) sepia(1) hue-rotate(90deg) saturate(5);
+          }
+          
+          .border-red {
+            border-color: var(--danger-color) !important;
+            background-color: rgba(234, 67, 53, 0.05) !important;
+          }
+          
+          .border-green {
+            border-color: var(--success-color) !important;
+            background-color: rgba(52, 168, 83, 0.05) !important;
+          }
+        `;
+        document.head.appendChild(unitStyle);
+      }
+      
+      // تحميل الصورة الافتراضية للعملة
+      function checkCurrencyImage() {
+        const currencyImg = document.querySelector('.currency-icon');
+        if (currencyImg) {
+          const img = new Image();
+          img.onerror = function() {
+            // إذا فشل تحميل الصورة، استبدلها بنص
+            const parent = currencyImg.parentElement;
+            if (parent) {
+              currencyImg.style.display = 'none';
+              const textSpan = parent.querySelector('span');
+              if (textSpan) {
+                textSpan.innerHTML = '﷼';
+                textSpan.style.fontSize = '14px';
+              }
+            }
+          };
+          img.src = 'SRE.png';
+        }
+      }
+      
+      setTimeout(checkCurrencyImage, 500);
+      
+      // تحديث تلقائي للوحدات
+      if (amountField) {
+        amountField.addEventListener('input', updateUnitOverlays);
+      }
+      if (materialsField) {
+        materialsField.addEventListener('input', updateUnitOverlays);
+      }
+    });
+  </script>
+
+  <script type="module">
     import { translations, getCurrentLanguage, setLanguage, t, isRTL } from './js/translations.js';
     
     function applyTranslations() {
@@ -1859,6 +2353,10 @@
       const languageSelect = document.getElementById('languageSelect');
       if (languageSelect) {
         languageSelect.value = lang;
+        const options = languageSelect.querySelectorAll('option');
+        options[0].textContent = 'العربية';
+        options[1].textContent = 'English';
+        options[2].textContent = 'اردو';
       }
       
       document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -1891,129 +2389,9 @@
     
     document.addEventListener('DOMContentLoaded', function() {
       applyTranslations();
-      
-      // ========== ربط لون حقل الاسم بالحالة الدينية ==========
-      function linkNameToReligionColor(nameField, religionField) {
-        if (!nameField || !religionField) return;
-        
-        // تحديث اللون عند تغيير الحالة الدينية
-        religionField.addEventListener('change', function() {
-          updateNameFieldColor(nameField, this.value);
-        });
-        
-        // تطبيق اللون الأولي
-        updateNameFieldColor(nameField, religionField.value);
-      }
-      
-      function updateNameFieldColor(nameField, religionValue) {
-        nameField.classList.remove('border-red-linked', 'border-green-linked');
-        if (religionValue === 'غير مسلم') {
-          nameField.classList.add('border-red-linked');
-        } else if (religionValue === 'مسلم') {
-          nameField.classList.add('border-green-linked');
-        }
-      }
-      
-      // الحصول على العناصر مرة واحدة لتجنب التعارض
-      const deceasedNameInput = document.getElementById('deceased_name');
-      const religionSelect = document.getElementById('deceased_religion');
-      const wifeSelect = document.getElementById('wife');
-      const husbandSelect = document.getElementById('husband');
-      
-      // ربط حقل اسم المتوفى بالحالة الدينية
-      if (deceasedNameInput && religionSelect) {
-        linkNameToReligionColor(deceasedNameInput, religionSelect);
-      }
-      
-      // دالة لربط حقول الورثة في التبويب الثاني
-      function setupHeirFieldsLinking() {
-        const resultTableBody = document.getElementById('resultTableBody');
-        if (!resultTableBody) return;
-        
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.type === 'childList') {
-              setTimeout(linkAllHeirFields, 100);
-            }
-          });
-        });
-        
-        observer.observe(resultTableBody, { childList: true, subtree: true });
-        linkAllHeirFields();
-      }
-      
-      function linkAllHeirFields() {
-        const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
-        const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
-        
-        heirNameFields.forEach((nameField, index) => {
-          const religionField = heirReligionFields[index];
-          if (nameField && religionField) {
-            linkNameToReligionColor(nameField, religionField);
-          }
-        });
-      }
-      
-      // عند النقر على تبويب الورثة، نربط الحقول
-      document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('tab-button') && 
-            e.target.getAttribute('data-tab') === 'religious') {
-          setTimeout(setupHeirFieldsLinking, 300);
-        }
-      });
-      
-      // تحديث ألوان الحقول الأساسية
-      function updateFieldColors() {
-        // تحديث حقل الزوجات
-        if (wifeSelect) {
-          const wifeValue = wifeSelect.value;
-          wifeSelect.classList.remove('filled-field');
-          if (wifeValue !== 'no') {
-            wifeSelect.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل الزوج
-        if (husbandSelect) {
-          const husbandValue = husbandSelect.value;
-          husbandSelect.classList.remove('filled-field');
-          if (husbandValue === 'yes') {
-            husbandSelect.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل اسم المتوفى
-        if (deceasedNameInput) {
-          const nameValue = deceasedNameInput.value.trim();
-          deceasedNameInput.classList.remove('filled-field');
-          if (nameValue.length > 0) {
-            deceasedNameInput.classList.add('filled-field');
-          }
-        }
-        
-        // تحديث حقل الديانة
-        if (religionSelect) {
-          const religionValue = religionSelect.value;
-          religionSelect.classList.remove('muslim-field', 'non-muslim-field');
-          if (religionValue === 'مسلم') {
-            religionSelect.classList.add('muslim-field');
-          } else if (religionValue === 'غير مسلم') {
-            religionSelect.classList.add('non-muslim-field');
-          }
-        }
-      }
-      
-      // إضافة مستمعي الأحداث
-      if (wifeSelect) wifeSelect.addEventListener('change', updateFieldColors);
-      if (husbandSelect) husbandSelect.addEventListener('change', updateFieldColors);
-      if (deceasedNameInput) deceasedNameInput.addEventListener('input', updateFieldColors);
-      if (religionSelect) religionSelect.addEventListener('change', updateFieldColors);
-      
-      // تحديث أولي
-      updateFieldColors();
     });
   </script>
 
-  <script type="module" src="./js/new_script.js"></script>
+  <script type="module" src="js/new_script.js"></script>
 </body>
 </html>
