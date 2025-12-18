@@ -964,6 +964,12 @@ export class InheritanceCalculator {
     });
   }
 }
+// في نهاية keysCalculator.js، أضف:
+if (typeof window !== 'undefined') {
+  window.InheritanceCalculator = InheritanceCalculator;
+  window.distribute = distribute;
+  console.log('🧮 keysCalculator.js محمل وجاهز للاستخدام');
+}
 
 // دالة التوزيع الرئيسية
 export function distribute(total = 100, heirs, deceasedType) {
