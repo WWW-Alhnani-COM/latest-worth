@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com">
   <title data-i18n="pageTitle">الفتح السليماني الطيبي - حاسبة الميراث</title>
   <link rel="stylesheet" href="css/worth.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2029,6 +2030,129 @@
       applyTranslations();
     });
   </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // ========== التعديل الثالث: ربط لون حقل الاسم بالحالة الدينية ==========
+      function linkNameToReligionColor(nameField, religionField) {
+        if (!nameField || !religionField) return;
+        
+        // تحديث اللون عند تغيير الحالة الدينية
+        religionField.addEventListener('change', function() {
+          updateNameFieldColor(nameField, this.value);
+        });
+        
+        // تطبيق اللون الأولي
+        updateNameFieldColor(nameField, religionField.value);
+      }
+      
+      function updateNameFieldColor(nameField, religionValue) {
+        nameField.classList.remove('border-red-linked', 'border-green-linked');
+        if (religionValue === 'غير مسلم') {
+          nameField.classList.add('border-red-linked');
+        } else if (religionValue === 'مسلم') {
+          nameField.classList.add('border-green-linked');
+        }
+      }
+      
+      // الحصول على العناصر مرة واحدة لتجنب التعارض
+      const deceasedNameInput = document.getElementById('deceased_name');
+      const religionSelect = document.getElementById('deceased_religion');
+      const wifeSelect = document.getElementById('wife');
+      const husbandSelect = document.getElementById('husband');
+      
+      // ربط حقل اسم المتوفى بالحالة الدينية
+      if (deceasedNameInput && religionSelect) {
+        linkNameToReligionColor(deceasedNameInput, religionSelect);
+      }
+      
+      // دالة لربط حقول الورثة في التبويب الثاني
+      function setupHeirFieldsLinking() {
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+              setTimeout(linkAllHeirFields, 100);
+            }
+          });
+        });
+        
+        const resultTableBody = document.getElementById('resultTableBody');
+        if (resultTableBody) {
+          observer.observe(resultTableBody, { childList: true, subtree: true });
+          linkAllHeirFields();
+        }
+      }
+      
+      function linkAllHeirFields() {
+        const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
+        const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
+        
+        heirNameFields.forEach((nameField, index) => {
+          const religionField = heirReligionFields[index];
+          if (nameField && religionField) {
+            linkNameToReligionColor(nameField, religionField);
+          }
+        });
+      }
+      
+      // عند النقر على تبويب الورثة، نربط الحقول
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('tab-button') && 
+            e.target.getAttribute('data-tab') === 'religious') {
+          setTimeout(setupHeirFieldsLinking, 300);
+        }
+      });
+      
+      // تحديث ألوان الحقول الأساسية
+      function updateFieldColors() {
+        // تحديث حقل الزوجات
+        if (wifeSelect) {
+          const wifeValue = wifeSelect.value;
+          wifeSelect.classList.remove('filled-field');
+          if (wifeValue !== 'no') {
+            wifeSelect.classList.add('filled-field');
+          }
+        }
+        
+        // تحديث حقل الزوج
+        if (husbandSelect) {
+          const husbandValue = husbandSelect.value;
+          husbandSelect.classList.remove('filled-field');
+          if (husbandValue === 'yes') {
+            husbandSelect.classList.add('filled-field');
+          }
+        }
+        
+        // تحديث حقل اسم المتوفى
+        if (deceasedNameInput) {
+          const nameValue = deceasedNameInput.value.trim();
+          deceasedNameInput.classList.remove('filled-field');
+          if (nameValue.length > 0) {
+            deceasedNameInput.classList.add('filled-field');
+          }
+        }
+        
+        // تحديث حقل الديانة
+        if (religionSelect) {
+          const religionValue = religionSelect.value;
+          religionSelect.classList.remove('muslim-field', 'non-muslim-field');
+          if (religionValue === 'مسلم') {
+            religionSelect.classList.add('muslim-field');
+          } else if (religionValue === 'غير مسلم') {
+            religionSelect.classList.add('non-muslim-field');
+          }
+        }
+      }
+      
+      // إضافة مستمعي الأحداث
+      if (wifeSelect) wifeSelect.addEventListener('change', updateFieldColors);
+      if (husbandSelect) husbandSelect.addEventListener('change', updateFieldColors);
+      if (deceasedNameInput) deceasedNameInput.addEventListener('input', updateFieldColors);
+      if (religionSelect) religionSelect.addEventListener('change', updateFieldColors);
+      
+      // تحديث أولي
+      updateFieldColors();
+    });
+</script>
 
   <script type="module" src="js/new_script.js"></script>
 </body>
