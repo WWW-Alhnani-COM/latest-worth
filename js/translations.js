@@ -830,7 +830,22 @@ export function formatCurrency(amount, lang = null) {
     en: 'SAR',
     ur: 'ر.س'
   };
-  
+
+  // في نهاية translations.js، أضف:
+if (typeof window !== 'undefined') {
+  window.translations = {
+    translations,
+    t,
+    getCurrentLanguage,
+    setLanguage,
+    isRTL,
+    getOrdinalNumber,
+    formatNumber,
+    parseNumber,
+    formatCurrency
+  };
+  console.log('🌍 translations.js محمل وجاهز للاستخدام');
+}
   const currencySymbol = translations[currentLang] || 'ر.س';
   
   return `${formattedNumber} ${currencySymbol}`;
