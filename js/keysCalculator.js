@@ -559,119 +559,6 @@ export class InheritanceCalculator {
     }
   }
 
-  // ========== الدوال المساعدة للمفاتيح ==========
-
-  applyMaleFemaleRatioToRemaining() {
-    const sonHeirs = Object.keys(this.heirs).filter(key => 
-      key === 'son' || key.startsWith('son_')
-    );
-    const daughterHeirs = Object.keys(this.heirs).filter(key => 
-      key === 'daughter' || key.startsWith('daughter_')
-    );
-
-    if (sonHeirs.length === 0 && daughterHeirs.length === 0) {
-      return;
-    }
-
-    const totalShares = (sonHeirs.length * 2) + daughterHeirs.length;
-    
-    if (totalShares === 0 || this.remainingAmount <= 0) return;
-
-    const sharePerUnit = this.remainingAmount / totalShares;
-
-    // توزيع على الأبناء (للذكر مثل حظ الانثيين)
-    for (const son of sonHeirs) {
-      const sonAmount = sharePerUnit * 2;
-      this.addHeirWithShare(son, sonAmount, t('maleFemaleRatioNote'), true);
-    }
-
-    // توزيع على البنات
-    for (const daughter of daughterHeirs) {
-      const daughterAmount = sharePerUnit;
-      this.addHeirWithShare(daughter, daughterAmount, t('maleFemaleRatioNote'), true);
-    }
-  }
-
-  applyRaddToEligibleHeirs(eligibleHeirs, noteKey = '') {
-    if (this.remainingAmount <= 0 || this.remainingAmount < 0.01) return;
-
-    const totalShares = eligibleHeirs.reduce((sum, heir) => {
-      return sum + parseFloat(this.results[heir]?.percentage || 0);
-    }, 0);
-
-    if (totalShares === 0) return;
-
-    for (const heir of eligibleHeirs) {
-      if (this.results[heir]) {
-        const heirPercentage = parseFloat(this.results[heir].percentage);
-        const additionalAmount = (heirPercentage / totalShares) * this.remainingAmount;
-        
-        this.results[heir].amount = (parseFloat(this.results[heir].amount) + additionalAmount).toFixed(3);
-        this.results[heir].percentage = this.formatPercentage((parseFloat(this.results[heir].amount) / this.totalAmount) * 100);
-        this.results[heir].note = this.results[heir].note + ' + ' + t(noteKey);
-      }
-    }
-    
-    this.remainingAmount = 0;
-  }
-
-  applyRaddToDaughtersOnly(noteKey = '') {
-    if (this.remainingAmount <= 0 || this.remainingAmount < 0.01) return;
-
-    const daughterHeirs = Object.keys(this.heirs).filter(key => 
-      key === 'daughter' || key.startsWith('daughter_')
-    );
-    const daughterCount = daughterHeirs.length;
-    
-    if (daughterCount === 0) return;
-
-    const sharePerDaughter = this.remainingAmount / daughterCount;
-    
-    for (const daughter of daughterHeirs) {
-      if (this.results[daughter]) {
-        this.results[daughter].amount = (parseFloat(this.results[daughter].amount) + sharePerDaughter).toFixed(3);
-        this.results[daughter].percentage = this.formatPercentage((parseFloat(this.results[daughter].amount) / this.totalAmount) * 100);
-        this.results[daughter].note = this.results[daughter].note + ' + ' + t(noteKey);
-      } else {
-        this.addHeirWithShare(daughter, sharePerDaughter, t(noteKey), true);
-      }
-    }
-    
-    this.remainingAmount = 0;
-  }
-
-  generateWifeNote(wifeCount) {
-    const notes = {
-      1: t('wifeOneShare') || 'الثمن فرض للزوجة لوجود أبناء',
-      2: t('wifeTwoShare') || 'نصف الثمن فرض للزوجتين لوجود أبناء',
-      3: t('wifeThreeShare') || 'ثلث الثمن فرض لثلاث زوجات لوجود أبناء',
-      4: t('wifeFourShare') || 'ربع الثمن فرض لأربع زوجات لوجود أبناء'
-    };
-    
-    return notes[wifeCount] || `حصة الزوجة (${wifeCount} زوجات)`;
-  }
-
-  // ========== الدالة الرئيسية ==========
-  
-  calculate() {
-    console.log('🧮 === بدء الحسابات ===');
-    console.log('نوع المتوفى:', this.deceasedType === DECEASED_TYPE.FATHER ? 'أب' : 'أم');
-    console.log('الورثة المدخلون:', this.allHeirKeys);
-    
-    // حالة خاصة: أب + أم + ابنة واحدة
-    if (this.handleFatherMotherDaughterCase()) {
-      console.log('✅ تمت معالجة الحالة الخاصة: أب + أم + ابنة واحدة');
-      this.ensureAllHeirsAreIncluded();
-      return this.ensureAllData(this.results);
-    }
-
-    const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
-    const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
-    const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
-
-    console.log('👦 له ابن؟:', hasSon);
-    // ======== أضف هذا بعد applyRaddToDaughtersOnly ========
-  
   // 🔑 المفتاح السابع: حالة عدم وجود أبناء أو بنات
   applyKey7() {
     console.log('🔑 تطبيق المفتاح 7: حالة عدم وجود أبناء أو بنات');
@@ -813,8 +700,118 @@ export class InheritanceCalculator {
     return false;
   }
 
-// ======== وأضف هذا في دالة calculate() ========
+  // ========== الدوال المساعدة للمفاتيح ==========
 
+  applyMaleFemaleRatioToRemaining() {
+    const sonHeirs = Object.keys(this.heirs).filter(key => 
+      key === 'son' || key.startsWith('son_')
+    );
+    const daughterHeirs = Object.keys(this.heirs).filter(key => 
+      key === 'daughter' || key.startsWith('daughter_')
+    );
+
+    if (sonHeirs.length === 0 && daughterHeirs.length === 0) {
+      return;
+    }
+
+    const totalShares = (sonHeirs.length * 2) + daughterHeirs.length;
+    
+    if (totalShares === 0 || this.remainingAmount <= 0) return;
+
+    const sharePerUnit = this.remainingAmount / totalShares;
+
+    // توزيع على الأبناء (للذكر مثل حظ الانثيين)
+    for (const son of sonHeirs) {
+      const sonAmount = sharePerUnit * 2;
+      this.addHeirWithShare(son, sonAmount, t('maleFemaleRatioNote'), true);
+    }
+
+    // توزيع على البنات
+    for (const daughter of daughterHeirs) {
+      const daughterAmount = sharePerUnit;
+      this.addHeirWithShare(daughter, daughterAmount, t('maleFemaleRatioNote'), true);
+    }
+  }
+
+  applyRaddToEligibleHeirs(eligibleHeirs, noteKey = '') {
+    if (this.remainingAmount <= 0 || this.remainingAmount < 0.01) return;
+
+    const totalShares = eligibleHeirs.reduce((sum, heir) => {
+      return sum + parseFloat(this.results[heir]?.percentage || 0);
+    }, 0);
+
+    if (totalShares === 0) return;
+
+    for (const heir of eligibleHeirs) {
+      if (this.results[heir]) {
+        const heirPercentage = parseFloat(this.results[heir].percentage);
+        const additionalAmount = (heirPercentage / totalShares) * this.remainingAmount;
+        
+        this.results[heir].amount = (parseFloat(this.results[heir].amount) + additionalAmount).toFixed(3);
+        this.results[heir].percentage = this.formatPercentage((parseFloat(this.results[heir].amount) / this.totalAmount) * 100);
+        this.results[heir].note = this.results[heir].note + ' + ' + t(noteKey);
+      }
+    }
+    
+    this.remainingAmount = 0;
+  }
+
+  applyRaddToDaughtersOnly(noteKey = '') {
+    if (this.remainingAmount <= 0 || this.remainingAmount < 0.01) return;
+
+    const daughterHeirs = Object.keys(this.heirs).filter(key => 
+      key === 'daughter' || key.startsWith('daughter_')
+    );
+    const daughterCount = daughterHeirs.length;
+    
+    if (daughterCount === 0) return;
+
+    const sharePerDaughter = this.remainingAmount / daughterCount;
+    
+    for (const daughter of daughterHeirs) {
+      if (this.results[daughter]) {
+        this.results[daughter].amount = (parseFloat(this.results[daughter].amount) + sharePerDaughter).toFixed(3);
+        this.results[daughter].percentage = this.formatPercentage((parseFloat(this.results[daughter].amount) / this.totalAmount) * 100);
+        this.results[daughter].note = this.results[daughter].note + ' + ' + t(noteKey);
+      } else {
+        this.addHeirWithShare(daughter, sharePerDaughter, t(noteKey), true);
+      }
+    }
+    
+    this.remainingAmount = 0;
+  }
+
+  generateWifeNote(wifeCount) {
+    const notes = {
+      1: t('wifeOneShare') || 'الثمن فرض للزوجة لوجود أبناء',
+      2: t('wifeTwoShare') || 'نصف الثمن فرض للزوجتين لوجود أبناء',
+      3: t('wifeThreeShare') || 'ثلث الثمن فرض لثلاث زوجات لوجود أبناء',
+      4: t('wifeFourShare') || 'ربع الثمن فرض لأربع زوجات لوجود أبناء'
+    };
+    
+    return notes[wifeCount] || `حصة الزوجة (${wifeCount} زوجات)`;
+  }
+
+  // ========== الدالة الرئيسية ==========
+  
+  calculate() {
+    console.log('🧮 === بدء الحسابات ===');
+    console.log('نوع المتوفى:', this.deceasedType === DECEASED_TYPE.FATHER ? 'أب' : 'أم');
+    console.log('الورثة المدخلون:', this.allHeirKeys);
+    
+    // حالة خاصة: أب + أم + ابنة واحدة
+    if (this.handleFatherMotherDaughterCase()) {
+      console.log('✅ تمت معالجة الحالة الخاصة: أب + أم + ابنة واحدة');
+      this.ensureAllHeirsAreIncluded();
+      return this.ensureAllData(this.results);
+    }
+
+    const hasSon = checkHeirs(this.heirs, CONDITIONS.hasSon);
+    const hasDaughter = checkHeirs(this.heirs, CONDITIONS.hasDaughter);
+    const hasMultipleDaughters = checkHeirs(this.heirs, CONDITIONS.hasMultipleDaughters);
+
+    console.log('👦 له ابن؟:', hasSon);
+    
     // 🔴 التعديل الجديد: إذا لم يكن هناك ابن أو ابنة، جرب المفتاح السابع
     if (!hasSon && !hasDaughter) {
       console.log('🔑 لا يوجد أبناء أو بنات، جرب المفتاح السابع');
@@ -826,6 +823,7 @@ export class InheritanceCalculator {
         return this.ensureAllData(this.results);
       }
     }
+    
     console.log('👧 له بنت؟:', hasDaughter);
     console.log('👧👧 له أكثر من بنت؟:', hasMultipleDaughters);
 
