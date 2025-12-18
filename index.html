@@ -1496,6 +1496,178 @@
       content: '✗';
       color: var(--danger-color);
     }
+      .form-group-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .form-group-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+    
+    .input-with-unit-container {
+      position: relative;
+      width: 100%;
+    }
+    
+    .input-with-unit-container input {
+      width: 100%;
+      padding: 1rem 3.5rem 1rem 1.2rem; /* مساحة كافية للوحدة على اليسار */
+      border: 2px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+      direction: ltr; /* للأرقام */
+      text-align: right; /* محاذاة الأرقام لليمين */
+      font-family: 'Roboto', 'Segoe UI', monospace; /* خط مناسب للأرقام */
+    }
+    
+    .input-with-unit-container input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .input-with-unit-container input:hover {
+      border-color: var(--border-medium);
+    }
+    
+    /* إصلاح وحدة القياس */
+    .unit-overlay {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-secondary);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+      pointer-events: none;
+      z-index: 2;
+      border: 1px solid var(--border-light);
+    }
+    
+    .unit-overlay .currency-icon {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+    
+    /* تخصيص لحقل الأمتار */
+    .input-with-unit-container.meter-input input {
+      padding-left: 4.5rem; /* مساحة أكبر لوحدة المتر */
+    }
+    
+    /* تخصيص لحقل المبلغ */
+    .input-with-unit-container.currency-input input {
+      padding-left: 4rem; /* مساحة مناسبة للصورة */
+    }
+    
+    /* تحسين عرض الأرقام */
+    .input-with-unit-container input::-webkit-outer-spin-button,
+    .input-with-unit-container input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    .input-with-unit-container input[type=number] {
+      -moz-appearance: textfield;
+    }
+    
+    /* تأثير عند تعبئة الحقل */
+    .input-with-unit-container input.filled-field {
+      border-color: var(--success-color);
+      background-color: rgba(52, 168, 83, 0.05);
+    }
+    
+    .input-with-unit-container:has(input.filled-field) .unit-overlay {
+      background: rgba(52, 168, 83, 0.1);
+      color: var(--success-color);
+      border-color: var(--success-color);
+    }
+    
+    /* تحسينات للحقول الفارغة */
+    .input-with-unit-container input.empty-field {
+      border-color: var(--primary-color);
+      background-color: rgba(26, 115, 232, 0.05);
+    }
+    
+    .input-with-unit-container:has(input.empty-field) .unit-overlay {
+      background: rgba(26, 115, 232, 0.1);
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    /* تحسين التنسيق العام */
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+    
+    /* تصميم متجاوب */
+    @media (max-width: 768px) {
+      .input-with-unit-container input {
+        padding: 0.875rem 3rem 0.875rem 1rem;
+        font-size: 0.95rem;
+      }
+      
+      .unit-overlay {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+        left: 0.75rem;
+      }
+      
+      .unit-overlay .currency-icon {
+        width: 18px;
+        height: 18px;
+      }
+      
+      .input-with-unit-container.meter-input input {
+        padding-left: 4rem;
+      }
+      
+      .input-with-unit-container.currency-input input {
+        padding-left: 3.5rem;
+      }
+    }
+    
+    /* تحسين للشاشات الصغيرة جداً */
+    @media (max-width: 480px) {
+      .input-with-unit-container input {
+        padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+      }
+      
+      .unit-overlay {
+        left: 0.5rem;
+        padding: 0.3rem 0.5rem;
+      }
+      
+      .unit-overlay .currency-icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1632,25 +1804,47 @@
 
             <!-- سطر اسم المتوفى والمبلغ والأمتار -->
             <div class="form-group-row">
-              <div class="input-group name-field">
-                <label for="deceased_name" data-i18n="deceasedName">اسم المتوفى</label>
-                <input type="text" id="deceased_name" name="deceased_name" data-i18n-placeholder="enterDeceasedName" data-i18n-title="deceasedName" />
-              </div>
-              
-              <div class="input-group input-with-unit">
-                <label for="amount" data-i18n="estateAmount">مبلغ التركة</label>
-                <input type="number" id="amount" data-i18n-placeholder="enterAmount" data-i18n-title="estateAmount" />
-                <span class="unit">
-                  <img src="SRE.png" alt="ريال" class="currency-icon" />
-                </span>
-              </div>
-              
-              <div class="input-group input-with-unit">
-                <label for="materials" data-i18n="materials">الأمتار المراد توزيعها</label>
-                <input type="number" id="materials" data-i18n-placeholder="enterMaterials" data-i18n-title="materials" />
-                <span class="unit" data-i18n="meter">متر</span>
-              </div>
-            </div>
+    <div class="input-group name-field">
+      <label for="deceased_name" data-i18n="deceasedName">اسم المتوفى</label>
+      <input type="text" id="deceased_name" name="deceased_name" 
+             placeholder="أدخل اسم المتوفى" 
+             data-i18n-placeholder="enterDeceasedName" 
+             data-i18n-title="deceasedName" />
+    </div>
+    
+    <!-- حقل المبلغ المعدل -->
+    <div class="input-group">
+      <label for="amount" data-i18n="estateAmount">مبلغ التركة</label>
+      <div class="input-with-unit-container currency-input">
+        <input type="number" id="amount" name="amount"
+               placeholder="0.00"
+               min="0"
+               step="0.01"
+               data-i18n-placeholder="enterAmount" 
+               data-i18n-title="estateAmount" />
+        <div class="unit-overlay">
+          <img src="SRE.png" alt="ريال" class="currency-icon" />
+          <span>ريال</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- حقل الأمتار المعدل -->
+    <div class="input-group">
+      <label for="materials" data-i18n="materials">الأمتار المراد توزيعها</label>
+      <div class="input-with-unit-container meter-input">
+        <input type="number" id="materials" name="materials"
+               placeholder="0"
+               min="0"
+               step="0.01"
+               data-i18n-placeholder="enterMaterials" 
+               data-i18n-title="materials" />
+        <div class="unit-overlay">
+          <span data-i18n="meter">متر</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
             <hr />
             <div id="dynamic-fields"></div>
@@ -2358,6 +2552,175 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+     document.addEventListener('DOMContentLoaded', function() {
+      // جعل الأرقام قابلة للقراءة بشكل أفضل
+      const amountInput = document.getElementById('amount');
+      const materialsInput = document.getElementById('materials');
+      
+      // تنسيق الأرقام عند الكتابة
+      function formatNumberInput(input) {
+        input.addEventListener('input', function(e) {
+          // إضافة فاصلة كل ثلاثة أرقام
+          let value = e.target.value.replace(/,/g, '');
+          
+          if (value.length > 3) {
+            value = parseFloat(value).toLocaleString('ar-SA');
+          }
+          
+          // تحديث القيمة مع الحفاظ على المؤشر
+          const cursorPosition = e.target.selectionStart;
+          e.target.value = value;
+          e.target.setSelectionRange(cursorPosition, cursorPosition);
+          
+          // تحديث تلوين الحقل
+          updateFieldColors();
+        });
+      }
+      
+      if (amountInput) formatNumberInput(amountInput);
+      if (materialsInput) formatNumberInput(materialsInput);
+      
+      // تحديث ألوان الحقول
+      function updateFieldColors() {
+        // حقل المبلغ
+        if (amountInput) {
+          const amountValue = amountInput.value.trim().replace(/,/g, '');
+          amountInput.classList.remove('filled-field', 'empty-field');
+          
+          if (amountValue && amountValue !== '0' && amountValue !== '0.00') {
+            amountInput.classList.add('filled-field');
+          } else if (amountValue === '0' || amountValue === '0.00') {
+            amountInput.classList.add('empty-field');
+          }
+        }
+        
+        // حقل الأمتار
+        if (materialsInput) {
+          const materialsValue = materialsInput.value.trim().replace(/,/g, '');
+          materialsInput.classList.remove('filled-field', 'empty-field');
+          
+          if (materialsValue && materialsValue !== '0' && materialsValue !== '0.00') {
+            materialsInput.classList.add('filled-field');
+          } else if (materialsValue === '0' || materialsValue === '0.00') {
+            materialsInput.classList.add('empty-field');
+          }
+        }
+        
+        // تحديث حقول أخرى (من الكود السابق)
+        const wifeField = document.getElementById('wife');
+        const husbandField = document.getElementById('husband');
+        const deceasedNameField = document.getElementById('deceased_name');
+        const religionField = document.getElementById('deceased_religion');
+        
+        if (wifeField) {
+          const wifeValue = wifeField.value;
+          wifeField.classList.remove('filled-field');
+          if (wifeValue !== 'no') {
+            wifeField.classList.add('filled-field');
+          }
+        }
+        
+        if (husbandField) {
+          const husbandValue = husbandField.value;
+          husbandField.classList.remove('filled-field');
+          if (husbandValue === 'yes') {
+            husbandField.classList.add('filled-field');
+          }
+        }
+        
+        if (deceasedNameField) {
+          const nameValue = deceasedNameField.value.trim();
+          deceasedNameField.classList.remove('filled-field');
+          if (nameValue.length > 0) {
+            deceasedNameField.classList.add('filled-field');
+          }
+        }
+        
+        if (religionField) {
+          const religionValue = religionField.value;
+          religionField.classList.remove('muslim-field', 'non-muslim-field');
+          if (religionValue === 'مسلم') {
+            religionField.classList.add('muslim-field');
+          } else if (religionValue === 'غير مسلم') {
+            religionField.classList.add('non-muslim-field');
+          }
+        }
+      }
+      
+      // تحديث أولي
+      updateFieldColors();
+      
+      // إضافة مستمعي الأحداث
+      const inputsToWatch = [amountInput, materialsInput, 
+                           document.getElementById('wife'), 
+                           document.getElementById('husband'),
+                           document.getElementById('deceased_name'),
+                           document.getElementById('deceased_religion')];
+      
+      inputsToWatch.forEach(input => {
+        if (input) {
+          input.addEventListener('change', updateFieldColors);
+          input.addEventListener('input', updateFieldColors);
+        }
+      });
+      
+      // تحديث تلقائي لون الوحدة عند تغيير الحقل
+      function updateUnitOverlay() {
+        const unitOverlays = document.querySelectorAll('.unit-overlay');
+        unitOverlays.forEach(overlay => {
+          const input = overlay.closest('.input-with-unit-container').querySelector('input');
+          if (input) {
+            overlay.classList.remove('filled-overlay', 'empty-overlay');
+            
+            const value = input.value.trim().replace(/,/g, '');
+            if (value && value !== '0' && value !== '0.00') {
+              overlay.classList.add('filled-overlay');
+            } else if (value === '0' || value === '0.00') {
+              overlay.classList.add('empty-overlay');
+            }
+          }
+        });
+      }
+      
+      // إضافة CSS للوحدات
+      const unitStyle = document.createElement('style');
+      unitStyle.textContent = `
+        .filled-overlay {
+          background: rgba(52, 168, 83, 0.15) !important;
+          color: var(--success-color) !important;
+          border-color: var(--success-color) !important;
+        }
+        
+        .empty-overlay {
+          background: rgba(26, 115, 232, 0.15) !important;
+          color: var(--primary-color) !important;
+          border-color: var(--primary-color) !important;
+        }
+        
+        .unit-overlay .currency-icon {
+          transition: all 0.3s ease;
+        }
+        
+        .filled-overlay .currency-icon {
+          filter: brightness(0.9) sepia(1) hue-rotate(90deg) saturate(5);
+        }
+      `;
+      document.head.appendChild(unitStyle);
+      
+      // تحديث الوحدات
+      updateUnitOverlay();
+      
+      // إضافة مستمعي أحداث لتحديث الوحدات
+      if (amountInput) {
+        amountInput.addEventListener('input', updateUnitOverlay);
+        amountInput.addEventListener('change', updateUnitOverlay);
+      }
+      
+      if (materialsInput) {
+        materialsInput.addEventListener('input', updateUnitOverlay);
+        materialsInput.addEventListener('change', updateUnitOverlay);
+      }
+    });
   </script>
 
   <script type="module" src="js/new_script.js"></script>
