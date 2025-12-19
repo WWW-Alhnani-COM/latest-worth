@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -582,132 +583,6 @@
       text-align: center;
     }
 
-    /* =================== إصلاح تنسيق حقول بيانات الورثة =================== */
-    /* حقل الاسم */
-    .heir-name-input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 2px solid var(--border-light);
-      border-radius: var(--radius-md);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 1rem;
-      transition: var(--transition);
-      font-family: inherit;
-      box-sizing: border-box;
-      direction: rtl;
-      text-align: right;
-    }
-
-    .heir-name-input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .heir-name-input:hover {
-      border-color: var(--border-medium);
-    }
-
-    .heir-name-input.filled-field {
-      border-color: var(--success-color);
-      background-color: rgba(52, 168, 83, 0.05);
-      font-weight: 500;
-    }
-
-    .heir-name-input.empty-field {
-      border-color: var(--primary-color);
-      background-color: rgba(26, 115, 232, 0.05);
-    }
-
-    /* حقل الحالة الدينية */
-    .heir-religion-select {
-      width: 100%;
-      padding: 0.75rem 2.5rem 0.75rem 1rem;
-      border: 2px solid var(--border-light);
-      border-radius: var(--radius-md);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 1rem;
-      transition: var(--transition);
-      font-family: inherit;
-      cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: left 1rem center;
-      box-sizing: border-box;
-    }
-
-    .heir-religion-select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .heir-religion-select:hover {
-      border-color: var(--border-medium);
-    }
-
-    .heir-religion-select.muslim-field {
-      border-color: var(--success-color);
-      background-color: rgba(52, 168, 83, 0.1);
-      color: var(--success-color);
-      font-weight: 600;
-    }
-
-    .heir-religion-select.non-muslim-field {
-      border-color: var(--danger-color);
-      background-color: rgba(234, 67, 53, 0.1);
-      color: var(--danger-color);
-      font-weight: 600;
-    }
-
-    /* تحسين عرض الحقول في الجدول */
-    #resultTableBody td {
-      vertical-align: middle;
-    }
-
-    #resultTableBody tr {
-      transition: var(--transition);
-    }
-
-    #resultTableBody tr:has(.filled-field) {
-      background-color: rgba(52, 168, 83, 0.02);
-    }
-
-    #resultTableBody tr:has(.non-muslim-field) {
-      background-color: rgba(234, 67, 53, 0.02);
-    }
-
-    /* أيقونات توضيحية للحقول */
-    .input-with-icon {
-      position: relative;
-    }
-
-    .field-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-tertiary);
-      font-size: 1rem;
-      pointer-events: none;
-    }
-
-    /* تخصيص حقول المسلمين */
-    .muslim-field-option {
-      color: var(--success-color);
-      font-weight: 500;
-    }
-
-    .non-muslim-field-option {
-      color: var(--danger-color);
-      font-weight: 500;
-    }
-
     .sons-modal {
       position: fixed;
       top: 0;
@@ -914,22 +789,6 @@
       .language-switcher select {
         min-width: 120px;
       }
-
-      /* تحسين حقول الورثة على الجوال */
-      .heir-name-input,
-      .heir-religion-select {
-        padding: 0.6rem 0.8rem;
-        font-size: 0.9rem;
-      }
-
-      .heir-religion-select {
-        padding-left: 2.2rem;
-      }
-
-      th, td {
-        padding: 0.8rem 0.5rem;
-        font-size: 0.85rem;
-      }
     }
 
     .hidden {
@@ -1121,7 +980,7 @@
     #dynamic-fields .input-group select.empty-field,
     #wife[value="0"],
     #husband[value="no"],
-    .heir-name-input.empty-field {
+    #resultTableBody .heir-name.empty-field {
       border-color: var(--primary-color) !important;
       background-color: rgba(26, 115, 232, 0.05) !important;
       border-width: 2px !important;
@@ -1131,21 +990,21 @@
     #wife.filled-field,
     #husband.filled-field,
     #deceased_name.filled-field,
-    .heir-name-input.filled-field {
+    #resultTableBody .heir-name.filled-field {
       border-color: var(--success-color) !important;
       background-color: rgba(52, 168, 83, 0.05) !important;
       border-width: 2px !important;
     }
 
     #deceased_religion.non-muslim-field,
-    .heir-religion-select.non-muslim-field {
+    #resultTableBody .heir-religion.non-muslim-field {
       border-color: var(--danger-color) !important;
       background-color: rgba(234, 67, 53, 0.05) !important;
       border-width: 2px !important;
     }
 
     #deceased_religion.muslim-field,
-    .heir-religion-select.muslim-field {
+    #resultTableBody .heir-religion.muslim-field {
       border-color: var(--success-color) !important;
       background-color: rgba(52, 168, 83, 0.05) !important;
       border-width: 2px !important;
@@ -1175,8 +1034,8 @@
     /* تأثيرات التركيز */
     .spouse-field:focus,
     #deceased_name:focus,
-    .heir-name-input:focus,
-    .heir-religion-select:focus {
+    #resultTableBody .heir-name:focus,
+    #resultTableBody .heir-religion:focus {
       outline: none !important;
       box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2) !important;
       transform: translateY(-1px) !important;
@@ -1761,8 +1620,8 @@
                 <div class="input-group">
                   <label for="deceased_religion" data-i18n="religion">الديانة</label>
                   <select id="deceased_religion" name="deceased_religion" data-i18n-title="religion">
-                    <option value="مسلم" data-i18n="muslim" class="muslim-field-option">مسلم</option>
-                    <option value="غير مسلم" data-i18n="nonMuslim" class="non-muslim-field-option">غير مسلم</option>
+                    <option value="مسلم" data-i18n="muslim">مسلم</option>
+                    <option value="غير مسلم" data-i18n="nonMuslim">غير مسلم</option>
                   </select>
                 </div>
                 <div class="worth-count">
@@ -2005,7 +1864,7 @@
         }
         
         // تحديث حقول الفئات الدينية
-        const heirReligionFields = document.querySelectorAll('.heir-religion-select');
+        const heirReligionFields = document.querySelectorAll('#resultTableBody .heir-religion');
         heirReligionFields.forEach(field => {
           const value = field.value;
           field.classList.remove('muslim-field', 'non-muslim-field');
@@ -2017,107 +1876,17 @@
         });
         
         // تحديث حقول أسماء الورثة
-        const heirNameFields = document.querySelectorAll('.heir-name-input');
+        const heirNameFields = document.querySelectorAll('#resultTableBody .heir-name');
         heirNameFields.forEach(field => {
           const value = field.value.trim();
-          field.classList.remove('filled-field', 'empty-field');
+          field.classList.remove('filled-field');
           if (value.length > 0) {
             field.classList.add('filled-field');
-          } else {
-            field.classList.add('empty-field');
-          }
-        });
-        
-        // تحديث لون صفوف الجدول بناءً على الحالة
-        const tableRows = document.querySelectorAll('#resultTableBody tr');
-        tableRows.forEach(row => {
-          const nameField = row.querySelector('.heir-name-input');
-          const religionField = row.querySelector('.heir-religion-select');
-          
-          if (nameField && religionField) {
-            const nameValue = nameField.value.trim();
-            const religionValue = religionField.value;
-            
-            row.classList.remove('filled-row', 'non-muslim-row');
-            
-            if (nameValue.length > 0) {
-              if (religionValue === 'مسلم') {
-                row.classList.add('filled-row');
-              } else if (religionValue === 'غير مسلم') {
-                row.classList.add('non-muslim-row');
-              }
-            }
           }
         });
       }
       
-      // إنشاء حقول الورثة ديناميكياً
-      function createHeirFields() {
-        const tableBody = document.getElementById('resultTableBody');
-        if (!tableBody) return;
-        
-        // بيانات الورثة الافتراضية (ستكون ديناميكية في التطبيق الحقيقي)
-        const defaultHeirs = [
-          { id: 1, category: 'الزوج/الزوجة', name: '', religion: 'مسلم' },
-          { id: 2, category: 'الأبناء', name: '', religion: 'مسلم' },
-          { id: 3, category: 'البنات', name: '', religion: 'مسلم' },
-          { id: 4, category: 'الأب', name: '', religion: 'مسلم' },
-          { id: 5, category: 'الأم', name: '', religion: 'مسلم' }
-        ];
-        
-        tableBody.innerHTML = '';
-        
-        defaultHeirs.forEach((heir, index) => {
-          const row = document.createElement('tr');
-          
-          row.innerHTML = `
-            <td class="counter">${heir.id}</td>
-            <td>${heir.category}</td>
-            <td>
-              <input type="text" 
-                     class="heir-name-input" 
-                     data-heir-id="${heir.id}" 
-                     placeholder="أدخل اسم الوارث"
-                     value="${heir.name}">
-            </td>
-            <td>
-              <select class="heir-religion-select" data-heir-id="${heir.id}">
-                <option value="مسلم" class="muslim-field-option">مسلم</option>
-                <option value="غير مسلم" class="non-muslim-field-option">غير مسلم</option>
-              </select>
-            </td>
-          `;
-          
-          // تعيين القيمة الافتراضية
-          const religionSelect = row.querySelector('.heir-religion-select');
-          if (religionSelect) {
-            religionSelect.value = heir.religion;
-          }
-          
-          tableBody.appendChild(row);
-        });
-        
-        // إضافة مستمعي الأحداث للحقول الجديدة
-        attachHeirFieldListeners();
-        updateFieldColors();
-      }
-      
-      // إضافة مستمعي الأحداث لحقول الورثة
-      function attachHeirFieldListeners() {
-        const nameInputs = document.querySelectorAll('.heir-name-input');
-        const religionSelects = document.querySelectorAll('.heir-religion-select');
-        
-        nameInputs.forEach(input => {
-          input.addEventListener('input', updateFieldColors);
-          input.addEventListener('change', updateFieldColors);
-        });
-        
-        religionSelects.forEach(select => {
-          select.addEventListener('change', updateFieldColors);
-        });
-      }
-      
-      // إضافة مستمعي الأحداث للصفحة
+      // إضافة مستمعي الأحداث
       const wifeField = document.getElementById('wife');
       const husbandField = document.getElementById('husband');
       const deceasedNameField = document.getElementById('deceased_name');
@@ -2128,6 +1897,23 @@
       if (deceasedNameField) deceasedNameField.addEventListener('input', updateFieldColors);
       if (religionField) religionField.addEventListener('change', updateFieldColors);
       
+      // تحديث حقول الورثة في التبويب الثاني
+      document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('heir-name') || e.target.classList.contains('heir-religion')) {
+          updateFieldColors();
+        }
+      });
+      
+      // تحديث تلقائي عند تغيير التبويب
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('tab-button')) {
+          setTimeout(updateFieldColors, 300);
+        }
+      });
+      
+      // تحديث أولي
+      setTimeout(updateFieldColors, 500);
+      
       // تحديث سمة value لجميع حقول select
       const selects = document.querySelectorAll('select');
       selects.forEach(select => {
@@ -2137,12 +1923,6 @@
           updateFieldColors();
         });
       });
-      
-      // إنشاء حقول الورثة عند تحميل الصفحة
-      createHeirFields();
-      
-      // تحديث أولي
-      setTimeout(updateFieldColors, 500);
     });
   </script>
 
@@ -2186,20 +1966,6 @@
           element.placeholder = translations[lang][key];
         }
       });
-      
-      // تحديث نصوص الحقول الدينية
-      const muslimOptions = document.querySelectorAll('.muslim-field-option');
-      const nonMuslimOptions = document.querySelectorAll('.non-muslim-field-option');
-      
-      if (translations[lang]) {
-        muslimOptions.forEach(option => {
-          option.textContent = translations[lang]['muslim'] || 'مسلم';
-        });
-        
-        nonMuslimOptions.forEach(option => {
-          option.textContent = translations[lang]['nonMuslim'] || 'غير مسلم';
-        });
-      }
     }
     
     document.getElementById('languageSelect').addEventListener('change', function(e) {
