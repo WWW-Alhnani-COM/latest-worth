@@ -736,6 +736,7 @@ if (printBtn) {
     }, 500);
   });
 }
+}
 // ========== تبديل التبويبات ==========
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -1688,5 +1689,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
 
