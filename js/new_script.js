@@ -689,12 +689,35 @@ function initFooterButtons() {
 
   // زر الطباعة
   if (printBtn) {
-    printBtn.addEventListener('click', () => {
-      switchTab('shares');
-      setTimeout(() => {
-        window.print();
-      }, 300);
-    });
+   printBtn.addEventListener('click', () => {
+  // الذهاب لتبويب النتائج
+  switchTab('shares');
+  
+  // الانتظار ثم الطباعة
+  setTimeout(() => {
+    // إضافة تنسيق الطباعة
+    const style = document.createElement('style');
+    style.textContent = `
+      @media print {
+        body > *:not(#shares) { display: none !important; }
+        #shares { 
+          position: fixed !important; 
+          top: 0 !important; 
+          left: 0 !important;
+          width: 100% !important;
+          padding: 20px !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // الطباعة
+    window.print();
+    
+    // إزالة التنسيق
+    setTimeout(() => style.remove(), 100);
+  }, 500);
+});
   }
 }
 
@@ -1650,3 +1673,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
