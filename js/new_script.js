@@ -688,39 +688,54 @@ function initFooterButtons() {
   });
 
   // زر الطباعة
-  if (printBtn) {
-   printBtn.addEventListener('click', () => {
-  // الذهاب لتبويب النتائج
-  switchTab('shares');
-  
-  // الانتظار ثم الطباعة
-  setTimeout(() => {
-    // إضافة تنسيق الطباعة
-    const style = document.createElement('style');
-    style.textContent = `
-      @media print {
-        body > *:not(#shares) { display: none !important; }
-        #shares { 
-          position: fixed !important; 
-          top: 0 !important; 
-          left: 0 !important;
-          width: 100% !important;
-          padding: 20px !important;
+ // زر الطباعة الجديد
+if (printBtn) {
+  printBtn.addEventListener('click', function() {
+    // 1. اذهب لصفحة النتائج
+    switchTab('shares');
+    
+    // 2. انتظر ثانية
+    setTimeout(() => {
+      // 3. أضف تنسيقات الطباعة
+      let printStyles = document.createElement('style');
+      printStyles.innerHTML = `
+        @media print {
+          /* إخفاء كل شيء */
+          body * {
+            visibility: hidden;
+          }
+          
+          /* إظهار النتيجة فقط */
+          #shares,
+          #shares * {
+            visibility: visible;
+          }
+          
+          #shares {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+          }
+          
+          /* إخفاء العناصر الأخرى */
+          .header, .tabs, .fixed-footer, .print-hide {
+            display: none !important;
+          }
         }
-      }
-    `;
-    document.head.appendChild(style);
-    
-    // الطباعة
-    window.print();
-    
-    // إزالة التنسيق
-    setTimeout(() => style.remove(), 100);
-  }, 500);
-});
-  }
+      `;
+      document.head.appendChild(printStyles);
+      
+      // 4. اطبع
+      window.print();
+      
+      // 5. نظف التنسيقات
+      setTimeout(() => {
+        printStyles.remove();
+      }, 100);
+    }, 500);
+  });
 }
-
 // ========== تبديل التبويبات ==========
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -1673,4 +1688,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
