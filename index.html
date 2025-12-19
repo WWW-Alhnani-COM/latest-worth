@@ -1814,6 +1814,7 @@
     </div>
   </div>
 
+  <!-- إضافة جافاسكريبت جديد لمعالجة الحقول في التبويب الثاني -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // تحديث ألوان الحقول عند التغيير
@@ -1921,6 +1922,174 @@
           this.setAttribute('value', this.value);
           updateFieldColors();
         });
+      });
+      
+      // ========== الإصلاح الجديد: تحسين تنسيق حقول التبويب الثاني ==========
+      
+      // دالة لتحسين تنسيق الحقول في جدول الورثة
+      function enhanceHeirFields() {
+        const resultTableBody = document.getElementById('resultTableBody');
+        if (!resultTableBody) return;
+        
+        // إضافة حقول input للاسم و select للدين لكل صف
+        const rows = resultTableBody.querySelectorAll('tr');
+        rows.forEach((row, index) => {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 3) {
+            // الخلية الثالثة (حقل الاسم)
+            const nameCell = cells[2];
+            if (!nameCell.querySelector('.heir-name-input')) {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.className = 'heir-name-input';
+              input.placeholder = 'اسم الوارث';
+              input.dataset.rowIndex = index;
+              nameCell.innerHTML = '';
+              nameCell.appendChild(input);
+            }
+            
+            // الخلية الرابعة (حقل الدين)
+            const religionCell = cells[3];
+            if (!religionCell.querySelector('.heir-religion-select')) {
+              const select = document.createElement('select');
+              select.className = 'heir-religion-select';
+              select.dataset.rowIndex = index;
+              
+              const option1 = document.createElement('option');
+              option1.value = 'مسلم';
+              option1.textContent = 'مسلم';
+              select.appendChild(option1);
+              
+              const option2 = document.createElement('option');
+              option2.value = 'غير مسلم';
+              option2.textContent = 'غير مسلم';
+              select.appendChild(option2);
+              
+              religionCell.innerHTML = '';
+              religionCell.appendChild(select);
+            }
+          }
+        });
+        
+        // إضافة تنسيق CSS خاص للحقول الجديدة
+        if (!document.querySelector('#heirFieldsStyle')) {
+          const style = document.createElement('style');
+          style.id = 'heirFieldsStyle';
+          style.textContent = `
+            /* تنسيق حقول الورثة في التبويب الثاني */
+            .heir-name-input, .heir-religion-select {
+              width: 100%;
+              padding: 0.75rem 1rem;
+              border: 2px solid var(--border-light);
+              border-radius: var(--radius-md);
+              font-size: 0.95rem;
+              transition: var(--transition);
+              background: var(--bg-primary);
+              font-family: inherit;
+              box-sizing: border-box;
+              direction: rtl;
+            }
+            
+            .heir-religion-select {
+              appearance: none;
+              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%235f6368' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+              background-repeat: no-repeat;
+              background-position: left 1rem center;
+              padding-left: 3rem;
+            }
+            
+            .heir-name-input:focus, .heir-religion-select:focus {
+              outline: none;
+              border-color: var(--primary-color);
+              box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+              transform: translateY(-2px);
+            }
+            
+            .heir-name-input.filled-field {
+              border-color: var(--success-color) !important;
+              background-color: rgba(52, 168, 83, 0.05) !important;
+              border-width: 2px !important;
+            }
+            
+            .heir-religion-select.muslim-field {
+              border-color: var(--success-color) !important;
+              background-color: rgba(52, 168, 83, 0.05) !important;
+              border-width: 2px !important;
+              color: var(--success-color);
+              font-weight: 600;
+            }
+            
+            .heir-religion-select.non-muslim-field {
+              border-color: var(--danger-color) !important;
+              background-color: rgba(234, 67, 53, 0.05) !important;
+              border-width: 2px !important;
+              color: var(--danger-color);
+              font-weight: 600;
+            }
+            
+            /* استجابة للجوال */
+            @media (max-width: 768px) {
+              .heir-name-input, .heir-religion-select {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+              }
+            }
+            
+            /* إضافة أيقونات للحقول */
+            .heir-name-input:not(:placeholder-shown) + .field-icon,
+            .heir-religion-select:valid + .field-icon {
+              display: block;
+            }
+            
+            /* إضافة تلميح توضيحي */
+            .heir-name-input::placeholder {
+              color: var(--text-tertiary);
+              font-size: 0.9rem;
+            }
+          `;
+          document.head.appendChild(style);
+        }
+        
+        // إضافة مستمعي الأحداث للحقول الجديدة
+        document.querySelectorAll('.heir-name-input').forEach(input => {
+          input.addEventListener('input', function() {
+            this.classList.remove('filled-field');
+            if (this.value.trim().length > 0) {
+              this.classList.add('filled-field');
+            }
+          });
+        });
+        
+        document.querySelectorAll('.heir-religion-select').forEach(select => {
+          select.addEventListener('change', function() {
+            this.classList.remove('muslim-field', 'non-muslim-field');
+            if (this.value === 'مسلم') {
+              this.classList.add('muslim-field');
+            } else if (this.value === 'غير مسلم') {
+              this.classList.add('non-muslim-field');
+            }
+          });
+        });
+      }
+      
+      // استدعاء الدالة لتحسين الحقول
+      enhanceHeirFields();
+      
+      // تحديث الحقول عند فتح التبويب الثاني
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+          if (this.getAttribute('data-tab') === 'religious') {
+            setTimeout(enhanceHeirFields, 100);
+          }
+        });
+      });
+      
+      // تحديث الحقول عند الضغط على زر التالي
+      document.getElementById('footer-next-btn')?.addEventListener('click', function() {
+        const currentTab = document.querySelector('.tab-content.active');
+        if (currentTab && currentTab.id === 'calculator') {
+          setTimeout(enhanceHeirFields, 500);
+        }
       });
     });
   </script>
