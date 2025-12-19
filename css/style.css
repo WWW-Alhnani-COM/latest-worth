@@ -1487,20 +1487,16 @@
 
     .input-group:has(.filled-field):not(:has(.non-muslim-field)) {
       padding-left: 5px;
-      border-left: 3px solid var(--success-color);
     }
 
     .input-group:has(.non-muslim-field) {
       padding-left: 5px;
-      border-left: 3px solid var(--danger-color);
     }
 
     #resultTableBody tr:has(.filled-field):not(:has(.non-muslim-field)) td:first-child {
-      border-left: 3px solid var(--success-color);
     }
 
     #resultTableBody tr:has(.non-muslim-field) td:first-child {
-      border-left: 3px solid var(--danger-color);
     }
 
     .input-group:has(.filled-field)::after {
