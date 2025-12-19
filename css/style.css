@@ -447,13 +447,10 @@
 
     .unit {
       position: absolute;
-      left: 1rem;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-tertiary);
       font-weight: 500;
-      background: var(--bg-secondary);
-      padding: 0.5rem 0.75rem;
       border-radius: var(--radius-sm);
       font-size: 0.9rem;
     }
