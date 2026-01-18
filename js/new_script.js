@@ -1689,3 +1689,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// وظيفة الطباعة المحسنة
+const printButton = document.getElementById('footer-print-btn');
+
+if (printButton) {
+    printButton.addEventListener('click', function() {
+        // التأكد من أننا في تبويب النتائج قبل الطباعة
+        const sharesTab = document.getElementById('shares');
+        if (sharesTab) {
+            window.print();
+        } else {
+            alert("يرجى الوصول إلى جدول النتائج أولاً");
+        }
+    });
+}
