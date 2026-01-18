@@ -686,57 +686,78 @@ function initFooterButtons() {
       document.getElementById('resultForm').dispatchEvent(new Event('submit'));
     }
   });
-
-  // زر الطباعة
- // زر الطباعة الجديد
+// زر الطباعة المطور لضمان صفحة واحدة فقط
 if (printBtn) {
   printBtn.addEventListener('click', function() {
-    // 1. اذهب لصفحة النتائج
+    // 1. الانتقال لتبويب النتائج أولاً
     switchTab('shares');
     
-    // 2. انتظر ثانية
+    // 2. وقت قصير للتأكد من تحديث الواجهة
     setTimeout(() => {
-      // 3. أضف تنسيقات الطباعة
+      // 3. إنشاء ستايل طباعة صارم
       let printStyles = document.createElement('style');
+      printStyles.id = 'print-one-page-style';
       printStyles.innerHTML = `
         @media print {
-          /* إخفاء كل شيء */
+          /* إخفاء كل شيء في الصفحة بلا استثناء */
           body * {
-            visibility: hidden;
-          }
-          
-          /* إظهار النتيجة فقط */
-          #shares,
-          #shares * {
-            visibility: visible;
-          }
-          
-          #shares {
-            position: absolute;
-            top: 10px;
-            left: 0;
-            width: 100%;
-          }
-          
-          /* إخفاء العناصر الأخرى */
-          .header, .tabs, .fixed-footer, .print-hide {
             display: none !important;
+          }
+          
+          /* إظهار حاوية النتائج فقط وما بداخلها */
+          #shares, #shares * {
+            display: block !important;
+            visibility: visible !important;
+          }
+
+          /* تعديل أبعاد الحاوية لتناسب الورقة */
+          #shares {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          /* إخفاء أي أزرار أو عناصر تنقل داخل منطقة النتائج */
+          .print-hide, button, .tabs, .fixed-footer, header {
+            display: none !important;
+          }
+
+          /* ضبط الجداول لتناسب عرض الصفحة */
+          table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            page-break-inside: auto !important;
+          }
+          
+          tr {
+            page-break-inside: avoid !important;
+            page-break-after: auto !important;
+          }
+
+          /* إزالة الهوامش الافتراضية للمتصفح */
+          @page {
+            size: auto;
+            margin: 10mm;
           }
         }
       `;
       document.head.appendChild(printStyles);
       
-      // 4. اطبع
+      // 4. تنفيذ أمر الطباعة
       window.print();
       
-      // 5. نظف التنسيقات
+      // 5. تنظيف الستايل بعد إغلاق نافذة الطباعة
       setTimeout(() => {
-        printStyles.remove();
-      }, 100);
-    }, 500);
+        const styleElement = document.getElementById('print-one-page-style');
+        if (styleElement) styleElement.remove();
+      }, 500);
+    }, 300);
   });
 }
-}
+
 // ========== تبديل التبويبات ==========
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
