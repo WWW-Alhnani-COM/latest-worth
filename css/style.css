@@ -1835,3 +1835,93 @@
     select::-webkit-scrollbar {
       display: none;
     }
+
+@media print {
+    /* 1. إخفاء كل شيء في الموقع بلا استثناء */
+    header, 
+    .fixed-footer, 
+    .tabs, 
+    .alert, 
+    .sons-modal, 
+    #calculator, 
+    #religious, 
+    #alertSystem, 
+    .modal-overlay,
+    hr {
+        display: none !important;
+    }
+
+    /* 2. إظهار حاوية النتائج فقط وضمان أنها تبدأ من أول الصفحة */
+    body, html {
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+    }
+
+    .app-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* إخفاء عنوان التطبيق الرئيسي في الطباعة ليحل محله عنوان "نتيجة التقسيم" */
+    .app-title {
+        display: none !important;
+    }
+
+    /* إظهار التبويب الثالث فقط */
+    #shares {
+        display: block !important;
+        visibility: visible !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+    }
+
+    /* 3. تنسيق الجداول لتناسب ورقة A4 */
+    .table-container {
+        overflow: visible !important;
+        margin-bottom: 20px !important;
+    }
+
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 10pt !important; /* تصغير الخط قليلاً لتناسب الصفحة */
+    }
+
+    th, td {
+        border: 1px solid #000 !important;
+        padding: 6px !important;
+        word-break: break-word !important;
+    }
+
+    th {
+        background-color: #f2f2f2 !important;
+        color: black !important;
+    }
+
+    /* 4. إظهار العنوان المخصص للطباعة فقط */
+    .print-only-title {
+        display: block !important;
+        text-align: center !important;
+        font-size: 18pt !important;
+        margin-bottom: 20px !important;
+        font-weight: bold !important;
+        border-bottom: 2px solid #000 !important;
+        padding-bottom: 10px !important;
+    }
+
+    /* 5. إلغاء أي فواصل صفحات تلقائية قد يضيفها المتصفح */
+    @page {
+        size: A4;
+        margin: 1cm !important;
+    }
+}
+
+/* أخفِ عنوان الطباعة في المتصفح العادي */
+.print-only-title {
+    display: none;
+}
