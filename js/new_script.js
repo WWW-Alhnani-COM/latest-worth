@@ -187,24 +187,15 @@ const fieldsData = [
 // ========== نظام ترميز الألوان لحقول الورثة وحقل الديانة ==========
 
 function updateHeirFieldStyle(selectElement) {
-    // تحديث سمة value لتعمل مع CSS
     selectElement.setAttribute('value', selectElement.value);
-    
-    // إزالة الفئات القديمة
     selectElement.classList.remove('filled-field', 'empty-field');
-    
-    // الحصول على القيمة الافتراضية للحقل
     const defaultValue = selectElement.options[0] ? selectElement.options[0].value : '0';
     const isBooleanField = ['father', 'mother', 'husband', 'wife'].includes(selectElement.id);
-    
-    // تحديد إذا كان الحقل مملوءاً أم لا
     let isFilled = false;
     
     if (isBooleanField) {
-        // للحقول المنطقية (نعم/لا)
         isFilled = selectElement.value === 'yesOption' || selectElement.value === 'نعم';
     } else {
-        // للحقول العددية
         isFilled = selectElement.value !== defaultValue && 
                   selectElement.value !== '0' && 
                   selectElement.value !== '' &&
@@ -220,13 +211,8 @@ function updateHeirFieldStyle(selectElement) {
 }
 
 function updateReligionFieldStyle(selectElement) {
-    // تحديث سمة value لتعمل مع CSS
     selectElement.setAttribute('value', selectElement.value);
-    
-    // إزالة جميع الفئات الملونة أولاً
     selectElement.classList.remove('non-muslim-field', 'muslim-field', 'empty-field');
-    
-    // تطبيق الأنماط بناءً على القيمة
     if (selectElement.value === 'غير مسلم') {
         selectElement.classList.add('non-muslim-field');
     } else if (selectElement.value === 'مسلم') {
@@ -237,7 +223,6 @@ function updateReligionFieldStyle(selectElement) {
 }
 
 function initColorCodingSystem() {
-    // 1. تحديث جميع حقول الورثة
     function updateAllHeirFields() {
         const heirSelects = document.querySelectorAll('#dynamic-fields select');
         heirSelects.forEach(select => {
@@ -245,47 +230,34 @@ function initColorCodingSystem() {
         });
     }
     
-    // 2. تحديث حقل الديانة
     function setupReligionField() {
         const religionSelect = document.getElementById('deceased_religion');
         if (religionSelect) {
             updateReligionFieldStyle(religionSelect);
-            
-            // إضافة مستمع للتحديث عند التغيير
             religionSelect.addEventListener('change', function() {
                 updateReligionFieldStyle(this);
             });
         }
     }
     
-    // 3. إضافة مستمعات الأحداث لحقول الورثة
     function setupHeirFieldEvents() {
         const dynamicFields = document.getElementById('dynamic-fields');
         if (!dynamicFields) return;
-        
-        // تحديث عند تغيير أي حقل
         dynamicFields.addEventListener('change', function(e) {
             if (e.target.tagName === 'SELECT') {
                 updateHeirFieldStyle(e.target);
-                // تحديث العداد بعد التغيير
                 setTimeout(() => calculateHeirsCount(all), 100);
             }
         });
     }
     
-    // 4. تشغيل النظام
     updateAllHeirFields();
     setupReligionField();
     setupHeirFieldEvents();
 }
 
-// ========== نظام ترميز الألوان للتبويب الثاني ==========
-
 function updateHeirNameFieldStyle(inputElement) {
-    // إزالة الفئات القديمة
     inputElement.classList.remove('filled-field', 'empty-field');
-    
-    // تحديد إذا كان الحقل مملوءاً
     if (inputElement.value && inputElement.value.trim() !== '') {
         inputElement.classList.add('filled-field');
     } else {
@@ -294,10 +266,7 @@ function updateHeirNameFieldStyle(inputElement) {
 }
 
 function updateHeirReligionFieldStyle(selectElement) {
-    // إزالة جميع الفئات الملونة
     selectElement.classList.remove('non-muslim-field', 'muslim-field', 'empty-field');
-    
-    // تطبيق الأنماط بناءً على القيمة
     if (selectElement.value === 'غير مسلم') {
         selectElement.classList.add('non-muslim-field');
     } else if (selectElement.value === 'مسلم') {
@@ -308,34 +277,25 @@ function updateHeirReligionFieldStyle(selectElement) {
 }
 
 function initTab2ColorCodingSystem() {
-    // تحديث جميع حقول الاسم والديانة في التبويب الثاني
     function updateAllTab2Fields() {
-        // تحديث حقول الأسماء
         const heirNameInputs = document.querySelectorAll('#resultTableBody .heir-name');
         heirNameInputs.forEach(input => {
             updateHeirNameFieldStyle(input);
         });
-        
-        // تحديث حقول الديانة
         const heirReligionSelects = document.querySelectorAll('#resultTableBody .heir-religion');
         heirReligionSelects.forEach(select => {
             updateHeirReligionFieldStyle(select);
         });
     }
     
-    // إضافة مستمعات الأحداث
     function setupTab2FieldEvents() {
         const resultTableBody = document.getElementById('resultTableBody');
         if (!resultTableBody) return;
-        
-        // تحديث عند تغيير اسم الوريث
         resultTableBody.addEventListener('input', function(e) {
             if (e.target.classList.contains('heir-name')) {
                 updateHeirNameFieldStyle(e.target);
             }
         });
-        
-        // تحديث عند تغيير ديانة الوريث
         resultTableBody.addEventListener('change', function(e) {
             if (e.target.classList.contains('heir-religion')) {
                 updateHeirReligionFieldStyle(e.target);
@@ -343,34 +303,26 @@ function initTab2ColorCodingSystem() {
         });
     }
     
-    // تشغيل النظام
     updateAllTab2Fields();
     setupTab2FieldEvents();
 }
 
-// تطبيق الترجمة على الصفحة
 function applyTranslations() {
   const lang = getCurrentLanguage();
-  
-  // تحديث اتجاه الصفحة
   document.documentElement.dir = isRTL(lang) ? 'rtl' : 'ltr';
   document.documentElement.lang = lang;
   document.body.className = isRTL(lang) ? '' : 'ltr';
   if (lang === 'ur') document.body.classList.add('lang-ur');
   
-  // تحديث مبدل اللغة
   const languageSelect = document.getElementById('languageSelect');
   if (languageSelect) {
     languageSelect.value = lang;
-    
-    // استخدام نصوص ثابتة للغات
     const options = languageSelect.querySelectorAll('option');
     options[0].textContent = 'العربية';
     options[1].textContent = 'English';
     options[2].textContent = 'اردو';
   }
   
-  // ترجمة النصوص
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.getAttribute('data-i18n');
     const translation = t(key);
@@ -379,7 +331,6 @@ function applyTranslations() {
     }
   });
   
-  // ترجمة العنواين
   document.querySelectorAll('[data-i18n-title]').forEach(element => {
     const key = element.getAttribute('data-i18n-title');
     const translation = t(key);
@@ -388,7 +339,6 @@ function applyTranslations() {
     }
   });
   
-  // ترجمة النصوص التوضيحية
   document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
     const key = element.getAttribute('data-i18n-placeholder');
     const translation = t(key);
@@ -397,24 +347,16 @@ function applyTranslations() {
     }
   });
   
-  // تحديث تسميات الأزرار
   updateButtonTexts();
-  
-  // تحديث تنسيق الأرقام في المدخلات
   updateNumberInputs();
   translateSelectOptions();
   
-  // تحديث نظام ترميز الألوان بعد الترجمة
   setTimeout(() => {
       initColorCodingSystem();
   }, 300);
 }
 
-// دالة جديدة لترجمة خيارات القوائم المنسدلة
 function translateSelectOptions() {
-  const lang = getCurrentLanguage();
-  
-  // ترجمة جميع عناصر select
   document.querySelectorAll('select').forEach(select => {
     Array.from(select.options).forEach(option => {
       const key = option.getAttribute('data-i18n');
@@ -428,7 +370,6 @@ function translateSelectOptions() {
   });
 }
 
-// تحديث تسميات الأزرار
 function updateButtonTexts() {
   const nextBtn = document.getElementById('footer-next-btn');
   const prevBtn = document.getElementById('footer-prev-btn');
@@ -448,28 +389,23 @@ function updateButtonTexts() {
   if (closeModalBtn) closeModalBtn.textContent = t('ok');
 }
 
-// ========== الإصلاح: تحديث تنسيق الأرقام باستخدام الفاصلة الصحيحة ==========
 function updateNumberInputs() {
   const amountInput = document.getElementById('amount');
   const materialsInput = document.getElementById('materials');
-  
   if (amountInput && amountInput.value) {
     const currentValue = parseNumber(amountInput.value);
     amountInput.value = formatNumber(currentValue);
   }
-  
   if (materialsInput && materialsInput.value) {
     const currentValue = parseNumber(materialsInput.value);
     materialsInput.value = formatNumber(currentValue);
   }
 }
 
-// تحويل الأرقام إلى كلمات حسب اللغة
 function numberToLocalizedWord(number, gender) {
   return getOrdinalNumber(number, gender) || number.toString();
 }
 
-// ========== نظام التنبيهات المحسن ==========
 class AlertSystem {
   constructor() {
     this.alertSystem = document.getElementById('alertSystem');
@@ -479,129 +415,76 @@ class AlertSystem {
     this.alertTitle = this.alertSystem.querySelector('.alert-title');
     this.alertMessage = document.getElementById('alertMessage');
     this.alertConfirm = document.getElementById('alertConfirm');
-    
     this.init();
   }
-
   init() {
     this.alertConfirm.addEventListener('click', () => this.hide());
     this.alertSystem.addEventListener('click', (e) => {
-      if (e.target === this.alertSystem) {
-        this.hide();
-      }
+      if (e.target === this.alertSystem) this.hide();
     });
   }
-
   show(type, message, title = null) {
     this.setAlertType(type);
-    
     this.alertMessage.textContent = message;
-    if (title) {
-      this.alertTitle.textContent = title;
-    }
-    
+    if (title) this.alertTitle.textContent = title;
     this.alertSystem.classList.remove('hidden');
-    setTimeout(() => {
-      this.alertSystem.classList.add('active');
-    }, 10);
+    setTimeout(() => { this.alertSystem.classList.add('active'); }, 10);
   }
-
   setAlertType(type) {
     this.alertContainer.classList.remove('alert-error', 'alert-warning', 'alert-success', 'alert-info');
     this.alertContainer.classList.add(`alert-${type}`);
-    
     const icon = this.alertIcon.querySelector('i');
     icon.className = this.getIconForType(type);
   }
-
   getIconForType(type) {
-    const icons = {
-      'error': 'fas fa-exclamation-circle',
-      'warning': 'fas fa-exclamation-triangle',
-      'success': 'fas fa-check-circle',
-      'info': 'fas fa-info-circle'
-    };
+    const icons = { 'error': 'fas fa-exclamation-circle', 'warning': 'fas fa-exclamation-triangle', 'success': 'fas fa-check-circle', 'info': 'fas fa-info-circle' };
     return icons[type] || 'fas fa-info-circle';
   }
-
   hide() {
     this.alertSystem.classList.remove('active');
-    setTimeout(() => {
-      this.alertSystem.classList.add('hidden');
-    }, 300);
+    setTimeout(() => { this.alertSystem.classList.add('hidden'); }, 300);
   }
 }
 
 let alertSystem;
-
 function showAlert(type, messageKey, titleKey = null) {
-  if (!alertSystem) {
-    alertSystem = new AlertSystem();
-  }
-  
+  if (!alertSystem) alertSystem = new AlertSystem();
   const message = t(messageKey);
   const title = titleKey ? t(titleKey) : null;
   alertSystem.show(type, message, title);
 }
 
-function showDeceasedTypeAlert() {
-  showAlert('error', 'deceasedTypeRequired', 'alertTitle');
-}
+function showDeceasedTypeAlert() { showAlert('error', 'deceasedTypeRequired', 'alertTitle'); }
+function showHeirsRequiredAlert() { showAlert('warning', 'heirsRequired', 'alertTitle'); }
 
-function showHeirsRequiredAlert() {
-  showAlert('warning', 'heirsRequired', 'alertTitle');
-}
-
-// ========== تهيئة نظام الترجمة ==========
 function initTranslationSystem() {
-  // تطبيق الترجمة عند التحميل
   applyTranslations();
-  
-  // إضافة مستمع لتغيير اللغة
   const languageSelect = document.getElementById('languageSelect');
   if (languageSelect) {
     languageSelect.addEventListener('change', function(e) {
       const lang = e.target.value;
       setLanguage(lang);
       applyTranslations();
-      // إعادة تحميل البيانات إذا كانت موجودة
       reloadFormData();
     });
   }
 }
 
-// ========== دالة التحقق من الصحة ==========
 function validateCalculatorForm() {
   const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked');
   const hasHeirs = hasSelectedHeirs();
-
-  if (!deceasedGender) {
-    showDeceasedTypeAlert();
-    return false;
-  }
-
-  if (!hasHeirs) {
-    showHeirsRequiredAlert();
-    return false;
-  }
-
+  if (!deceasedGender) { showDeceasedTypeAlert(); return false; }
+  if (!hasHeirs) { showHeirsRequiredAlert(); return false; }
   return true;
 }
 
-// ========== فتح نافذة الأبناء ==========
 function openSonsModal(e) {
   e.preventDefault();
-  
-  // التحقق من الصحة أولاً
-  if (!validateCalculatorForm()) {
-    return;
-  }
-
+  if (!validateCalculatorForm()) return;
   let daughter = document.getElementById('daughter').value === 'noOption';
   let mother = document.getElementById('mother').value === 'yesOption';
   let father = document.getElementById('father').value === 'yesOption';
   let son = document.getElementById('son').value === 'noOption';
-
   if (mother && father && daughter && son) {
     document.getElementById('sons_numbers').classList.add('show');
   } else {
@@ -611,184 +494,149 @@ function openSonsModal(e) {
   }
 }
 
-// ========== إعادة تحميل بيانات النموذج بعد تغيير اللغة ==========
 function reloadFormData() {
   const storedData = appStorage.getItem("inheritanceData");
   if (storedData) {
     const data = JSON.parse(storedData);
     updateReligiousTab(data);
-    
-    // تحديث تبويب النتائج إذا كان نشطاً
     const activeTab = document.querySelector('.tab-content.active').id;
     if (activeTab === 'shares') {
       const totalAmount = processTotalAmount(data.amount);
       const materialsAmount = parseNumber(data.materials) || 0;
-
       const formattedHeirs = formatHeirsForCalculation(data.heirs);
       const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
       const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
-
       let materialsResults = null;
-      if (materialsAmount > 0) {
-        materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
-      }
-
-      updateSharesTab({
-        ...data,
-        heirs: enrichedResults,
-        materialsDistribution: materialsResults,
-        hasAmount: !!data.amount && parseNumber(data.amount) > 0
-      });
+      if (materialsAmount > 0) materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
+      updateSharesTab({ ...data, heirs: enrichedResults, materialsDistribution: materialsResults, hasAmount: !!data.amount && parseNumber(data.amount) > 0 });
     }
   }
 }
 
-// ========== دالة التحكم في أزرار الفوتر ==========
 function initFooterButtons() {
   const prevBtn = document.getElementById('footer-prev-btn');
   const nextBtn = document.getElementById('footer-next-btn');
   const printBtn = document.getElementById('footer-print-btn');
 
-  // إزالة جميع الأحداث القديمة
   const newNextBtn = nextBtn.cloneNode(true);
   const newPrevBtn = prevBtn.cloneNode(true);
   nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
   prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
 
-  // الحصول على الأزرار الجديدة
   const newNextButton = document.getElementById('footer-next-btn');
   const newPrevButton = document.getElementById('footer-prev-btn');
 
-  // زر السابق
   newPrevButton.addEventListener('click', () => {
     const currentTab = document.querySelector('.tab-content.active').id;
-    
-    if (currentTab === 'religious') {
-      switchTab('calculator');
-    } else if (currentTab === 'shares') {
-      switchTab('religious');
-    }
+    if (currentTab === 'religious') switchTab('calculator');
+    else if (currentTab === 'shares') switchTab('religious');
   });
 
-  // زر التالي - الإصلاح الرئيسي هنا
   newNextButton.addEventListener('click', () => {
     const currentTab = document.querySelector('.tab-content.active').id;
-    
     if (currentTab === 'calculator') {
-      // التحقق من الصحة أولاً
-      if (!validateCalculatorForm()) {
-        return;
-      }
-      
-      // الانتقال مباشرة إلى الخطوة الثانية
+      if (!validateCalculatorForm()) return;
       handleCalculatorSubmit();
     } else if (currentTab === 'religious') {
       document.getElementById('resultForm').dispatchEvent(new Event('submit'));
     }
   });
 
-  // زر الطباعة
- // زر الطباعة الجديد
-if (printBtn) {
-  printBtn.addEventListener('click', function() {
-    // 1. اذهب لصفحة النتائج
-    switchTab('shares');
-    
-    // 2. انتظر ثانية
-    setTimeout(() => {
-      // 3. أضف تنسيقات الطباعة
-      let printStyles = document.createElement('style');
-      printStyles.innerHTML = `
-        @media print {
-          /* إخفاء كل شيء */
-          body * {
-            visibility: hidden;
-          }
-          
-          /* إظهار النتيجة فقط */
-          #shares,
-          #shares * {
-            visibility: visible;
-          }
-          
-          #shares {
-            position: absolute;
-            top: 10px;
-            left: 0;
-            width: 100%;
-          }
-          
-          /* إخفاء العناصر الأخرى */
-          .header, .tabs, .fixed-footer, .print-hide {
-            display: none !important;
-          }
-        }
-      `;
-      document.head.appendChild(printStyles);
-      
-      // 4. اطبع
-      window.print();
-      
-      // 5. نظف التنسيقات
+  // ========== تعديل زر الطباعة لضمان صفحة واحدة ==========
+  if (printBtn) {
+    printBtn.addEventListener('click', function() {
+      switchTab('shares');
       setTimeout(() => {
-        printStyles.remove();
-      }, 100);
-    }, 500);
-  });
+        let printStyles = document.createElement('style');
+        printStyles.id = 'print-one-page-style';
+        printStyles.innerHTML = `
+          @media print {
+            /* إخفاء كل شيء في الصفحة تماماً */
+            body * {
+              display: none !important;
+            }
+            
+            /* إظهار حاوية النتائج فقط وما بداخلها */
+            #shares, #shares * {
+              display: block !important;
+              visibility: visible !important;
+            }
+
+            /* تهيئة منطقة النتائج لتأخذ كامل الصفحة */
+            #shares {
+              position: absolute !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100% !important;
+              margin: 0 !important;
+              padding: 0 !important;
+            }
+
+            /* إخفاء عناصر الموقع غير الضرورية */
+            .header, .tabs, .fixed-footer, .print-hide, button {
+              display: none !important;
+            }
+
+            /* تحسين الجداول للطباعة */
+            table {
+              width: 100% !important;
+              border-collapse: collapse !important;
+              page-break-inside: auto !important;
+              font-size: 13px !important; /* تصغير الخط قليلاً لضمان الاحتواء */
+            }
+            
+            tr {
+              page-break-inside: avoid !important;
+            }
+
+            /* إعدادات الهوامش */
+            @page {
+              size: auto;
+              margin: 10mm;
+            }
+          }
+        `;
+        document.head.appendChild(printStyles);
+        window.print();
+        setTimeout(() => {
+          const styleElement = document.getElementById('print-one-page-style');
+          if (styleElement) styleElement.remove();
+        }, 500);
+      }, 400);
+    });
+  }
 }
-}
-// ========== تبديل التبويبات ==========
+
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
-
   document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
   document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
-
-  // تحديث حالة الأزرار
   updateTabButtonsState(tabId);
-  
-  // التحكم في إظهار/إخفاء أزرار الفوتر حسب التبويب النشط
   updateFooterButtons(tabId);
-  
-  // تطبيق نظام ترميز الألوان عند تغيير التبويب
   setTimeout(() => {
-      if (tabId === 'calculator') {
-          initColorCodingSystem();
-      } else if (tabId === 'religious') {
-          initTab2ColorCodingSystem();
-      }
+      if (tabId === 'calculator') initColorCodingSystem();
+      else if (tabId === 'religious') initTab2ColorCodingSystem();
   }, 300);
 }
 
-// تحديث حالة أزرار التبويب
 function updateTabButtonsState(activeTab) {
   const tabs = document.querySelectorAll('.tab-button');
-  
   tabs.forEach(tab => {
     const tabName = tab.getAttribute('data-tab');
-    
-    if (tabName === activeTab) {
-      tab.disabled = false;
-    } else if (tabName === 'religious' && activeTab === 'calculator') {
-      tab.disabled = true;
-    } else if (tabName === 'shares' && (activeTab === 'calculator' || activeTab === 'religious')) {
-      tab.disabled = true;
-    }
+    if (tabName === activeTab) tab.disabled = false;
+    else if (tabName === 'religious' && activeTab === 'calculator') tab.disabled = true;
+    else if (tabName === 'shares' && (activeTab === 'calculator' || activeTab === 'religious')) tab.disabled = true;
   });
 }
 
-// إصلاح دالة updateFooterButtons لتشمل زر الطباعة
 function updateFooterButtons(activeTab) {
   const prevBtn = document.getElementById('footer-prev-btn');
   const nextBtn = document.getElementById('footer-next-btn');
   const printBtn = document.getElementById('footer-print-btn');
-
-  // إخفاء جميع الأزرار أولاً
   prevBtn.classList.add('hidden');
   nextBtn.classList.add('hidden');
   if (printBtn) printBtn.classList.add('hidden');
-
   switch(activeTab) {
     case 'calculator':
       nextBtn.classList.remove('hidden');
@@ -806,110 +654,80 @@ function updateFooterButtons(activeTab) {
   }
 }
 
-// ========== تهيئة التبويبات ==========
 function initTabs() {
   document.querySelectorAll('.tab-button').forEach(button => {
     button.addEventListener('click', (e) => {
       e.preventDefault();
       const tabId = button.getAttribute('data-tab');
-      
-      // التحقق من أن التبويب ليس معطلاً
-      if (!button.disabled) {
-        switchTab(tabId);
-      }
+      if (!button.disabled) switchTab(tabId);
     });
   });
-
   document.querySelector('.tab-button.religious').disabled = true;
   document.querySelector('.tab-button.shares').disabled = true;
-  
-  // تهيئة أزرار الفوتر للتبويب الأول
   updateFooterButtons('calculator');
 }
 
-// ========== تهيئة نموذج الحاسبة ==========
 function initCalculatorForm() {
   const form = document.getElementById('inheritanceForm');
   const templateSource = document.getElementById('field-template').innerHTML;
   const template = Handlebars.compile(templateSource);
   document.getElementById('dynamic-fields').innerHTML = template({ groups: fieldsData });
-
-  // تحديث العناوين بعد الترجمة
   setTimeout(() => {
     document.querySelectorAll('.group-header h3').forEach((header, index) => {
       header.setAttribute('data-i18n', `category${index + 1}`);
       header.textContent = t(`category${index + 1}`);
     });
   }, 100);
-
   document.querySelectorAll('input[name="deceased_gender"]').forEach(input => {
     input.addEventListener('change', toggleSpouseField);
   });
-
   form.addEventListener('submit', openSonsModal);
-  
-  // تحديث تسميات الحقول بعد الترجمة
   updateFieldLabels();
-  
-  // تهيئة نظام ترميز الألوان
-  setTimeout(() => {
-      initColorCodingSystem();
-  }, 500);
+  setTimeout(() => { initColorCodingSystem(); }, 500);
 }
 
-// تحديث تسميات الحقول
 function updateFieldLabels() {
   setTimeout(() => {
     document.querySelectorAll('.field-item label').forEach(label => {
       const fieldId = label.getAttribute('for');
       if (fieldId) {
         const translation = t(fieldId);
-        if (translation && translation !== fieldId) {
-          label.textContent = translation;
-        }
+        if (translation && translation !== fieldId) label.textContent = translation;
       }
     });
   }, 200);
 }
 
-// ========== تبديل حقل الزوج/الزوجة ==========
 function toggleSpouseField() {
   const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
   if (deceasedGender !== 'male') {
     document.getElementById('spouse_female').classList.add('hidden');
     document.getElementById('spouse_male').classList.remove('hidden');
-    document.getElementById('wife').value = 'no'
-    all.wife = 0
+    document.getElementById('wife').value = 'no';
+    all.wife = 0;
   } else {
     document.getElementById('spouse_female').classList.remove('hidden');
     document.getElementById('spouse_male').classList.add('hidden');
-    document.getElementById('husband').value = 'no'
-    all.husband = 0
+    document.getElementById('husband').value = 'no';
+    all.husband = 0;
   }
-
   calculateHeirsCount(all);
-  
-  // تحديث ألوان الحقول المتأثرة
   setTimeout(() => {
     const wifeSelect = document.getElementById('wife');
     const husbandSelect = document.getElementById('husband');
-    
     if (wifeSelect) updateHeirFieldStyle(wifeSelect);
     if (husbandSelect) updateHeirFieldStyle(husbandSelect);
   }, 100);
 }
 
-// ========== معالجة إرسال الحاسبة ==========
 function handleCalculatorSubmit() {
   const formData = collectFormData();
   appStorage.setItem("inheritanceData", JSON.stringify(formData));
-
   document.querySelector('.tab-button.religious').disabled = false;
   switchTab('religious');
   updateReligiousTab(formData);
 }
 
-// ========== جمع بيانات النموذج - الإصلاحات المهمة ==========
 function collectFormData() {
   const formData = {
     deceased_gender: document.querySelector('input[name="deceased_gender"]:checked')?.value || "",
@@ -919,7 +737,6 @@ function collectFormData() {
     materials: document.getElementById("materials")?.value || "",
     heirs: {}
   };
-
   document.querySelectorAll("#inheritanceForm select").forEach(select => {
     const id = select.id;
     const label = select.parentElement.querySelector("label");
@@ -927,70 +744,24 @@ function collectFormData() {
     const value = select.value;
     const fieldConfig = fieldsData.flatMap(group => group.fields).find(field => field.id === id);
     const gender = fieldConfig?.gender || "male";
-
-    // ========== الإصلاح 1: معالجة حقول الزوج والزوجة بشكل صحيح ==========
     if (id === "wife") {
-      if (parseInt(value) > 0) {
-        formData.heirs["wife"] = { 
-          title: t('wife') || 'زوجة',
-          name: "",
-          count: parseInt(value),
-          religion: "مسلم",
-          isMultiple: true,
-          gender: "female"
-        };
-      }
+      if (parseInt(value) > 0) formData.heirs["wife"] = { title: t('wife') || 'زوجة', name: "", count: parseInt(value), religion: "مسلم", isMultiple: true, gender: "female" };
       return;
     }
-
     if (id === "husband") {
       const isYes = value === "yes" || value === "yesOption" || value === "نعم";
-      if (isYes && formData.deceased_gender === "female") {
-        formData.heirs["husband"] = { 
-          title: t('husband') || 'زوج', 
-          name: "",
-          religion: "مسلم",
-          gender: "male"
-        };
-      }
+      if (isYes && formData.deceased_gender === "female") formData.heirs["husband"] = { title: t('husband') || 'زوج', name: "", religion: "مسلم", gender: "male" };
       return;
     }
-
-    // ========== الإصلاح 2: معالجة الحقول العادية ==========
     const isYesOption = value === "نعم" || value === "yesOption" || value === "yes";
     const isNoOption = value === "لا" || value === "noOption" || value === "no";
-    
-    if (isYesOption) {
-      formData.heirs[id] = { 
-        title: title, 
-        name: "",
-        religion: "مسلم",
-        gender: gender
-      };
-      return;
-    }
-
-    if (isNoOption) {
-      return; // تجاهل القيم "لا"
-    }
-
-    if (!isNaN(parseInt(value)) && parseInt(value) > 0) {
-      // ========== الإصلاح 3: إنشاء مفتاح واحد للحقول المتعددة ==========
-      formData.heirs[id] = { 
-        title: title,
-        name: "",
-        count: parseInt(value),
-        religion: "مسلم",
-        isMultiple: true,
-        gender: gender
-      };
-    }
+    if (isYesOption) { formData.heirs[id] = { title: title, name: "", religion: "مسلم", gender: gender }; return; }
+    if (isNoOption) return;
+    if (!isNaN(parseInt(value)) && parseInt(value) > 0) formData.heirs[id] = { title: title, name: "", count: parseInt(value), religion: "مسلم", isMultiple: true, gender: gender };
   });
-
   return formData;
 }
 
-// ========== تحديث تبويب البيانات الدينية - الإصلاح ==========
 function updateReligiousTab(data) {
   let deceasedInfoHTML = "";
   if (data.deceased_gender) {
@@ -1005,83 +776,42 @@ function updateReligiousTab(data) {
         `;
   }
   document.getElementById('deceasedInfoBody').innerHTML = deceasedInfoHTML;
-
   let heirsHTML = "";
   let i = 0;
-  
-  // ========== الإصلاح: عرض جميع الورثة ==========
   for (let key in data.heirs) {
     const heir = data.heirs[key];
-    
-    // تخطي الزوجات الذكور إذا كان المتوفى أنثى
-    if (data.deceased_gender === 'female' && key === "wife") {
-      continue;
-    }
-    
+    if (data.deceased_gender === 'female' && key === "wife") continue;
     i++;
-    
-    // ========== الإصلاح: معالجة الحقول المتعددة ==========
     if (heir.isMultiple && heir.count > 1) {
       for (let j = 1; j <= heir.count; j++) {
-        // الحصول على الاسم من مصفوفة names
         let heirName = '';
-        if (heir.names && Array.isArray(heir.names) && heir.names[j-1]) {
-          heirName = heir.names[j-1];
-        } else if (heir.name) {
-          heirName = heir.name;
-        }
-        
-        // الحصول على الدين من مصفوفة religions أو القيمة الافتراضية
+        if (heir.names && Array.isArray(heir.names) && heir.names[j-1]) heirName = heir.names[j-1];
+        else if (heir.name) heirName = heir.name;
         let heirReligion = 'مسلم';
-        if (heir.religions && Array.isArray(heir.religions) && heir.religions[j-1]) {
-          heirReligion = heir.religions[j-1];
-        } else if (heir.religion) {
-          heirReligion = heir.religion;
-        }
-        
+        if (heir.religions && Array.isArray(heir.religions) && heir.religions[j-1]) heirReligion = heir.religions[j-1];
+        else if (heir.religion) heirReligion = heir.religion;
         heirsHTML += `
                 <tr>
                     <td class="counter">${formatNumber(i)}</td>
                     <td>${heir.title} ${numberToLocalizedWord(j, heir.gender || 'male')}</td>
-                    <td>
-                      <input 
-                        type="text" 
-                        class="heir-name" 
-                        data-heir-id="${key}_${j}" 
-                        value="${heirName}" 
-                        placeholder="${t('enterHeirName')}"
-                        title="${t('enterHeirName')}"
-                      >
-                    </td>
-                    <td>
-                        <select class="heir-religion" data-heir-id="${key}_${j}" title="${t('religiousStatus')}">
+                    <td><input type="text" class="heir-name" data-heir-id="${key}_${j}" value="${heirName}" placeholder="${t('enterHeirName')}" title="${t('enterHeirName')}"></td>
+                    <td><select class="heir-religion" data-heir-id="${key}_${j}" title="${t('religiousStatus')}">
                             <option value="مسلم" ${heirReligion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
                             <option value="غير مسلم" ${heirReligion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
                         </select>
                     </td>
                 </tr>
             `;
-        i++; // زيادة العداد لكل فرد
+        i++;
       }
-      i--; // تصحيح العداد
+      i--;
     } else {
-      // ========== الإصلاح: الحقول المفردة ==========
       heirsHTML += `
             <tr>
                 <td class="counter">${formatNumber(i)}</td>
                 <td>${heir.title}</td>
-                <td>
-                  <input 
-                    type="text" 
-                    class="heir-name" 
-                    data-heir-id="${key}" 
-                    value="${heir.name || ''}" 
-                    placeholder="${t('enterHeirName')}"
-                    title="${t('enterHeirName')}"
-                  >
-                </td>
-                <td>
-                    <select class="heir-religion" data-heir-id="${key}" title="${t('religiousStatus')}">
+                <td><input type="text" class="heir-name" data-heir-id="${key}" value="${heir.name || ''}" placeholder="${t('enterHeirName')}" title="${t('enterHeirName')}"></td>
+                <td><select class="heir-religion" data-heir-id="${key}" title="${t('religiousStatus')}">
                         <option value="مسلم" ${heir.religion === 'مسلم' ? 'selected' : ''}>${t('muslim')}</option>
                         <option value="غير مسلم" ${heir.religion === 'غير مسلم' ? 'selected' : ''}>${t('nonMuslim')}</option>
                     </select>
@@ -1090,108 +820,40 @@ function updateReligiousTab(data) {
         `;
     }
   }
-  
   document.getElementById('resultTableBody').innerHTML = heirsHTML;
-
   document.getElementById('resultForm').onsubmit = handleReligiousSubmit;
-  
-  // تهيئة نظام ترميز الألوان للتبويب الثاني
-  setTimeout(() => {
-      initTab2ColorCodingSystem();
-  }, 100);
+  setTimeout(() => { initTab2ColorCodingSystem(); }, 100);
 }
 
-// ========== معالجة إرسال البيانات الدينية - الإصلاح ==========
 function handleReligiousSubmit(event) {
   event.preventDefault();
-  
-  // الحصول على البيانات الأصلية
   const storedData = appStorage.getItem("inheritanceData");
   let data = {};
-  
-  if (storedData) {
-    try {
-      data = JSON.parse(storedData);
-    } catch (error) {
-      console.error('Error parsing stored data:', error);
-      data = {};
-    }
-  }
-  
-  if (!data.heirs || typeof data.heirs !== "object") {
-    data.heirs = {};
-  }
-
-  // ========== الإصلاح: جمع بيانات الأسماء والديانات ==========
+  if (storedData) { try { data = JSON.parse(storedData); } catch (error) { data = {}; } }
+  if (!data.heirs || typeof data.heirs !== "object") data.heirs = {};
   document.querySelectorAll('.heir-name').forEach(input => {
     const heirId = input.getAttribute('data-heir-id');
     const religionSelect = document.querySelector(`.heir-religion[data-heir-id="${heirId}"]`);
-
-    if (!religionSelect) {
-      return;
-    }
-
-    // حفظ الاسم والديانة
+    if (!religionSelect) return;
     if (heirId.includes('_')) {
-      // حالة الحقول المتعددة (son_1, son_2، إلخ)
       const [baseId, index] = heirId.split('_');
-
-      if (!baseId || !index) {
-        return;
-      }
-
-      // التأكد من وجود الكائن الأساسي
-      if (!data.heirs[baseId]) {
-        data.heirs[baseId] = {
-          title: '', // سيتم تعبئته من البيانات الأصلية
-          name: '',
-          religion: 'مسلم',
-          religions: [],
-          isMultiple: true,
-          count: 0
-        };
-      }
-
-      // حفظ الأسماء الفردية في مصفوفة names
-      if (!data.heirs[baseId].names || !Array.isArray(data.heirs[baseId].names)) {
-        data.heirs[baseId].names = [];
-      }
-      
-      // حفظ الأديان الفردية في مصفوفة religions
-      if (!data.heirs[baseId].religions || !Array.isArray(data.heirs[baseId].religions)) {
-        data.heirs[baseId].religions = [];
-      }
-      
-      // حفظ الاسم في الفهرس الصحيح
+      if (!baseId || !index) return;
+      if (!data.heirs[baseId]) data.heirs[baseId] = { title: '', name: '', religion: 'مسلم', religions: [], isMultiple: true, count: 0 };
+      if (!data.heirs[baseId].names) data.heirs[baseId].names = [];
+      if (!data.heirs[baseId].religions) data.heirs[baseId].religions = [];
       const nameIndex = parseInt(index) - 1;
       data.heirs[baseId].names[nameIndex] = input.value.trim();
       data.heirs[baseId].religions[nameIndex] = religionSelect.value;
-      
     } else {
-      // حالة الحقول المفردة
-      if (!data.heirs[heirId]) {
-        data.heirs[heirId] = {
-          title: '', // سيتم تعبئته من البيانات الأصلية
-          name: '',
-          religion: 'مسلم'
-        };
-      }
-
+      if (!data.heirs[heirId]) data.heirs[heirId] = { title: '', name: '', religion: 'مسلم' };
       data.heirs[heirId].name = input.value.trim();
       data.heirs[heirId].religion = religionSelect.value;
     }
   });
-
-  // ========== الإصلاح: الحفاظ على بيانات العنوان الأصلية ==========
-  // الحصول على البيانات الأصلية من الخطوة الأولى
   const originalFormData = collectFormData();
-  
-  // تحديث العناوين في البيانات النهائية
   for (const key in originalFormData.heirs) {
     if (data.heirs[key]) {
       data.heirs[key].title = originalFormData.heirs[key].title;
-      
-      // إذا كان حقل متعدد، نسخ البيانات الأخرى
       if (originalFormData.heirs[key].isMultiple) {
         data.heirs[key].isMultiple = true;
         data.heirs[key].count = originalFormData.heirs[key].count;
@@ -1199,43 +861,256 @@ function handleReligiousSubmit(event) {
       }
     }
   }
-
-  // حفظ البيانات المحدثة
   appStorage.setItem("inheritanceData", JSON.stringify(data));
-
   document.querySelector('.tab-button.shares').disabled = false;
   switchTab('shares');
-
-  // حساب التوزيع
   const totalAmount = processTotalAmount(data.amount);
   const materialsAmount = parseNumber(data.materials) || 0;
-
-  // ========== الإصلاح: تحويل البيانات إلى تنسيق مناسب لدالة الحساب ==========
   const formattedHeirs = formatHeirsForCalculation(data.heirs);
   const moneyResults = calculateInheritance(totalAmount, formattedHeirs);
   const enrichedResults = enrichResultsWithDisplayData(moneyResults, formattedHeirs);
-
   let materialsResults = null;
-  if (materialsAmount > 0) {
-    materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
-  }
-
-  updateSharesTab({
-    ...data,
-    heirs: enrichedResults,
-    materialsDistribution: materialsResults,
-    hasAmount: !!data.amount && parseNumber(data.amount) > 0
-  });
+  if (materialsAmount > 0) materialsResults = calculateMaterialsDistribution(enrichedResults, materialsAmount);
+  updateSharesTab({ ...data, heirs: enrichedResults, materialsDistribution: materialsResults, hasAmount: !!data.amount && parseNumber(data.amount) > 0 });
 }
 
-// يدمج بيانات العرض (الاسم/القرابة) في نتائج الحساب لضمان ظهورها دائمًا
 function enrichResultsWithDisplayData(calculatedResults, formattedHeirs) {
   const merged = {};
-
   for (const [key, result] of Object.entries(calculatedResults)) {
     const display = formattedHeirs[key] || {};
-    merged[key] = {
-      ...display,
+    merged[key] = { ...display, ...result, title: result.title || display.title || display.originalTitle || key, name: result.name || display.name || '', religion: display.religion || 'مسلم' };
+  }
+  return merged;
+}
+
+function formatHeirsForCalculation(heirsData) {
+  const formatted = {};
+  for (let key in heirsData) {
+    const heir = heirsData[key];
+    if (key === "husband" && heir) { formatted["husband"] = { title: heir.title || 'زوج', name: heir.name || '', religion: heir.religion || 'مسلم', gender: 'male', originalTitle: heir.title }; continue; }
+    if (key === "wife" && heir) {
+      const wifeCount = heir.count || 1;
+      for (let i = 1; i <= wifeCount; i++) {
+        const wifeKey = `wife_${i}`;
+        formatted[wifeKey] = { title: `${heir.title} ${numberToLocalizedWord(i, 'female')}`, name: (heir.names && heir.names[i-1]) || heir.name || '', religion: (heir.religions && heir.religions[i-1]) || heir.religion || 'مسلم', gender: 'female', originalTitle: heir.title };
+      }
+      continue;
+    }
+    const count = heir.isMultiple ? Math.max(parseInt(heir.count, 10) || 0, 1) : 1;
+    if (heir.isMultiple && count > 1) {
+      for (let i = 1; i <= count; i++) {
+        const individualKey = `${key}_${i}`;
+        const nameIndex = i - 1;
+        let individualName = '';
+        if (heir.names && Array.isArray(heir.names) && heir.names[nameIndex]) individualName = heir.names[nameIndex];
+        else if (heir.name) individualName = heir.name;
+        let individualReligion = 'مسلم';
+        if (heir.religions && Array.isArray(heir.religions) && heir.religions[nameIndex]) individualReligion = heir.religions[nameIndex];
+        else if (heir.religion) individualReligion = heir.religion;
+        formatted[individualKey] = { title: `${heir.title} ${numberToLocalizedWord(i, heir.gender || 'male')}`, name: individualName, religion: individualReligion, gender: heir.gender || 'male', originalTitle: heir.title };
+      }
+    } else {
+      formatted[key] = { title: heir.title, name: heir.name || '', religion: heir.religion || 'مسلم', gender: heir.gender || 'male', originalTitle: heir.title };
+    }
+  }
+  return formatted;
+}
+
+function processTotalAmount(amount) {
+  let total = parseNumber(amount) || 0;
+  if (total === 0) total = 100;
+  return total;
+}
+
+function calculateMaterialsDistribution(moneyResults, materialsAmount) {
+  const materialsDistribution = {};
+  for (const [key, heirData] of Object.entries(moneyResults)) {
+    const percentage = parseFloat(heirData.percentage) || 0;
+    const materialsShare = (percentage / 100) * materialsAmount;
+    materialsDistribution[key] = { ...heirData, materialsAmount: materialsShare.toFixed(3), materialsPercentage: heirData.percentage };
+  }
+  return materialsDistribution;
+}
+
+function formatMoneyWithCurrency(amount) {
+  if (amount === '-' || amount === '' || amount === undefined || amount === null) return '-';
+  const numStr = amount.toString();
+  const formattedNumber = formatNumber(numStr);
+  return `${formattedNumber} ${t('riyal')}`;
+}
+
+function getHeirReligionDisplay(heir) {
+  if (!heir || !heir.religion) return '-';
+  if (heir.religion === 'مسلم') return t('muslim');
+  else if (heir.religion === 'غير مسلم') return t('nonMuslim');
+  return heir.religion;
+}
+
+function formatHeirNote(key, heir, allHeirs) {
+    let note = heir.note || '';
+    if (!note) {
+        if (key.includes('daughter')) {
+            const daughterCount = Object.keys(allHeirs).filter(k => k.includes('daughter')).length;
+            if (daughterCount === 1) note = t('remainderToSingleDaughter') || 'النصف فرض والباقي يرد على الابنة';
+            else if (daughterCount > 1) note = t('remainderToMultipleDaughters') || 'الثلثين فرض والباقي يرد على البنات';
+        } else if (key.includes('son')) {
+            const sonCount = Object.keys(allHeirs).filter(k => k.includes('son')).length;
+            if (sonCount === 1) note = t('remainderToSonNote') || 'والباقي كاملاً للابن';
+            else if (sonCount > 1) note = t('remainderToSons') || 'الباقي تعصيب للأبناء';
+        }
+    }
+    if (note.includes('الباقي يرد') || note.includes('يرد')) {
+        if (key.includes('daughter')) {
+            const daughterCount = Object.keys(allHeirs).filter(k => k.includes('daughter')).length;
+            note = (daughterCount === 1) ? (t('remainderToSingleDaughter') || 'النصف فرض والباقي يرد على الابنة') : (t('remainderToMultipleDaughters') || 'الثلثين فرض والباقي يرد على البنات');
+        } else if (key.includes('son')) {
+            const sonCount = Object.keys(allHeirs).filter(k => k.includes('son')).length;
+            note = (sonCount === 1) ? (t('remainderToSonNote') || 'والباقي كاملاً للابن') : (t('remainderToSons') || 'الباقي تعصيب للأبناء');
+        } else note = t('raddNote') || note;
+    }
+    if (note.includes('للذكر مثل حظ الأنثيين')) note = t('maleFemaleRatioNote') || note;
+    if (note.includes('الباقي تعصيب')) note = t('remainderNote') || note;
+    return note;
+}
+
+function updateSharesTab(data) {
+  let deceasedInfoHTML = "";
+  if (data.deceased_gender) {
+    deceasedInfoHTML = `
+        <tr>
+            <td>${data.deceased_gender === 'male' ? t('male') : t('female')}</td>
+            <td>${data.deceased_religion}</td>
+            <td>${data.deceased_name || '-'}</td>
+            <td>${data.amount ? formatMoneyWithCurrency(data.amount) : t('noAmount')}</td>
+            <td>${data.materials ? `${formatNumber(data.materials)} ${t('meter')}` : t('noMaterials')}</td>
+        </tr>
+    `;
+  }
+  document.getElementById('sharesDeceasedInfoBody').innerHTML = deceasedInfoHTML;
+  let sharesHTML = "";
+  let i = 0;
+  const showAmounts = data.hasAmount;
+  for (let key in data.heirs) {
+    if (key === 'bayt_al_mal') continue;
+    i++;
+    const heir = data.heirs[key];
+    let relationship = heir.originalTitle || heir.title || '';
+    if (key.includes('_')) {
+      const baseKey = key.split('_')[0];
+      const index = key.split('_')[1];
+      let baseTitle = (data.heirs[baseKey] && data.heirs[baseKey].originalTitle) ? data.heirs[baseKey].originalTitle : (t(baseKey) || baseKey);
+      relationship = (index && !isNaN(index)) ? `${baseTitle} ${numberToLocalizedWord(parseInt(index), heir.gender || 'male')}` : baseTitle;
+    } else relationship = t(key) || heir.originalTitle || heir.title || key;
+    let heirName = heir.name || heir.originalTitle || heir.title || '-';
+    let heirReligion = 'مسلم';
+    if (heir.religion) {
+      if (heir.religion === 'مسلم' || heir.religion === 'Muslim') heirReligion = t('muslim');
+      else if (heir.religion === 'غير مسلم' || heir.religion === 'Non-Muslim') heirReligion = t('nonMuslim');
+      else heirReligion = heir.religion;
+    }
+    const note = formatHeirNote(key, heir, data.heirs);
+    const materialsData = data.materialsDistribution?.[key];
+    const materialsAmount = materialsData?.materialsAmount || '0.000';
+    const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
+    const moneyAmount = heir.amount ? Number(heir.amount).toFixed(3) : '-';
+    const moneyDisplay = showAmounts ? formatMoneyWithCurrency(moneyAmount) : '-';
+    const religionClass = (heirReligion === t('muslim')) ? 'heir-muslim' : 'heir-non-muslim';
+    sharesHTML += `
+        <tr>
+            <td class="counter">${formatNumber(i)}</td>
+            <td>${relationship}</td>
+            <td>${heirName}</td>
+            <td class="${religionClass}">${heirReligion}</td>
+            <td>${moneyDisplay}</td>
+            <td>${materialsDisplay}</td>
+            <td>${formatNumber(heir.percentage) + '%' || '-'}</td>
+            <td>${note}</td>
+        </tr>
+    `;
+  }
+  if (data.heirs.bayt_al_mal && Object.keys(data.heirs.bayt_al_mal).length > 0) {
+    i++;
+    const materialsData = data.materialsDistribution?.bayt_al_mal;
+    const materialsAmount = materialsData?.materialsAmount || '0.000';
+    const materialsDisplay = data.materials ? `${formatNumber(Number(materialsAmount).toFixed(3))} ${t('meter')}` : '-';
+    const baytMoneyAmount = data.heirs.bayt_al_mal.amount ? Number(data.heirs.bayt_al_mal.amount).toFixed(3) : '-';
+    const baytMoneyDisplay = showAmounts ? formatMoneyWithCurrency(baytMoneyAmount) : '-';
+    let baytNote = data.heirs.bayt_al_mal.note || t('baytAlMalNote') || 'الباقي لبيت المال';
+    sharesHTML += `
+        <tr>
+            <td class="counter">${formatNumber(i)}</td>
+            <td>${t('baytAlMal') || 'بيت المال'}</td>
+            <td>-</td>
+            <td>-</td>
+            <td>${baytMoneyDisplay}</td>
+            <td>${materialsDisplay}</td>
+            <td>${formatNumber(data.heirs.bayt_al_mal.percentage) + '%' || '-'}</td>
+            <td>${baytNote}</td>
+        </tr>
+    `;
+  }
+  document.getElementById('sharesTableBody').innerHTML = sharesHTML;
+}
+
+function hasSelectedHeirs() {
+  const worthCountText = document.getElementById('worthCount')?.textContent || '0';
+  const heirsCount = parseNumber(worthCountText);
+  const hasOtherHeirs = heirsCount > 0 || [...document.querySelectorAll('#dynamic-fields select')].some(select => select.value !== 'noOption' && select.value !== 'لا');
+  const maleChecked = document.getElementById('male').checked;
+  const femaleChecked = document.getElementById('female').checked;
+  const deceasedGender = document.querySelector('input[name="deceased_gender"]:checked')?.value;
+  const husbandSelected = deceasedGender === 'female' && (['yesOption', 'yes', 'نعم'].includes(document.getElementById('husband')?.value));
+  const wifeSelected = deceasedGender === 'male' && parseInt(document.getElementById('wife')?.value) > 0;
+  return (hasOtherHeirs || husbandSelected || wifeSelected) && (maleChecked || femaleChecked);
+}
+
+function showModal() { document.getElementById('modalOverlay').style.display = 'block'; document.getElementById('validationModal').style.display = 'block'; }
+function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; document.getElementById('validationModal').style.display = 'none'; }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const allSelect = [...document.querySelectorAll('select')];
+  allSelect.forEach(el => {
+    all[el.id] = el.value || 0;
+    el.addEventListener('change', () => { all[el.id] = el.value; calculateHeirsCount(all); });
+  });
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+});
+
+function calculateHeirsCount(all) {
+  let count = 0;
+  let hiddenWife = document.getElementById('spouse_female').classList.contains('hidden');
+  let hiddenHusband = document.getElementById('spouse_male').classList.contains('hidden');
+  for (const [key, item] of Object.entries(all)) {
+    if (['dad_sons', 'dad_girls'].includes(key)) continue;
+    if (key === 'wife' && hiddenWife) continue;
+    if (key === 'husband' && hiddenHusband) continue;
+    const yesValues = ['نعم', 'yes', 'yesOption'];
+    const noValues = ['لا', 'no', 'noOption'];
+    if (yesValues.includes(item)) count += 1;
+    else if (noValues.includes(item) || item === 'مسلم' || item === 'غير مسلم') continue;
+    else count += parseNumber(item);
+  }
+  document.getElementById('worthCount').textContent = formatNumber(count);
+}
+
+window.initColorCodingSystem = initColorCodingSystem;
+window.initTab2ColorCodingSystem = initTab2ColorCodingSystem;
+window.updateHeirFieldStyle = updateHeirFieldStyle;
+window.updateReligionFieldStyle = updateReligionFieldStyle;
+window.updateHeirNameFieldStyle = updateHeirNameFieldStyle;
+window.updateHeirReligionFieldStyle = updateHeirReligionFieldStyle;
+window.formatMoneyWithCurrency = formatMoneyWithCurrency;
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', function() {
+            setTimeout(() => {
+                const activeTab = document.querySelector('.tab-content.active').id;
+                if (activeTab === 'religious') initTab2ColorCodingSystem();
+            }, 350);
+        });
+    });
+});
       ...result,
       title: result.title || display.title || display.originalTitle || key,
       name: result.name || display.name || '',
@@ -1689,6 +1564,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
 
 
